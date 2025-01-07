@@ -210,8 +210,7 @@ export const getProjectsData = async () => {
                 {
                     name: "Flutter",
                     iconClass: "devicon-flutter-plain colored text-3xl",
-                },
-                "Git", "FastAPI", "SQLite", "Flutter"],
+                },],
             banner: "",
             category: ["Mobile"],
         },

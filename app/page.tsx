@@ -68,7 +68,7 @@ export default function Home() {
         {/* Left Section */}
         <div className="items-center">
           <h2 className="mb-4 text-3xl font-bold text-white dark:text-white">
-            Hi, I'm Bayu
+            Hi, I&#39;m Bayu
           </h2>
           <h1 className="mb-6 text-2xl font-extrabold leading-tight text-gray-100 md:text-4xl lg:text-6xl dark:text-gray-100">
             I Passionate about
