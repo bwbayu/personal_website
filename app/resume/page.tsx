@@ -47,7 +47,7 @@ export default function ResumePage() {
   }, []);
 
   return (
-    <div className="flex flex-grow flex-col bg-gray-100 p-6 dark:bg-gray-900">
+    <div className="flex grow flex-col bg-gray-900 p-6 dark:bg-gray-900">
       <div className="overflow-x-auto">
         {/* Custom Tabs */}
         <div className="mb-6 flex flex-wrap gap-2 overflow-x-auto border-b">

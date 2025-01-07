@@ -7,7 +7,7 @@ import { BsInstagram, BsTwitter } from "react-icons/bs";
 
 const CustomFooter = () => {
   return (
-    <div className="w-full bottom-0">
+    <div className="bottom-0 w-full">
       <Footer container>
         <div className="w-full sm:flex sm:items-center sm:justify-between">
           <FooterCopyright href="/" by="Bayu Wicaksono" year={2025} />

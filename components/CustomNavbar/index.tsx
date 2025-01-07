@@ -12,9 +12,9 @@ import Image from "next/image";
 export function CustomNavbar() {
   return (
     <div className="w-full">
-      <Navbar fluid rounded className="dark:bg-gray-800">
+      <Navbar fluid rounded className="bg-gray-800 dark:bg-gray-800">
           <NavbarBrand as={Link} href="/">
-            <span className="self-center whitespace-nowrap p-2 text-xl font-semibold dark:text-white dark:hover:text-blue-500">
+            <span className="self-center whitespace-nowrap p-2 text-xl font-semibold text-white hover:text-blue-500 dark:text-white dark:hover:text-blue-500">
               bwbayu
             </span>
           </NavbarBrand>

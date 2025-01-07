@@ -57,9 +57,9 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="flex flex-grow flex-col items-center justify-center px-10 dark:bg-gray-900 gap-10">
+    <main className="flex grow flex-col items-center justify-center gap-10 bg-gray-900 px-10 dark:bg-gray-900">
       {/* Profile Image */}
-      <div className="flex text-center sm:text-start items-center justify-between xl:justify-around gap-3 md:gap-6 flex-col-reverse sm:flex-row lg:gap-12 w-full pt-10 sm:pt-0 animate-fade-in-left-top opacity-0"
+      <div className="flex w-full animate-fade-in-left-top flex-col-reverse items-center justify-between gap-3 pt-10 text-center opacity-0 sm:flex-row sm:pt-0 sm:text-start md:gap-6 lg:gap-12 xl:justify-around"
         style={{
           animationDelay: "0.5s",
           animationFillMode: "forwards",
@@ -67,16 +67,16 @@ export default function Home() {
       >
         {/* Left Section */}
         <div className="items-center">
-          <h2 className="mb-4 text-3xl font-bold text-gray-800 dark:text-white">
+          <h2 className="mb-4 text-3xl font-bold text-white dark:text-white">
             Hi, I'm Bayu
           </h2>
-          <h1 className="mb-6 text-2xl md:text-4xl lg:text-6xl font-extrabold leading-tight text-gray-900 dark:text-gray-100">
+          <h1 className="mb-6 text-2xl font-extrabold leading-tight text-gray-100 md:text-4xl lg:text-6xl dark:text-gray-100">
             I Passionate about
           </h1>
-          <p className="mb-6 text-2xl md:text-4xl lg:text-6xl font-extrabold leading-tight text-gray-900 dark:text-gray-100">
+          <p className="mb-6 text-2xl font-extrabold leading-tight text-gray-100 md:text-4xl lg:text-6xl dark:text-gray-100">
             <span className="relative">
               <span
-                className="sm:absolute  w-full animate-fade-in-out text-blue-500 whitespace-nowrap"
+                className="w-full  animate-fade-in-out whitespace-nowrap text-blue-500 sm:absolute"
                 key={currentRoleIndex}
               >
                 {roles[currentRoleIndex]}
@@ -85,14 +85,14 @@ export default function Home() {
           </p>
         </div>
         {/* Right Section */}
-        <div className="flex flex-col items-center justify-center animate-fade-in-right-top opacity-0"
+        <div className="flex animate-fade-in-right-top flex-col items-center justify-center opacity-0"
           style={{
             animationDelay: "0.5s",
             animationFillMode: "forwards",
           }}
         >
           {/* Profile Picture */}
-          <div className="relative size-40 lg:size-60 overflow-hidden rounded-full shadow-lg">
+          <div className="relative size-40 overflow-hidden rounded-full shadow-lg lg:size-60">
             <Image
               src="/bayuwicaksono_bg.jpg"
               alt="Avatar of Bayu"
@@ -107,22 +107,22 @@ export default function Home() {
           >
             {showContactInfo ? (
               <>
-                Hide Contact <IoIosArrowUp className="w-4 h-4" />
+                Hide Contact <IoIosArrowUp className="size-4" />
               </>
             ) : (
               <>
-                Show Contact <IoIosArrowDown className="w-4 h-4" />
+                Show Contact <IoIosArrowDown className="size-4" />
               </>
             )}
           </button>
 
           {/* Contact Information */}
           {showContactInfo && self && (
-            <div className="mt-4 text-center lg:mt-6 animate-fade-in opacity-0">
-              <p className="text-lg font-medium text-gray-800 dark:text-gray-200">{self.name}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{self.email}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{self.location}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{self.phone_number}</p>
+            <div className="mt-4 animate-fade-in text-center opacity-0 lg:mt-6">
+              <p className="text-lg font-medium text-gray-200 dark:text-gray-200">{self.name}</p>
+              <p className="text-sm text-gray-400 dark:text-gray-400">{self.email}</p>
+              <p className="text-sm text-gray-400 dark:text-gray-400">{self.location}</p>
+              <p className="text-sm text-gray-400 dark:text-gray-400">{self.phone_number}</p>
             </div>
           )}
         </div>
@@ -130,7 +130,7 @@ export default function Home() {
       
       <div className="flex w-full flex-col gap-4 pb-10 sm:pb-0">
         <h2
-          className="text-center text-3xl font-bold text-white animate-fade-in opacity-0"
+          className="animate-fade-in text-center text-3xl font-bold text-white opacity-0"
           style={{
             animationDelay: "0.5s",
             animationFillMode: "forwards",
@@ -154,7 +154,7 @@ export default function Home() {
                     <p className="text-white">{category}</p>
                   </Accordion.Title>
                   <Accordion.Content>
-                    <div className="flex flex-wrap gap-4 animate-fade-in-left opacity-0"
+                    <div className="flex animate-fade-in-left flex-wrap gap-4 opacity-0"
                     style={{
                       animationDelay: "0.1s",
                       animationFillMode: "forwards",

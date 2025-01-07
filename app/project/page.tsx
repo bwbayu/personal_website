@@ -25,8 +25,8 @@ export default function ProjectsPage() {
     }, []);
 
     return (
-      <div className="flex flex-grow flex-col bg-gray-100 p-6 dark:bg-gray-900">
-        <h1 className="mb-6 text-3xl font-bold text-gray-800 dark:text-gray-200">
+      <div className="flex grow flex-col bg-gray-900 p-6 dark:bg-gray-900">
+        <h1 className="mb-6 text-3xl font-bold text-gray-200 dark:text-gray-200">
           My Projects
         </h1>
         <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -51,7 +51,7 @@ export default function ProjectsPage() {
                     </div>
                   </Accordion.Title>
                   <Accordion.Content>
-                    <p className="mt-2 text-justify text-sm text-gray-600 dark:text-gray-400 animate-fade-in opacity-0"
+                    <p className="mt-2 animate-fade-in text-justify text-sm text-gray-400 opacity-0 dark:text-gray-400"
                     style={{
                       animationDelay: "0.1s",
                       animationFillMode: "forwards",
@@ -60,7 +60,7 @@ export default function ProjectsPage() {
                     </p>
                   </Accordion.Content>
                   <Accordion.Content>
-                    <div className="flex flex-row justify-between animate-fade-in opacity-0"
+                    <div className="flex animate-fade-in flex-row justify-between opacity-0"
                     style={{
                       animationDelay: "0.1s",
                       animationFillMode: "forwards",
