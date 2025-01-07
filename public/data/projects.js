@@ -11,19 +11,19 @@ export const getProjectsData = async () => {
             tech: [
                 {
                     name: "Amazon Web Services (AWS)",
-                    iconClass: "devicon-amazonwebservices-plain-wordmark colored text-4xl",
+                    iconClass: "devicon-amazonwebservices-plain-wordmark colored text-3xl",
                 },
                 {
                     name: "PostgreSQL",
-                    iconClass: "devicon-postgresql-plain colored text-4xl",
+                    iconClass: "devicon-postgresql-plain colored text-3xl",
                 },
                 {
                     name: "Node.js",
-                    iconClass: "devicon-nodejs-plain-wordmark colored text-4xl",
+                    iconClass: "devicon-nodejs-plain-wordmark colored text-3xl",
                 },
                 {
                     name: "JavaScript",
-                    iconClass: "devicon-javascript-plain colored text-4xl",
+                    iconClass: "devicon-javascript-plain colored text-3xl",
                 }
             ],
             category: ["Web"],
@@ -39,19 +39,19 @@ export const getProjectsData = async () => {
             tech: [
                 {
                     name: "Python",
-                    iconClass: "devicon-python-plain colored text-4xl",
+                    iconClass: "devicon-python-plain colored text-3xl",
                 },
                 {
                     name: "Numpy",
-                    iconClass: "devicon-numpy-plain colored text-4xl",
+                    iconClass: "devicon-numpy-plain colored text-3xl",
                 },
                 {
                     name: "Pandas",
-                    iconClass: "devicon-pandas-plain colored text-4xl",
+                    iconClass: "devicon-pandas-plain colored text-3xl",
                 },
                 {
                     name: "Scikit-Learn",
-                    iconClass: "devicon-scikitlearn-plain colored text-4xl",
+                    iconClass: "devicon-scikitlearn-plain colored text-3xl",
                 },
             ],
             category: ["Data/ML"],
@@ -67,23 +67,23 @@ export const getProjectsData = async () => {
             tech: [
                 {
                     name: "PyTorch",
-                    iconClass: "devicon-pytorch-original colored text-4xl",
+                    iconClass: "devicon-pytorch-original colored text-3xl",
                 },
                 {
                     name: "Python",
-                    iconClass: "devicon-python-plain colored text-4xl",
+                    iconClass: "devicon-python-plain colored text-3xl",
                 },
                 {
                     name: "Numpy",
-                    iconClass: "devicon-numpy-plain colored text-4xl",
+                    iconClass: "devicon-numpy-plain colored text-3xl",
                 },
                 {
                     name: "Pandas",
-                    iconClass: "devicon-pandas-plain colored text-4xl",
+                    iconClass: "devicon-pandas-plain colored text-3xl",
                 },
                 {
                     name: "Scikit-Learn",
-                    iconClass: "devicon-scikitlearn-plain colored text-4xl",
+                    iconClass: "devicon-scikitlearn-plain colored text-3xl",
                 },
             ],
             banner: "",
@@ -100,35 +100,35 @@ export const getProjectsData = async () => {
             tech: [
                 {
                     name: "React",
-                    iconClass: "devicon-react-original colored text-4xl",
+                    iconClass: "devicon-react-original colored text-3xl",
                 },
                 {
                     name: "Docker",
-                    iconClass: "devicon-docker-plain colored text-4xl",
+                    iconClass: "devicon-docker-plain colored text-3xl",
                 },
                 {
                     name: "Flask",
-                    iconClass: "devicon-flask-original colored text-4xl",
+                    iconClass: "devicon-flask-original colored text-3xl",
                 },
                 {
                     name: "Google Cloud Platform (GCP)",
-                    iconClass: "devicon-googlecloud-plain colored text-4xl",
+                    iconClass: "devicon-googlecloud-plain colored text-3xl",
                 },
                 {
                     name: "Python",
-                    iconClass: "devicon-python-plain colored text-4xl",
+                    iconClass: "devicon-python-plain colored text-3xl",
                 },
                 {
                     name: "Numpy",
-                    iconClass: "devicon-numpy-plain colored text-4xl",
+                    iconClass: "devicon-numpy-plain colored text-3xl",
                 },
                 {
                     name: "Pandas",
-                    iconClass: "devicon-pandas-plain colored text-4xl",
+                    iconClass: "devicon-pandas-plain colored text-3xl",
                 },
                 {
                     name: "Scikit-Learn",
-                    iconClass: "devicon-scikitlearn-plain colored text-4xl",
+                    iconClass: "devicon-scikitlearn-plain colored text-3xl",
                 },
                 ],
             banner: "",
@@ -145,19 +145,19 @@ export const getProjectsData = async () => {
             tech: [
                 {
                     name: "Node.js",
-                    iconClass: "devicon-nodejs-plain-wordmark colored text-4xl",
+                    iconClass: "devicon-nodejs-plain-wordmark colored text-3xl",
                 },
                 {
                     name: "JavaScript",
-                    iconClass: "devicon-javascript-plain colored text-4xl",
+                    iconClass: "devicon-javascript-plain colored text-3xl",
                 },
                 {
                     name: "PostgreSQL",
-                    iconClass: "devicon-postgresql-plain colored text-4xl",
+                    iconClass: "devicon-postgresql-plain colored text-3xl",
                 },
                 {
                     name: "Amazon Web Services (AWS)",
-                    iconClass: "devicon-amazonwebservices-plain-wordmark colored text-4xl",
+                    iconClass: "devicon-amazonwebservices-plain-wordmark colored text-3xl",
                 },
                 ],
             banner: "",
@@ -173,19 +173,19 @@ export const getProjectsData = async () => {
             tech: [
                 {
                     name: "Python",
-                    iconClass: "devicon-python-plain colored text-4xl",
+                    iconClass: "devicon-python-plain colored text-3xl",
                 },
                 {
                     name: "Numpy",
-                    iconClass: "devicon-numpy-plain colored text-4xl",
+                    iconClass: "devicon-numpy-plain colored text-3xl",
                 },
                 {
                     name: "Pandas",
-                    iconClass: "devicon-pandas-plain colored text-4xl",
+                    iconClass: "devicon-pandas-plain colored text-3xl",
                 },
                 {
                     name: "Scikit-Learn",
-                    iconClass: "devicon-scikitlearn-plain colored text-4xl",
+                    iconClass: "devicon-scikitlearn-plain colored text-3xl",
                 },
             ],
             banner: "",
@@ -201,15 +201,15 @@ export const getProjectsData = async () => {
             tech: [
                 {
                     name: "FastAPI",
-                    iconClass: "devicon-fastapi-plain colored text-4xl",
+                    iconClass: "devicon-fastapi-plain colored text-3xl",
                 },
                 {
                     name: "SQLite",
-                    iconClass: "devicon-sqlite-plain colored text-4xl",
+                    iconClass: "devicon-sqlite-plain colored text-3xl",
                 },
                 {
                     name: "Flutter",
-                    iconClass: "devicon-flutter-plain colored text-4xl",
+                    iconClass: "devicon-flutter-plain colored text-3xl",
                 },],
             banner: "",
             category: ["Mobile"],
@@ -225,15 +225,15 @@ export const getProjectsData = async () => {
             tech: [
                 {
                     name: "PHP",
-                    iconClass: "devicon-php-plain colored text-4xl",
+                    iconClass: "devicon-php-plain colored text-3xl",
                 },
                 {
                     name: "Laravel",
-                    iconClass: "devicon-laravel-original colored text-4xl",
+                    iconClass: "devicon-laravel-original colored text-3xl",
                 },
                 {
                     name: "MySQL",
-                    iconClass: "devicon-mysql-original colored text-4xl",
+                    iconClass: "devicon-mysql-original colored text-3xl",
                 },
                 ],
             banner: "",
