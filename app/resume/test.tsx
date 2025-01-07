@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 // data
-import { getEducationsData } from "@/app/data/educations";
-import { getExperiencesData } from "@/app/data/experiences";
-import { getCertificationsData } from "@/app/data/certifications";
-import { getAchievementsData } from "@/app/data/achievements";
+import { getEducationsData } from "@/public/data/educations";
+import { getExperiencesData } from "@/public/data/experiences";
+import { getCertificationsData } from "@/public/data/certifications";
+import { getAchievementsData } from "@/public/data/achievements";
 // data type
 import { EducationType, ExperienceType, CertificationType, AchievementType } from "../types/resume";
 // component

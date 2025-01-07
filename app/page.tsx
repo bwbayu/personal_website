@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { Accordion, Tooltip } from "flowbite-react";
 import Image from "next/image";
-import { getAboutMeData} from "@/app/data/aboutMe"
-import {getSkillsData} from "@/app/data/skills"
+import { getAboutMeData} from "@/public/data/aboutMe"
+import {getSkillsData} from "@/public/data/skills"
 import {AboutMeType, SkillType} from '@/app/types/resume'
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 

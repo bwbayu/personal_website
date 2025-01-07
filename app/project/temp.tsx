@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Card, Tooltip } from "flowbite-react";
-import { getProjectsData } from '@/app/data/projects'
+import { getProjectsData } from '@/public/data/projects'
 import {
     ProjectType
 } from "../types/resume";
