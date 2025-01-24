@@ -57,10 +57,28 @@ export const getSkillsData = async () => {
             experience: "1+ years",
             category: "Web/Cross Platform Framework & Libraries",
           },
-        //   docker
+        //   DevOps Tools
           {
             name: "Docker",
             iconClass: "devicon-docker-plain colored text-3xl",
+            experience: "<1 years",
+            category: "DevOps Tools",
+          },
+          {
+            name: "Jenkins",
+            iconClass: "devicon-jenkins-plain colored text-3xl",
+            experience: "<1 years",
+            category: "DevOps Tools",
+          },
+          {
+            name: "Prometheus",
+            iconClass: "devicon-prometheus-original colored text-3xl",
+            experience: "<1 years",
+            category: "DevOps Tools",
+          },
+          {
+            name: "Grafana",
+            iconClass: "devicon-grafana-plain colored text-3xl",
             experience: "<1 years",
             category: "DevOps Tools",
           },

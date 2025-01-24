@@ -1,6 +1,38 @@
 export const getProjectsData = async () => {
     return ([
         {
+            name: "Jenkins Pipeline",
+            date: "Jan 2025",
+            description: "Part of the Dicoding IDCamp DevOps Engineer scholarship, where I implemented a CI/CD pipeline using Jenkins, \
+            Docker, and AWS EC2 to automate the build, test, and deployment process for a React and Python app. Additionally, integrated Prometheus \
+            and Grafana for real-time monitoring and visualization of metrics, enhancing system reliability and performance insights.",
+            repository: "https://github.com/bwbayu/jenkins-pipeline",
+            role: ["DevOps Engineer"],
+            tech: [
+                {
+                    name: "Amazon Web Services (AWS)",
+                    iconClass: "devicon-amazonwebservices-plain-wordmark colored text-3xl",
+                },
+                {
+                    name: "Docker",
+                    iconClass: "devicon-docker-plain colored text-3xl",
+                },
+                {
+                    name: "Jenkins",
+                    iconClass: "devicon-jenkins-plain colored text-3xl",
+                },
+                {
+                    name: "Prometheus",
+                    iconClass: "devicon-prometheus-original colored text-3xl",
+                },
+                {
+                    name: "Grafana",
+                    iconClass: "devicon-grafana-plain colored text-3xl",
+                }
+            ],
+            category: ["Web"],
+        },
+        {
             name: "Forum API",
             date: "Okt - Dec 2024",
             description: "Part of Dicoding AWS Back-End Developer Academy scholarship, this API was designed for a discussion platform using \

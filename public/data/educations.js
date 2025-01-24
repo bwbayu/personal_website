@@ -11,6 +11,15 @@ export const getEducationsData = async () => {
             for Automatic Essay Scoring'
         },
         {
+            institusi : 'Dicoding Academy',
+            title: 'IDCamp DevOps Engineer',
+            start: 'Jan 2025',
+            end: 'Mar 2025',
+            description: 'Received a scholarship for the IDCamp DevOps Engineer program. \
+            This comprehensive course focused on implementing DevOps techniques, CI/CD pipelines, \
+            and leveraging cloud computing using AWS services.'
+        },
+        {
             institusi : 'RevoU',
             title: 'AWS Cendekiawan - Cloud And Gen AI Machine Learning',
             start: 'Sep 2024',

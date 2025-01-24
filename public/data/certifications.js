@@ -2,6 +2,13 @@ export const getCertificationsData = async () => {
     return ([
         {
             company: 'Dicoding Indonesia',
+            title: 'Belajar Implementasi CI/CD',
+            issued: 'Jan 2025',
+            expires: 'Jan 2028',
+            url: 'https://www.dicoding.com/certificates/72ZD5OW0LZYW',
+        },
+        {
+            company: 'Dicoding Indonesia',
             title: 'Menjadi Back-End Developer Expert dengan JavaScript',
             issued: 'Dec 2024',
             expires: 'Dec 2027',
