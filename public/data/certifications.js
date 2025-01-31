@@ -15,6 +15,13 @@ export const getCertificationsData = async () => {
             url: 'https://www.dicoding.com/certificates/6RPNY5GYRZ2M',
         },
         {
+            company: 'Universitas Pendidikan Indonesia',
+            title: 'BNSP - Database Administrator',
+            issued: 'Nov 2024',
+            expires: 'Nov 2027',
+            url: 'https://drive.google.com/file/d/1e8sQcyXPfR-V751O5V_om3ZvjYNoaAak/view',
+        },
+        {
             company: 'Amazon Web Services (AWS)',
             title: 'AWS Certified Machine Learning - Specialty',
             issued: 'Nov 2024',
