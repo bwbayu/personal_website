@@ -1,6 +1,13 @@
 export const getExperiencesData = async () => {
     return ([
         {
+            company: 'PT Bina Bangkit Nusantara (Cakap)',
+            role: 'DevOps Engineer Intern',
+            start: 'Jan 2025',
+            end: 'Current',
+            location: 'Bandung, West Java, Indonesia',
+        },
+        {
             company: 'PT. Widata Intelligent Solution',
             role: 'Software Engineer',
             start: 'Jan 2024',
