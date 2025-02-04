@@ -7,7 +7,7 @@ export const getExperiencesData = async () => {
             end: 'Mar 2025',
             duration: 3,
             location: 'Bandung, West Java, Indonesia',
-            description: ''
+            description: []
         },
         {
             company: 'PT. Widata Intelligent Solution',
