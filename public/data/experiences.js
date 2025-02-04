@@ -4,8 +4,10 @@ export const getExperiencesData = async () => {
             company: 'PT Bina Bangkit Nusantara (Cakap)',
             role: 'DevOps Engineer Intern',
             start: 'Jan 2025',
-            end: 'Current',
+            end: 'Mar 2025',
+            duration: 3,
             location: 'Bandung, West Java, Indonesia',
+            description: ''
         },
         {
             company: 'PT. Widata Intelligent Solution',
