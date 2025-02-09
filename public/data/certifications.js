@@ -2,7 +2,7 @@ export const getCertificationsData = async () => {
     return ([
         {
             company: 'Dicoding Indonesia',
-            title: 'AMenjadi Linux System Administrator',
+            title: 'Menjadi Linux System Administrator',
             issued: 'Feb 2025',
             expires: 'Feb 2028',
             url: 'https://www.dicoding.com/certificates/6RPNRW9Q4X2M',
