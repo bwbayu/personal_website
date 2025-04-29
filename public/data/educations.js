@@ -6,15 +6,15 @@ export const getEducationsData = async () => {
             start: 'Aug 2021',
             end: 'Jul 2025',
             description: 'Grade: 3.92/4.00 \
-            | Thesis (In Progress) : Exploring Large Language Models (LLM) \
-            including BERT, Longformer, and LLaMA with LoRA Fine-tuning \
-            for Automatic Essay Scoring'
+            | Thesis (In Progress) : Exploring Regularization Techniques  \
+            such as Dropout and Weight Decay in ALBERT Model \
+            to Improve Generalization for Automatic Scoring Tasks'
         },
         {
             institusi : 'Dicoding Academy',
             title: 'IDCamp DevOps Engineer',
             start: 'Jan 2025',
-            end: 'Mar 2025',
+            end: 'Mei 2025',
             description: 'Received a scholarship for the IDCamp DevOps Engineer program. \
             This comprehensive course focused on implementing DevOps techniques, CI/CD pipelines, \
             and leveraging cloud computing using AWS services.'

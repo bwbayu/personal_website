@@ -1,6 +1,37 @@
 export const getProjectsData = async () => {
     return ([
         {
+            name: "KostHub",
+            date: "Feb - April 2025",
+            description: "Participated as Machine Learning Engineer in Mapid WebGIS Competition 2025. Built a price prediction model (XGBoost, R² = 0.82) \
+            and a boarding house recommender system (KNN). Deployed models into the system using FastAPI.",
+            repository: "https://github.com/MuhammadRizki8/KostHub",
+            role: ["Machine Learning Engineer"],
+            tech: [
+                {
+                    name: "FastAPI",
+                    iconClass: "devicon-fastapi-plain colored text-3xl",
+                },
+                {
+                    name: "Python",
+                    iconClass: "devicon-python-plain colored text-3xl",
+                },
+                {
+                    name: "Numpy",
+                    iconClass: "devicon-numpy-plain colored text-3xl",
+                },
+                {
+                    name: "Pandas",
+                    iconClass: "devicon-pandas-plain colored text-3xl",
+                },
+                {
+                    name: "Scikit-Learn",
+                    iconClass: "devicon-scikitlearn-plain colored text-3xl",
+                },
+            ],
+            category: ["Data/ML"],
+        },
+        {
             name: "Jenkins Pipeline",
             date: "Jan 2025",
             description: "Part of the Dicoding IDCamp DevOps Engineer scholarship, where I implemented a CI/CD pipeline using Jenkins, \
