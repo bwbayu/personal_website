@@ -17,9 +17,9 @@ export const getExperiencesData = async () => {
             duration: 11,
             location: 'Bandung, West Java, Indonesia',
             description: [
-                'Developed and maintained 4 web applications using frameworks such as Flask, React.js, Laravel, and Tailwind.',
-                'Researched, fine-tuned, and integrated pre-trained AI models into production, ensuring 100% functionality and optimizing memory usage for better resource efficiency.',
-                'Collaborated with cross-functional teams of 4-6 members to deliver projects on time, utilizing effective communication and teamwork to meet client requirements.',
+                'Developed four web applications using frameworks such as Flask, React.js, Laravel, and Tailwind CSS.',
+                'Integrated three pre-trained AI models into production environments and fine-tuned one pre-trained model using client-specific datasets.',
+                'Collaborated with cross-functional teams (4–6 members) to deliver projects on time, ensuring alignment with client requirements through effective communication and teamwork.',
             ],
         },
         {
