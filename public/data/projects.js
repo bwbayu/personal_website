@@ -1,6 +1,88 @@
 export const getProjectsData = async () => {
   return [
     {
+      name: "StopJudol Youtube Bot",
+      date: "Sep - Oct 2025",
+      description:
+        "StopJudol is a web dashboard, similar to YouTube Studio, that integrates the YouTube Data API with a fine‑tuned BERT model (≈97% accuracy) to automatically detect online‑gambling promotions in YouTube comments. It empowers content creators to clean up their comment sections effortlessly in just two steps: run the detection and bulk-delete flagged comments. That's it.",
+      repository: "https://github.com/bwbayu/youtube-bot",
+      role: ["Full-Stack Developer", "Machine Learning Engineer"],
+      tech: [
+        {
+          name: "Python",
+          iconClass: "devicon-python-plain colored text-3xl",
+        },
+        {
+          name: "TypeScript",
+          iconClass: "devicon-typescript-plain colored text-3xl",
+        },
+        {
+          name: "FastAPI",
+          iconClass: "devicon-fastapi-plain colored text-3xl",
+        },
+        {
+          name: "React",
+          iconClass: "devicon-react-original colored text-3xl",
+        },
+        {
+          name: "PostgreSQL",
+          iconClass: "devicon-postgresql-plain colored text-3xl",
+        },
+        {
+          name: "Redis",
+          iconClass: "devicon-redis-plain colored text-3xl",
+        },
+        {
+          name: "PyTorch",
+          iconClass: "devicon-pytorch-original colored text-3xl",
+        },
+        {
+          name: "Pandas",
+          iconClass: "devicon-pandas-plain colored text-3xl",
+        },
+      ],
+      category: ["Web", "ML"],
+    },
+    {
+      name: "Qlassroom",
+      date: "Sep 2025",
+      description:
+        "A multi-modal classroom assistant that captures speech, video, slides, images, and documents together into a searchable knowledge memory. Awarded in Qdrant Hackathon 2025 Project by YHHA (Best in Category TwelveLabs)",
+      repository: "https://github.com/bwbayu/Qlassroom",
+      role: ["AI Engineer"],
+      tech: [
+        {
+          name: "Python",
+          iconClass: "devicon-python-plain colored text-3xl",
+        },
+        {
+          name: "Google Cloud Platform (GCP)",
+          iconClass: "devicon-googlecloud-plain colored text-3xl",
+        },
+        {
+          name: "Cognee",
+          iconClass: "devicon-python-plain text-3xl",
+        },
+        {
+          name: "Qdrant",
+          iconClass: "devicon-python-plain text-3xl",
+        },
+        {
+          name: "TwelveLabs",
+          iconClass: "devicon-python-plain text-3xl",
+        },
+        {
+          name: "CrewAI",
+          iconClass: "devicon-python-plain text-3xl",
+        },
+        {
+          name: "Gradio",
+          iconClass: "devicon-python-plain text-3xl",
+        },
+      ],
+      category: ["Web", "ML"],
+    },
+    {
       name: "RAG Chatbot CSE UPI",
       date: "Aug 2025",
       description:

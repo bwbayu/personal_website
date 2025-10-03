@@ -10,7 +10,7 @@ export const getSkillsData = async () => {
     {
       name: "Numpy",
       iconClass: "devicon-numpy-plain colored text-3xl",
-      experience: "1+ years",
+      experience: "<1 years",
       category: "Data/AI Framework & Libraries",
     },
     {
@@ -22,13 +22,13 @@ export const getSkillsData = async () => {
     {
       name: "Pandas",
       iconClass: "devicon-pandas-plain colored text-3xl",
-      experience: "1+ years",
+      experience: "<1 years",
       category: "Data/AI Framework & Libraries",
     },
     {
       name: "Scikit-Learn",
       iconClass: "devicon-scikitlearn-plain colored text-3xl",
-      experience: "1+ years",
+      experience: "<1 years",
       category: "Data/AI Framework & Libraries",
     },
     //   cloud
@@ -48,7 +48,7 @@ export const getSkillsData = async () => {
     {
       name: "FastAPI",
       iconClass: "devicon-fastapi-plain colored text-3xl",
-      experience: "<1 years",
+      experience: "1+ years",
       category: "Web/Cross Platform Framework & Libraries",
     },
     {
@@ -61,31 +61,31 @@ export const getSkillsData = async () => {
     {
       name: "Docker",
       iconClass: "devicon-docker-plain colored text-3xl",
-      experience: "<1 years",
+      experience: "1+ years",
       category: "DevOps Tools",
     },
     {
       name: "Kubernetes",
       iconClass: "devicon-kubernetes-plain colored text-3xl",
-      experience: "<1 years",
+      experience: "Just Familiar",
       category: "DevOps Tools",
     },
     {
       name: "Jenkins",
       iconClass: "devicon-jenkins-plain colored text-3xl",
-      experience: "<1 years",
+      experience: "Just Familiar",
       category: "DevOps Tools",
     },
     {
       name: "Prometheus",
       iconClass: "devicon-prometheus-original colored text-3xl",
-      experience: "<1 years",
+      experience: "Just Familiar",
       category: "DevOps Tools",
     },
     {
       name: "Grafana",
       iconClass: "devicon-grafana-plain colored text-3xl",
-      experience: "<1 years",
+      experience: "Just Familiar",
       category: "DevOps Tools",
     },
     //   version control
@@ -109,12 +109,6 @@ export const getSkillsData = async () => {
       category: "Databases",
     },
     {
-      name: "SQLite",
-      iconClass: "devicon-sqlite-plain colored text-3xl",
-      experience: "<1 years",
-      category: "Databases",
-    },
-    {
       name: "MongoDB",
       iconClass: "devicon-mongodb-plain colored text-3xl",
       experience: "<1 years",
@@ -124,7 +118,7 @@ export const getSkillsData = async () => {
     {
       name: "React",
       iconClass: "devicon-react-original colored text-3xl",
-      experience: "1 years",
+      experience: "<1 years",
       category: "Web/Cross Platform Framework & Libraries",
     },
     {
@@ -134,26 +128,8 @@ export const getSkillsData = async () => {
       category: "Web/Cross Platform Framework & Libraries",
     },
     {
-      name: "Laravel",
-      iconClass: "devicon-laravel-original colored text-3xl",
-      experience: "1+ years",
-      category: "Web/Cross Platform Framework & Libraries",
-    },
-    {
       name: "Tailwind CSS",
       iconClass: "devicon-tailwindcss-original colored text-3xl",
-      experience: "1 years",
-      category: "Web/Cross Platform Framework & Libraries",
-    },
-    {
-      name: "Next.js",
-      iconClass: "devicon-nextjs-plain colored text-3xl",
-      experience: "<1 years",
-      category: "Web/Cross Platform Framework & Libraries",
-    },
-    {
-      name: "Flutter",
-      iconClass: "devicon-flutter-plain colored text-3xl",
       experience: "<1 years",
       category: "Web/Cross Platform Framework & Libraries",
     },
@@ -168,18 +144,6 @@ export const getSkillsData = async () => {
       name: "TypeScript",
       iconClass: "devicon-typescript-plain colored text-3xl",
       experience: "<1 years",
-      category: "Programming Languages",
-    },
-    {
-      name: "Golang (Go)",
-      iconClass: "devicon-go-original-wordmark colored text-3xl",
-      experience: "<1 years",
-      category: "Programming Languages",
-    },
-    {
-      name: "PHP",
-      iconClass: "devicon-php-plain colored text-3xl",
-      experience: "1+ years",
       category: "Programming Languages",
     },
   ];

@@ -11,7 +11,7 @@ export const getAchievementsData = async () => {
                 rental properties using XGBoost (R² = 0.82), leveraging both textual and geospatial features",
       ],
       repository: [],
-      url: "https://drive.google.com/file/d/1ZKR3dyi-KT5cVQpkSHw_R04uYhVY6r_Q/view?usp=sharing",
+      url: "https://drive.google.com/file/d/11nKa7k7jk6-mCF7Rjg-IDpitjbV2Vpu6/view?usp=sharing",
     },
     {
       event: "Hology 7.0 ",

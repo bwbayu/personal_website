@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { Accordion, Tooltip } from "flowbite-react";
 import Image from "next/image";
-import { getAboutMeData} from "@/public/data/aboutMe"
-import {getSkillsData} from "@/public/data/skills"
-import {AboutMeType, SkillType} from '@/app/types/resume'
+import { getAboutMeData } from "@/public/data/aboutMe";
+import { getSkillsData } from "@/public/data/skills";
+import { AboutMeType, SkillType } from "@/app/types/resume";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 const roles = [
@@ -19,9 +19,11 @@ const roles = [
 export default function Home() {
   const [self, setSelf] = useState<AboutMeType | null>(null);
   const [skills, setSkills] = useState<SkillType[]>([]);
-  const [groupedSkills, setGroupedSkills] = useState<Record<string, SkillType[]>>({});
+  const [groupedSkills, setGroupedSkills] = useState<
+    Record<string, SkillType[]>
+  >({});
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
-  // 
+  //
   const [showContactInfo, setShowContactInfo] = useState(false);
 
   useEffect(() => {
@@ -33,33 +35,37 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-      async function fetchData() {
-        const [selfData, skillData] = await Promise.all([
-          getAboutMeData(),
-          getSkillsData()
-        ]);
-  
-        setSelf(selfData);
-        setSkills(skillData);
+    async function fetchData() {
+      const [selfData, skillData] = await Promise.all([
+        getAboutMeData(),
+        getSkillsData(),
+      ]);
 
-        const grouped = skillData.reduce((acc, skill) => {
+      setSelf(selfData);
+      setSkills(skillData);
+
+      const grouped = skillData.reduce(
+        (acc, skill) => {
           if (!acc[skill.category]) {
             acc[skill.category] = [];
           }
           acc[skill.category].push(skill);
           return acc;
-        }, {} as Record<string, SkillType[]>);
-  
-        setGroupedSkills(grouped);
-      }
-  
-      fetchData();
+        },
+        {} as Record<string, SkillType[]>,
+      );
+
+      setGroupedSkills(grouped);
+    }
+
+    fetchData();
   }, []);
 
   return (
     <main className="flex grow flex-col items-center justify-center gap-10 bg-gray-900 px-10 dark:bg-gray-900">
       {/* Profile Image */}
-      <div className="flex w-full animate-fade-in-left-top flex-col-reverse items-center justify-between gap-3 pt-10 text-center opacity-0 sm:flex-row sm:pt-0 sm:text-start md:gap-6 lg:gap-12 xl:justify-around"
+      <div
+        className="flex w-full animate-fade-in-left-top flex-col-reverse items-center justify-between gap-3 pt-10 text-center opacity-0 sm:flex-row sm:pt-0 sm:text-start md:gap-6 lg:gap-12 xl:justify-around"
         style={{
           animationDelay: "0.5s",
           animationFillMode: "forwards",
@@ -71,7 +77,7 @@ export default function Home() {
             Hi, I&#39;m Bayu
           </h2>
           <h1 className="mb-6 text-2xl font-extrabold leading-tight text-gray-100 md:text-4xl lg:text-6xl dark:text-gray-100">
-            I Passionate about
+            I'm Currently Learning about
           </h1>
           <p className="mb-6 text-2xl font-extrabold leading-tight text-gray-100 md:text-4xl lg:text-6xl dark:text-gray-100">
             <span className="relative">
@@ -85,7 +91,8 @@ export default function Home() {
           </p>
         </div>
         {/* Right Section */}
-        <div className="flex animate-fade-in-right-top flex-col items-center justify-center opacity-0"
+        <div
+          className="flex animate-fade-in-right-top flex-col items-center justify-center opacity-0"
           style={{
             animationDelay: "0.5s",
             animationFillMode: "forwards",
@@ -94,7 +101,7 @@ export default function Home() {
           {/* Profile Picture */}
           <div className="relative size-40 overflow-hidden rounded-full shadow-lg lg:size-60">
             <Image
-              src="/bayuwicaksono_bg.jpg"
+              src="/bayuwicaksono_bg1.jpeg"
               alt="Avatar of Bayu"
               fill
               style={{ objectFit: "cover" }}
@@ -119,15 +126,23 @@ export default function Home() {
           {/* Contact Information */}
           {showContactInfo && self && (
             <div className="mt-4 animate-fade-in text-center opacity-0 lg:mt-6">
-              <p className="text-lg font-medium text-gray-200 dark:text-gray-200">{self.name}</p>
-              <p className="text-sm text-gray-400 dark:text-gray-400">{self.email}</p>
-              <p className="text-sm text-gray-400 dark:text-gray-400">{self.location}</p>
-              <p className="text-sm text-gray-400 dark:text-gray-400">{self.phone_number}</p>
+              <p className="text-lg font-medium text-gray-200 dark:text-gray-200">
+                {self.name}
+              </p>
+              <p className="text-sm text-gray-400 dark:text-gray-400">
+                {self.email}
+              </p>
+              <p className="text-sm text-gray-400 dark:text-gray-400">
+                {self.location}
+              </p>
+              <p className="text-sm text-gray-400 dark:text-gray-400">
+                {self.phone_number}
+              </p>
             </div>
           )}
         </div>
       </div>
-      
+
       <div className="flex w-full flex-col gap-4 pb-10 sm:pb-0">
         <h2
           className="animate-fade-in text-center text-3xl font-bold text-white opacity-0"
@@ -154,18 +169,22 @@ export default function Home() {
                     <p className="text-white">{category}</p>
                   </Accordion.Title>
                   <Accordion.Content>
-                    <div className="flex animate-fade-in-left flex-wrap gap-4 opacity-0"
-                    style={{
-                      animationDelay: "0.1s",
-                      animationFillMode: "forwards",
-                    }}>
+                    <div
+                      className="flex animate-fade-in-left flex-wrap gap-4 opacity-0"
+                      style={{
+                        animationDelay: "0.1s",
+                        animationFillMode: "forwards",
+                      }}
+                    >
                       {skills.map((skill, idx) => (
                         <Tooltip
                           key={idx}
                           content={
                             <div className="text-center">
                               <p className="font-semibold">{skill.name}</p>
-                              <p className="text-sm text-gray-500">{skill.experience}</p>
+                              <p className="text-sm text-gray-500">
+                                {skill.experience}
+                              </p>
                             </div>
                           }
                         >
