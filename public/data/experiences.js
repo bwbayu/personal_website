@@ -8,8 +8,8 @@ export const getExperiencesData = async () => {
       duration: 4,
       location: "Bandung, West Java, Indonesia",
       description: [
-        "Assisted in maintaining and managing a microservices-based application stack built with Go (Golang)",
-        "Supported deployment and containerization using Docker and Kubernetes (K8s) in development environments",
+        "Maintained and monitored a microservices-based backend system built in Go (Golang), supporting development and testing environments",
+        "Assisted in containerizing services using Docker and orchestrating deployments with Kubernetes (K8s), streamlining local development workflows",
       ],
     },
     {
@@ -20,8 +20,9 @@ export const getExperiencesData = async () => {
       duration: 11,
       location: "Bandung, West Java, Indonesia",
       description: [
-        "Developed four web applications using frameworks such as Flask, React.js, Laravel, and Tailwind CSS.",
-        "Integrated three pre-trained AI models into production environments and fine-tuned one pre-trained model using client-specific datasets.",
+        "Developed and deployed 4 full-stack web applications using Flask, React.js, Laravel, and Tailwind CSS, tailored to diverse client needs.",
+        "Integrated 3 pre-trained AI models into production: facial emotion recognition for a student monitoring system, and TTS/STT models for an Indonesian language learning platform.",
+        "Fine-tuned a BERT-based model for automatic essay scoring, increasing accuracy by 41.5% on client-provided datasets.",
         "Collaborated with cross-functional teams (4–6 members) to deliver projects on time, ensuring alignment with client requirements through effective communication and teamwork.",
       ],
     },
