@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Badge, Tooltip, Accordion } from "flowbite-react";
 import { getProjectsData } from "@/public/data/projects";
 import { ProjectType } from "../types/resume";
+import { BsGlobe2 } from "react-icons/bs";
 import "devicon/devicon.min.css";
 import Link from "next/link";
 
@@ -83,19 +84,34 @@ export default function ProjectsPage() {
                           </Tooltip>
                         ))}
                       </div>
-                      {/* Repository Link */}
-                      {project.repository && (
-                        <Tooltip content="View Repository">
-                          <Link
-                            href={project.repository}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mr-2 text-3xl text-white hover:text-slate-500"
-                          >
-                            <i className="devicon-github-original"></i>
-                          </Link>
-                        </Tooltip>
-                      )}
+                      <div className="flex flex-row gap-2">
+                        {/* Repository Link */}
+                        {project.repository && (
+                          <Tooltip content="View Repository">
+                            <Link
+                              href={project.repository}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mr-2 text-3xl text-white hover:text-slate-500"
+                            >
+                              <i className="devicon-github-original"></i>
+                            </Link>
+                          </Tooltip>
+                        )}
+                        {/* website url (if already deploy) */}
+                        {project.web_url && (
+                          <Tooltip content="View Website">
+                            <Link
+                              href={project.web_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-3xl text-white hover:text-slate-500"
+                            >
+                              <BsGlobe2 />
+                            </Link>
+                          </Tooltip>
+                        )}
+                      </div>
                     </div>
                   </Accordion.Content>
                 </Accordion.Panel>
@@ -163,19 +179,34 @@ export default function ProjectsPage() {
                           </Tooltip>
                         ))}
                       </div>
-                      {/* Repository Link */}
-                      {project.repository && (
-                        <Tooltip content="View Repository">
-                          <Link
-                            href={project.repository}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mr-2 text-3xl text-white hover:text-slate-500"
-                          >
-                            <i className="devicon-github-original"></i>
-                          </Link>
-                        </Tooltip>
-                      )}
+                      <div className="flex flex-row gap-2">
+                        {/* Repository Link */}
+                        {project.repository && (
+                          <Tooltip content="View Repository">
+                            <Link
+                              href={project.repository}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mr-2 text-3xl text-white hover:text-slate-500"
+                            >
+                              <i className="devicon-github-original"></i>
+                            </Link>
+                          </Tooltip>
+                        )}
+                        {/* website url (if already deploy) */}
+                        {project.web_url && (
+                          <Tooltip content="View Website">
+                            <Link
+                              href={project.web_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-3xl text-white hover:text-slate-500"
+                            >
+                              <BsGlobe2 />
+                            </Link>
+                          </Tooltip>
+                        )}
+                      </div>
                     </div>
                   </Accordion.Content>
                 </Accordion.Panel>

@@ -4,8 +4,9 @@ export const getProjectsData = async () => {
       name: "StopJudol Youtube Bot",
       date: "Sep - Oct 2025",
       description:
-        "StopJudol is a web dashboard, similar to YouTube Studio, that integrates the YouTube Data API with a fine‑tuned BERT model (≈97% accuracy) to automatically detect online‑gambling promotions in YouTube comments. It empowers content creators to clean up their comment sections effortlessly in just two steps: run the detection and bulk-delete flagged comments. That's it.",
+        "StopJudol is a web dashboard, similar to YouTube Studio, that integrates the YouTube Data API with a fine‑tuned BERT model (~99% accuracy) to automatically detect online‑gambling promotions in YouTube comments. It empowers content creators to clean up their comment sections effortlessly in just two steps: run the detection and bulk-delete flagged comments. That's it.",
       repository: "https://github.com/bwbayu/youtube-bot",
+      web_url: "",
       role: ["Full-Stack Developer", "Machine Learning Engineer"],
       tech: [
         {
@@ -49,6 +50,7 @@ export const getProjectsData = async () => {
       description:
         "A multi-modal classroom assistant that captures speech, video, slides, images, and documents together into a searchable knowledge memory. Awarded in Qdrant Hackathon 2025 Project by YHHA (Best in Category TwelveLabs)",
       repository: "https://github.com/bwbayu/Qlassroom",
+      web_url: "",
       role: ["AI Engineer"],
       tech: [
         {
@@ -88,6 +90,7 @@ export const getProjectsData = async () => {
       description:
         "A lightweight RAG-based chatbot built with FastAPI and Streamlit to answer questions about the Faculty of Computer Science Education at UPI, using content sourced from the official website.",
       repository: "https://github.com/bwbayu/RAG_Chatbot",
+      web_url: "https://chatbot-upi.bwbayu.space/",
       role: ["Full-Stack Developer", "Machine Learning Engineer"],
       tech: [
         {
@@ -128,6 +131,7 @@ export const getProjectsData = async () => {
         "A full-stack project for developing and deploying an Automatic Short Answer Scoring (ASAS) system using BERT-based models, \
       combining machine learning experimentation with a web-based demo interface.",
       repository: "https://github.com/bwbayu/thesis-code",
+      web_url: "https://asas-demo.web.app/",
       role: ["Full-Stack Developer", "Machine Learning Engineer"],
       tech: [
         {
@@ -172,6 +176,7 @@ export const getProjectsData = async () => {
         "Participated as Machine Learning Engineer in Mapid WebGIS Competition 2025. Built a price prediction model (XGBoost, R² = 0.82) \
             and a boarding house recommender system (KNN). Deployed models into the system using FastAPI.",
       repository: "",
+      web_url: "",
       role: ["Machine Learning Engineer"],
       tech: [
         {
@@ -205,6 +210,7 @@ export const getProjectsData = async () => {
             Docker, and AWS EC2 to automate the build, test, and deployment process for a React and Python app. Additionally, integrated Prometheus \
             and Grafana for real-time monitoring and visualization of metrics, enhancing system reliability and performance insights.",
       repository: "https://github.com/bwbayu/jenkins-pipeline",
+      web_url: "",
       role: ["DevOps Engineer"],
       tech: [
         {
@@ -239,6 +245,7 @@ export const getProjectsData = async () => {
             Clean Architecture and TDD. It features unit, integration, and functional testing, CI/CD with GitHub Actions, and secure deployment on \
             AWS. Also implementing HTTPS, rate limiting via NGINX, and Hapi Swagger documentation were implemented to ensure security.",
       repository: "https://github.com/bwbayu/forum-api",
+      web_url: "",
       role: ["Back-End Developer"],
       tech: [
         {
@@ -269,6 +276,7 @@ export const getProjectsData = async () => {
             marketplace. Using TF-IDF, SentenceTransformer, and POS tagging, the project improved product discoverability by clustering over \
             516 categories and building a recommendation system to enhance user experience.",
       repository: "https://github.com/bwbayu/product_name_clustering",
+      web_url: "",
       role: ["Data Scientist"],
       tech: [
         {
@@ -299,6 +307,7 @@ export const getProjectsData = async () => {
             top-8 position out of 196 teams, showcasing its high accuracy and innovative approach.",
       repository:
         "https://github.com/Khaairi/Clothing_Multilabel_Classification",
+      web_url: "",
       role: ["Machine Learning Engineer"],
       tech: [
         {
@@ -333,6 +342,7 @@ export const getProjectsData = async () => {
             for IT professionals by leveraging vector search and a fine-tuned SBERT model. It features resume upload, real-time job recommendations, \
             and advanced similarity matching, powered by Zilliz Milvus and custom datasets of 85,000 entries.",
       repository: "https://github.com/bwbayu/JobFitte",
+      web_url: "",
       role: ["Full-Stack Developer", "Machine Learning Engineer"],
       tech: [
         {
@@ -379,6 +389,7 @@ export const getProjectsData = async () => {
             and AWS. Key features include user authentication with JWT, data export via RabbitMQ, file storage on Amazon S3, and caching with \
             Redis for optimal performance.",
       repository: "https://github.com/bwbayu/openmusic-api",
+      web_url: "",
       role: ["Back-End Developer"],
       tech: [
         {
@@ -410,6 +421,7 @@ export const getProjectsData = async () => {
             By applying data augmentation and fine-tuning, it effectively addressed the growing issue of gambling-related content in digital marketing.",
       repository:
         "https://github.com/bwbayu/Deep-Learning-Projects/tree/main/Image-Classification/Classification%20of%20online%20gambling%20advertisements",
+      web_url: "",
       role: ["Machine Learning Engineer"],
       tech: [
         {
@@ -439,6 +451,7 @@ export const getProjectsData = async () => {
         "Developed a mobile app using Flutter and FastAPI to connect UMKM with investors. The app features registration, \
             loan tracking, payment systems, and fund management, simplifying access to financial resources and promoting business growth.",
       repository: "https://github.com/bwbayu/P2P_Lending_App_Flutter",
+      web_url: "",
       role: ["Full-Stack Developer"],
       tech: [
         {
@@ -465,6 +478,7 @@ export const getProjectsData = async () => {
             production output, and sales. It integrates Laravel features like Seeder, Migration, and Eloquent ORM for efficient database \
             management and a user-friendly interface.",
       repository: "https://github.com/bwbayu/Web_Inventaris",
+      web_url: "",
       role: ["Full-Stack Developer"],
       tech: [
         {

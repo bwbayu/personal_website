@@ -1,6 +1,18 @@
 export const getAchievementsData = async () => {
   return [
     {
+      event: "Qdrant Vector Database Hackathon 2025",
+      organization: "Qdrant",
+      achievement: "Winner Best-in-Category TwelveLabs",
+      date: "Sep 2025",
+      description: [
+        "Built a multi-modal knowledge assistant that transforms educational videos into searchable knowledge using video, audio, slide, and document understanding.",
+        "Integrated Twelve Labs, Qdrant, Neo4j, and Cognee to enable semantic search, slide extraction, and graph reasoning across instructional content.",
+      ],
+      repository: ["https://github.com/bwbayu/Qlassroom"],
+      url: "https://qdrant.tech/blog/vector-space-hackathon-winners-2025/#twelvelabs-prize-qlassroom-yhha",
+    },
+    {
       event: "MAPID WebGIS Competition",
       organization: "MAPID",
       achievement: "Finalist",
