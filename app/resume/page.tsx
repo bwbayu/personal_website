@@ -1,3 +1,4 @@
+/* eslint-disable tailwindcss/no-custom-classname */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -16,9 +17,15 @@ import {
 // component
 import { Tooltip, Timeline, List } from "flowbite-react";
 // icon
-import { HiCalendar, HiAcademicCap, HiBriefcase, HiClipboardList, HiStar } from "react-icons/hi";
+import {
+  HiCalendar,
+  HiAcademicCap,
+  HiBriefcase,
+  HiClipboardList,
+  HiStar,
+} from "react-icons/hi";
 import { BsArrowUpRightCircle } from "react-icons/bs";
-import 'devicon/devicon.min.css';
+import "devicon/devicon.min.css";
 import Link from "next/link";
 
 export default function ResumePage() {
@@ -54,7 +61,11 @@ export default function ResumePage() {
           {[
             { key: "education", label: "Education", icon: HiAcademicCap },
             { key: "experience", label: "Experience", icon: HiBriefcase },
-            { key: "certification", label: "Certification", icon: HiClipboardList },
+            {
+              key: "certification",
+              label: "Certification",
+              icon: HiClipboardList,
+            },
             { key: "achievement", label: "Achievement", icon: HiStar },
           ].map((tab, idx) => (
             <button
@@ -69,10 +80,8 @@ export default function ResumePage() {
                 animationDelay: `${idx * 0.2}s`,
                 animationFillMode: "forwards",
               }}
-              >
-              <div className=""
-              >
-              </div>
+            >
+              <div className=""></div>
               <tab.icon className="text-lg" />
               {tab.label}
             </button>
@@ -83,14 +92,15 @@ export default function ResumePage() {
         <div>
           {activeTab === "education" && (
             <div className="px-6">
-                {educations.map((education, index) => (
-                  <Timeline
-                    className="animate-fade-in opacity-0"
-                    style={{
-                      animationDelay: `${index * 0.2}s`,
-                      animationFillMode: "forwards",
-                    }}
-                    key={index}>
+              {educations.map((education, index) => (
+                <Timeline
+                  className="animate-fade-in opacity-0"
+                  style={{
+                    animationDelay: `${index * 0.2}s`,
+                    animationFillMode: "forwards",
+                  }}
+                  key={index}
+                >
                   <Timeline.Item>
                     <Timeline.Point icon={HiCalendar} />
                     <Timeline.Content>
@@ -104,8 +114,8 @@ export default function ResumePage() {
                       </Timeline.Body>
                     </Timeline.Content>
                   </Timeline.Item>
-              </Timeline>
-                ))}
+                </Timeline>
+              ))}
             </div>
           )}
 
@@ -118,12 +128,14 @@ export default function ResumePage() {
                     animationDelay: `${index * 0.2}s`,
                     animationFillMode: "forwards",
                   }}
-                  key={index}>
+                  key={index}
+                >
                   <Timeline.Item key={index}>
                     <Timeline.Point icon={HiCalendar} />
                     <Timeline.Content>
                       <Timeline.Time>
-                        {experience.start} - {experience.end} ({experience.duration} months)
+                        {experience.start} - {experience.end} (
+                        {experience.duration} months)
                       </Timeline.Time>
                       <Timeline.Title>{experience.role}</Timeline.Title>
                       <Timeline.Body>
@@ -151,7 +163,8 @@ export default function ResumePage() {
                     animationDelay: `${index * 0.2}s`,
                     animationFillMode: "forwards",
                   }}
-                  key={index}>
+                  key={index}
+                >
                   <Timeline.Item key={index}>
                     <Timeline.Point icon={HiCalendar} />
                     <Timeline.Content>
@@ -190,14 +203,16 @@ export default function ResumePage() {
                     animationDelay: `${index * 0.2}s`,
                     animationFillMode: "forwards",
                   }}
-                  key={index}>
+                  key={index}
+                >
                   <Timeline.Item key={index}>
                     <Timeline.Point icon={HiCalendar} />
                     <Timeline.Content>
                       <Timeline.Time>{achievement.date}</Timeline.Time>
                       <Timeline.Title>{achievement.achievement}</Timeline.Title>
                       <Timeline.Body>
-                        <strong>{achievement.event}</strong> - {achievement.organization}
+                        <strong>{achievement.event}</strong> -{" "}
+                        {achievement.organization}
                         <br />
                         <List>
                           {achievement.description &&
@@ -207,22 +222,23 @@ export default function ResumePage() {
                         </List>
                       </Timeline.Body>
                       <div className="flex flex-row">
-                        {achievement.repository && achievement.repository.length > 0 && (
-                          <div className="flex flex-row">
-                            {achievement.repository.map((repoUrl, idx) => (
-                              <Tooltip content="View Repository" key={idx}>
-                                <Link
-                                  href={repoUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="mr-2 text-3xl text-white hover:text-slate-500"
-                                >
-                                  <i className="devicon-github-original"></i>
-                                </Link>
-                              </Tooltip>
-                            ))}
-                          </div>
-                        )}
+                        {achievement.repository &&
+                          achievement.repository.length > 0 && (
+                            <div className="flex flex-row">
+                              {achievement.repository.map((repoUrl, idx) => (
+                                <Tooltip content="View Repository" key={idx}>
+                                  <Link
+                                    href={repoUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="mr-2 text-3xl text-white hover:text-slate-500"
+                                  >
+                                    <i className="devicon-github-original"></i>
+                                  </Link>
+                                </Tooltip>
+                              ))}
+                            </div>
+                          )}
                         {achievement.url && (
                           <Tooltip content="View Certificate">
                             <Link

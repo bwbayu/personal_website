@@ -77,7 +77,7 @@ export default function Home() {
             Hi, I&#39;m Bayu
           </h2>
           <h1 className="mb-6 text-2xl font-extrabold leading-tight text-gray-100 md:text-4xl lg:text-6xl dark:text-gray-100">
-            I'm Currently Learning about
+            I&apos;m Currently Learning about
           </h1>
           <p className="mb-6 text-2xl font-extrabold leading-tight text-gray-100 md:text-4xl lg:text-6xl dark:text-gray-100">
             <span className="relative">

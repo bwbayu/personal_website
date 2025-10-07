@@ -23,7 +23,7 @@ export default function RootLayout({
         <ThemeModeScript />
         <link rel="icon" href="/sleepy.png" />
       </head>
-      <body className={`${inter.className} min-h-screen flex flex-col`}>
+      <body className={`${inter.className} flex min-h-screen flex-col`}>
         {/* Navbar */}
         <CustomNavbar />
         {/* Main Content */}
