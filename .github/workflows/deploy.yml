@@ -1,0 +1,44 @@
+name: Build and deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }} # bwbayu
+          password: ${{ secrets.DOCKERHUB_TOKEN }} #
+
+      - name: Build and Push Docker image
+        run: |
+          docker build -t bwbayu/personal-website:${{ github.sha }} .
+          docker push bwbayu/personal-website:${{ github.sha }}
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: personal-website
+          install_components: "beta"
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy personal-website \
+            --image docker.io/bwbayu/personal-website:${{ github.sha }} \
+            --platform managed \
+            --region asia-southeast1 \
+            --allow-unauthenticated
