@@ -1,0 +1,53 @@
+name: Deploy Backend to Cloud Run
+
+on:
+  push:
+    branches: [main]
+    paths: ['backend/**']
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@c200f3691d83b41bf9bbd8638997a462592937ed # v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@e427ad8a34f8676edf47cf7d7925499adf3eb74f # v2
+        with:
+          project_id: personal-website-490704
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker asia-southeast1-docker.pkg.dev --quiet
+
+      - name: Build and Push Docker image
+        run: |
+          docker build -f backend/Dockerfile \
+            -t asia-southeast1-docker.pkg.dev/personal-website-490704/personal-website/backend:${{ github.sha }} \
+            backend/
+          docker push asia-southeast1-docker.pkg.dev/personal-website-490704/personal-website/backend:${{ github.sha }}
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy personal-website-backend \
+            --image asia-southeast1-docker.pkg.dev/personal-website-490704/personal-website/backend:${{ github.sha }} \
+            --platform managed \
+            --region asia-southeast1 \
+            --project personal-website-490704 \
+            --allow-unauthenticated \
+            --port 3001 \
+            --max-instances=1 \
+            --set-env-vars "NODE_ENV=production,API_KEY=${{ secrets.API_KEY }},ALLOWED_ORIGINS=${{ secrets.ALLOWED_ORIGINS }}"
+
+      - name: Verify deployment
+        run: |
+          SERVICE_URL=$(gcloud run services describe personal-website-backend --region asia-southeast1 --project personal-website-490704 --format 'value(status.url)')
+          sleep 10
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$SERVICE_URL/health")
+          if [ "$STATUS" != "200" ]; then echo "Health check failed with status $STATUS"; exit 1; fi

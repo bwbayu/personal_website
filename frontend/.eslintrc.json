@@ -1,0 +1,18 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:tailwindcss/recommended",
+    "prettier"
+  ],
+  "settings": {
+    "tailwindcss": {
+      "callees": ["twMerge", "createTheme"],
+      "classRegex": "^(class(Name)|theme)?$"
+    }
+  },
+  "rules": {
+    "tailwindcss/no-custom-classname": ["warn", {
+      "whitelist": ["flowbite.*", "animate-.*", "devicon-.*"]
+    }]
+  }
+}
