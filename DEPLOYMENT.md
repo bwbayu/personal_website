@@ -142,6 +142,7 @@ gcloud run deploy personal-website-backend \
   --project personal-website-490704 \
   --allow-unauthenticated \
   --port 3001 \
+  --max-instances 1 \
   # --set-env-vars NODE_ENV=production
   --env-vars-file backend/.env.production
 ```
