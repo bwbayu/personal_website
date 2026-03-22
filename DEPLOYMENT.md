@@ -142,7 +142,8 @@ gcloud run deploy personal-website-backend \
   --project personal-website-490704 \
   --allow-unauthenticated \
   --port 3001 \
-  --set-env-vars NODE_ENV=production
+  # --set-env-vars NODE_ENV=production
+  --env-vars-file backend/.env.production
 ```
 
 After deploy, note the **Service URL** printed in the output (e.g. `https://personal-website-backend-xxxx-as.a.run.app`). You will need this for the next step.

@@ -20,6 +20,14 @@ import {
   AchievementType,
 } from "@/app/types/resume";
 
+function formatDate(date: string): string {
+  const [year, month] = date.split("-");
+  return new Date(Number(year), Number(month) - 1).toLocaleDateString("en-US", {
+    month: "short",
+    year: "numeric",
+  });
+}
+
 type Props = {
   educations: EducationType[];
   experiences: ExperienceType[];
@@ -92,7 +100,7 @@ export default function ResumeClient({
                     <Timeline.Point icon={HiCalendar} />
                     <Timeline.Content>
                       <Timeline.Time>
-                        {education.startDate} - {education.endDate}
+                        {formatDate(education.startDate)} - {formatDate(education.endDate)}
                       </Timeline.Time>
                       <Timeline.Title>{education.title}</Timeline.Title>
                       <Timeline.Body>
@@ -124,7 +132,7 @@ export default function ResumeClient({
                     <Timeline.Point icon={HiCalendar} />
                     <Timeline.Content>
                       <Timeline.Time>
-                        {experience.startDate} - {experience.endDate ?? "Present"}
+                        {formatDate(experience.startDate)} - {experience.endDate ? formatDate(experience.endDate) : "Present"}
                       </Timeline.Time>
                       <Timeline.Title>{experience.position}</Timeline.Title>
                       <Timeline.Body>
@@ -160,12 +168,12 @@ export default function ResumeClient({
                   <Timeline.Item key={index}>
                     <Timeline.Point icon={HiCalendar} />
                     <Timeline.Content>
-                      <Timeline.Time>{cert.issued}</Timeline.Time>
+                      <Timeline.Time>{formatDate(cert.issued)}</Timeline.Time>
                       <Timeline.Title>{cert.title}</Timeline.Title>
                       <Timeline.Body>
                         {cert.company_name}
                         <br />
-                        {cert.expires && <span>Expires: {cert.expires}</span>}
+                        {cert.expires && <span>Expires: {formatDate(cert.expires)}</span>}
                       </Timeline.Body>
                       {cert.url && isSafeUrl(cert.url) && (
                         <Tooltip content="View Certificate">
@@ -203,7 +211,7 @@ export default function ResumeClient({
                   <Timeline.Item key={index}>
                     <Timeline.Point icon={HiCalendar} />
                     <Timeline.Content>
-                      <Timeline.Time>{achievement.date}</Timeline.Time>
+                      <Timeline.Time>{formatDate(achievement.date)}</Timeline.Time>
                       <Timeline.Title>{achievement.achievement}</Timeline.Title>
                       <Timeline.Body>
                         <strong>{achievement.event_name}</strong> -{" "}
