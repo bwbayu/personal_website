@@ -3,9 +3,14 @@
 import { useEffect, useState } from "react";
 import { Accordion, Tooltip } from "flowbite-react";
 import Image from "next/image";
-import { AboutMeType, SkillType } from "@/app/types/resume";
+import { SkillType } from "@/app/types/resume";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { isSafeUrl } from "@/lib/url";
+import { useApi } from "@/lib/useApi";
+import { fetchAbout } from "@/app/api/about";
+import { fetchSkills } from "@/app/api/skills";
+import Loading from "@/components/Loading";
+import ErrorMessage from "@/components/ErrorMessage";
 
 const roles = [
   "Artificial Intelligence",
@@ -13,14 +18,26 @@ const roles = [
   "Cloud Computing",
 ];
 
-type Props = {
-  aboutMe: AboutMeType;
-  skills: SkillType[];
-};
-
-export default function HomeClient({ aboutMe, skills }: Props) {
+export default function HomeClient() {
+  const { data, loading, error } = useApi(async () => {
+    const [aboutMe, skills] = await Promise.all([fetchAbout(), fetchSkills()]);
+    return { aboutMe, skills: skills.filter((s) => s.isShow) };
+  });
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [showContactInfo, setShowContactInfo] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentRoleIndex((prevIndex) => (prevIndex + 1) % roles.length);
+    }, 2800);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading) return <Loading />;
+  if (error || !data) return <ErrorMessage />;
+
+  const { aboutMe, skills } = data;
 
   const groupedSkills = skills.reduce(
     (acc, skill) => {
@@ -32,14 +49,6 @@ export default function HomeClient({ aboutMe, skills }: Props) {
     },
     {} as Record<string, SkillType[]>,
   );
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentRoleIndex((prevIndex) => (prevIndex + 1) % roles.length);
-    }, 2800);
-
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <main className="flex grow flex-col items-center justify-center gap-10 bg-gray-900 px-10 dark:bg-gray-900">

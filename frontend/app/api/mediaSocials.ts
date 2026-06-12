@@ -3,7 +3,7 @@ import { MediaSocialType } from "@/app/types/resume";
 export async function fetchMediaSocials(): Promise<MediaSocialType[]> {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/media-socials`,
-    { signal: AbortSignal.timeout(10000) }
+    { signal: AbortSignal.timeout(10000), cache: "no-store" }
   );
   if (!res.ok) {
     throw new Error(`Failed to fetch media socials data (HTTP ${res.status})`);

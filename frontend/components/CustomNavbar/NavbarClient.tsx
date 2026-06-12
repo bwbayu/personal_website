@@ -9,14 +9,14 @@ import {
   NavbarToggle,
 } from "flowbite-react";
 import "devicon/devicon.min.css";
-import { MediaSocialType } from "@/app/types/resume";
 import { isSafeUrl } from "@/lib/url";
+import { useApi } from "@/lib/useApi";
+import { fetchMediaSocials } from "@/app/api/mediaSocials";
 
-interface NavbarClientProps {
-  mediaSocials: MediaSocialType[];
-}
+export function NavbarClient() {
+  const { data } = useApi(fetchMediaSocials);
+  const mediaSocials = data ?? [];
 
-export function NavbarClient({ mediaSocials }: NavbarClientProps) {
   return (
     <div className="w-full">
       <Navbar fluid rounded className="bg-gray-800 dark:bg-gray-800">

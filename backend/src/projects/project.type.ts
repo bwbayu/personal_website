@@ -10,4 +10,5 @@ export interface Project {
   category: string[];
   url?: string;
   githubUrl?: string;
+  youtubeUrl?: string;
 }

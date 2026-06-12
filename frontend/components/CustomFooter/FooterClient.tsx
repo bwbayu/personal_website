@@ -3,14 +3,14 @@
 import { Footer, FooterCopyright } from "flowbite-react";
 import Link from "next/link";
 import "devicon/devicon.min.css";
-import { MediaSocialType } from "@/app/types/resume";
 import { isSafeUrl } from "@/lib/url";
+import { useApi } from "@/lib/useApi";
+import { fetchMediaSocials } from "@/app/api/mediaSocials";
 
-interface FooterClientProps {
-  mediaSocials: MediaSocialType[];
-}
+export function FooterClient() {
+  const { data } = useApi(fetchMediaSocials);
+  const mediaSocials = data ?? [];
 
-export function FooterClient({ mediaSocials }: FooterClientProps) {
   return (
     <div className="bottom-0 w-full">
       <Footer container>

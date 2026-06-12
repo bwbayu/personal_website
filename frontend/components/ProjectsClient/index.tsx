@@ -1,25 +1,30 @@
 "use client";
 
 import { Badge, Tooltip, Accordion } from "flowbite-react";
-import { ProjectType } from "@/app/types/resume";
-import { BsGlobe2 } from "react-icons/bs";
+import { BsGlobe2, BsYoutube } from "react-icons/bs";
 import "devicon/devicon.min.css";
 import Link from "next/link";
 import Image from "next/image";
 import { isSafeUrl } from "@/lib/url";
+import { useApi } from "@/lib/useApi";
+import { fetchProjects } from "@/app/api/projects";
+import Loading from "@/components/Loading";
+import ErrorMessage from "@/components/ErrorMessage";
 
-type Props = {
-  projects: ProjectType[];
-  recent: ProjectType[];
-};
+export default function ProjectsClient() {
+  const { data: projects, loading, error } = useApi(fetchProjects);
 
-export default function ProjectsClient({ projects, recent }: Props) {
+  if (loading) return <Loading />;
+  if (error || !projects) return <ErrorMessage message="Failed to load projects. Please try again later." />;
+
+  const recent = projects.slice(0, 3);
+
   return (
     <div className="flex grow flex-col bg-gray-900 p-6 dark:bg-gray-900">
       <h1 className="mb-6 text-3xl font-bold text-gray-200 dark:text-gray-200">
         Recent Projects
       </h1>
-      <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
         {recent.length === 0 && (
           <p className="col-span-full text-gray-400">No recent projects to display.</p>
         )}
@@ -60,7 +65,7 @@ export default function ProjectsClient({ projects, recent }: Props) {
                   </Accordion.Content>
                   <Accordion.Content>
                     <div
-                      className="animate-fade-in flex flex-row justify-between opacity-0"
+                      className="animate-fade-in flex flex-row items-center justify-between opacity-0"
                       style={{
                         animationDelay: "0.1s",
                         animationFillMode: "forwards",
@@ -90,14 +95,14 @@ export default function ProjectsClient({ projects, recent }: Props) {
                           </Tooltip>
                         ))}
                       </div>
-                      <div className="flex flex-row gap-2">
+                      <div className="flex flex-row items-center gap-3 rounded-lg border border-gray-700 bg-gray-800/60 px-3 py-1.5 empty:hidden">
                         {project.githubUrl && isSafeUrl(project.githubUrl) && (
                           <Tooltip content="View Repository">
                             <Link
                               href={project.githubUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="mr-2 text-3xl text-white hover:text-slate-500"
+                              className="text-3xl text-white hover:text-slate-500"
                             >
                               <i className="devicon-github-original"></i>
                             </Link>
@@ -115,6 +120,18 @@ export default function ProjectsClient({ projects, recent }: Props) {
                             </Link>
                           </Tooltip>
                         )}
+                        {project.youtubeUrl && isSafeUrl(project.youtubeUrl) && (
+                          <Tooltip content="Watch Video">
+                            <Link
+                              href={project.youtubeUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-3xl text-white hover:text-slate-500"
+                            >
+                              <BsYoutube />
+                            </Link>
+                          </Tooltip>
+                        )}
                       </div>
                     </div>
                   </Accordion.Content>
@@ -127,7 +144,7 @@ export default function ProjectsClient({ projects, recent }: Props) {
       <h1 className="mb-6 mt-10 text-3xl font-bold text-gray-200 dark:text-gray-200">
         All My Projects
       </h1>
-      <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
         {projects.length === 0 && (
           <p className="col-span-full text-gray-400">No projects to display.</p>
         )}
@@ -168,7 +185,7 @@ export default function ProjectsClient({ projects, recent }: Props) {
                   </Accordion.Content>
                   <Accordion.Content>
                     <div
-                      className="animate-fade-in flex flex-row justify-between opacity-0"
+                      className="animate-fade-in flex flex-row items-center justify-between opacity-0"
                       style={{
                         animationDelay: "0.1s",
                         animationFillMode: "forwards",
@@ -198,14 +215,14 @@ export default function ProjectsClient({ projects, recent }: Props) {
                           </Tooltip>
                         ))}
                       </div>
-                      <div className="flex flex-row gap-2">
+                      <div className="flex flex-row items-center gap-3 rounded-lg border border-gray-700 bg-gray-800/60 px-3 py-1.5 empty:hidden">
                         {project.githubUrl && isSafeUrl(project.githubUrl) && (
                           <Tooltip content="View Repository">
                             <Link
                               href={project.githubUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="mr-2 text-3xl text-white hover:text-slate-500"
+                              className="text-3xl text-white hover:text-slate-500"
                             >
                               <i className="devicon-github-original"></i>
                             </Link>
@@ -220,6 +237,18 @@ export default function ProjectsClient({ projects, recent }: Props) {
                               className="text-3xl text-white hover:text-slate-500"
                             >
                               <BsGlobe2 />
+                            </Link>
+                          </Tooltip>
+                        )}
+                        {project.youtubeUrl && isSafeUrl(project.youtubeUrl) && (
+                          <Tooltip content="Watch Video">
+                            <Link
+                              href={project.youtubeUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-3xl text-white hover:text-slate-500"
+                            >
+                              <BsYoutube />
                             </Link>
                           </Tooltip>
                         )}

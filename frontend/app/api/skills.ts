@@ -3,6 +3,7 @@ import { SkillType } from "@/app/types/resume";
 export async function fetchSkills(): Promise<SkillType[]> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/skills`, {
     signal: AbortSignal.timeout(10000),
+    cache: "no-store",
   });
   if (!res.ok) {
     throw new Error(`Failed to fetch skills data (HTTP ${res.status})`);

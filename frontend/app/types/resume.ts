@@ -39,6 +39,7 @@ export type ProjectType = {
   description: string;
   githubUrl?: string;
   url?: string;
+  youtubeUrl?: string;
   role: string[];
   technologies: { name: string; iconClass?: string; iconImage?: string }[];
   category: string[];

@@ -13,12 +13,10 @@ import { BsArrowUpRightCircle } from "react-icons/bs";
 import "devicon/devicon.min.css";
 import Link from "next/link";
 import { isSafeUrl } from "@/lib/url";
-import {
-  EducationType,
-  ExperienceType,
-  CertificationType,
-  AchievementType,
-} from "@/app/types/resume";
+import { useApi } from "@/lib/useApi";
+import { fetchResume } from "@/app/api/resume";
+import Loading from "@/components/Loading";
+import ErrorMessage from "@/components/ErrorMessage";
 
 function formatDate(date: string): string {
   const [year, month] = date.split("-");
@@ -28,20 +26,14 @@ function formatDate(date: string): string {
   });
 }
 
-type Props = {
-  educations: EducationType[];
-  experiences: ExperienceType[];
-  certifications: CertificationType[];
-  achievements: AchievementType[];
-};
-
-export default function ResumeClient({
-  educations,
-  experiences,
-  certifications,
-  achievements,
-}: Props) {
+export default function ResumeClient() {
+  const { data, loading, error } = useApi(fetchResume);
   const [activeTab, setActiveTab] = useState("education");
+
+  if (loading) return <Loading />;
+  if (error || !data) return <ErrorMessage message="Failed to load resume. Please try again later." />;
+
+  const { educations, experiences, certifications, achievements } = data;
 
   return (
     <div className="flex grow flex-col bg-gray-900 p-6 dark:bg-gray-900">

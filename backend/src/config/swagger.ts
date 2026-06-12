@@ -102,6 +102,7 @@ const swaggerSpec = {
           },
           url: { type: 'string' },
           githubUrl: { type: 'string' },
+          youtubeUrl: { type: 'string' },
         },
       },
       Skill: {

@@ -16,6 +16,7 @@ export const projectInsertSchema = z.object({
   category: z.array(z.string().max(200)).max(10),
   url: safeUrl.optional(),
   githubUrl: safeUrl.optional(),
+  youtubeUrl: safeUrl.optional(),
 });
 
 export const projectUpdateSchema = projectInsertSchema.partial();
