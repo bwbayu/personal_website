@@ -42,9 +42,9 @@ jobs:
             --region asia-southeast1 \
             --project personal-website-490704 \
             --allow-unauthenticated \
-            --port 3001 \
+            --port 8080 \
             --max-instances=1 \
-            --set-env-vars "NODE_ENV=production,API_KEY=${{ secrets.API_KEY }},ALLOWED_ORIGINS=${{ secrets.ALLOWED_ORIGINS }}"
+            --set-env-vars "^@^NODE_ENV=production@API_KEY=${{ secrets.API_KEY }}@ALLOWED_ORIGINS=${{ secrets.ALLOWED_ORIGINS }}"
 
       - name: Verify deployment
         run: |
