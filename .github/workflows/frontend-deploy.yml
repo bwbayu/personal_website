@@ -38,3 +38,4 @@ jobs:
           firebaseServiceAccount: ${{ secrets.GCP_SA_KEY }}
           projectId: personal-website-490704
           entryPoint: ./frontend
+          channelId: live
