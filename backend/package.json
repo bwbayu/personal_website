@@ -6,6 +6,7 @@
     "start": "node ./dist/bin/www",
     "dev": "ts-node ./bin/www",
     "build": "tsc",
+    "test": "vitest run",
     "migrate": "ts-node src/config/migration.ts",
     "patch:media-socials": "ts-node src/config/patch-media-socials.ts"
   },
@@ -29,6 +30,7 @@
     "@types/node": "^25.5.0",
     "@types/swagger-ui-express": "^4.1.8",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "4.1.9"
   }
 }
