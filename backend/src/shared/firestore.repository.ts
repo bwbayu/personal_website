@@ -6,7 +6,7 @@ export class FirestoreRepository<T extends { id: string }> {
 
   async findAll(): Promise<T[]> {
     const snapshot = await this.db.collection(this.collection).get();
-    return snapshot.docs.map(doc => doc.data() as T);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
   }
 
   async findAllOrdered(field: string, direction: 'asc' | 'desc' = 'desc'): Promise<T[]> {

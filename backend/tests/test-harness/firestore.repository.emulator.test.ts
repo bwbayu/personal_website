@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { FirestoreRepository } from '../../src/shared/firestore.repository';
+import { db } from '../../src/config/firestore';
 import { clearFirestore } from '../helpers/emulator';
 
 // Emulator-backed test for the generic FirestoreRepository against the real
@@ -26,6 +27,14 @@ describe('FirestoreRepository (emulator)', () => {
     await repo.save(doc);
     const all = await repo.findAll();
     expect(all).toEqual([doc]);
+  });
+
+  it('findAll projects the doc id even when the stored body omits it', async () => {
+    // Write a raw doc whose body has NO embedded `id` field; findAll must still
+    // surface the document id (parity with findAllOrdered).
+    await db.collection(COLLECTION).doc('zeta').set({ name: 'Zeta', rank: 9 });
+    const [only] = await makeRepo().findAll();
+    expect(only).toEqual({ id: 'zeta', name: 'Zeta', rank: 9 });
   });
 
   it('findAllOrdered honors ascending and default-descending direction', async () => {
