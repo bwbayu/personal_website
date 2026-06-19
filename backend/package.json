@@ -7,6 +7,8 @@
     "dev": "ts-node ./bin/www",
     "build": "tsc",
     "test": "vitest run",
+    "test:emulator": "firebase emulators:exec --only firestore --project demo-test \"vitest run --config vitest.emulator.config.ts\"",
+    "test:all": "npm test && npm run test:emulator",
     "migrate": "ts-node src/config/migration.ts",
     "patch:media-socials": "ts-node src/config/patch-media-socials.ts"
   },
@@ -29,6 +31,7 @@
     "@types/morgan": "^1.9.10",
     "@types/node": "^25.5.0",
     "@types/swagger-ui-express": "^4.1.8",
+    "firebase-tools": "15.22.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "vitest": "4.1.9"
