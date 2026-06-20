@@ -8,8 +8,18 @@ export const config = {
   apiKey: process.env.API_KEY,
   allowedOrigins: (process.env.ALLOWED_ORIGINS?.split(',') ?? []).map(s => s.trim()).filter(Boolean),
   apiBaseUrl: process.env.API_BASE_URL ?? 'http://localhost:3001',
+  // Comma-separated admin allowlist; lowercased so token email matching is case-insensitive.
+  adminEmails: (process.env.ADMIN_EMAILS?.split(',') ?? [])
+    .map(s => s.trim().toLowerCase())
+    .filter(Boolean),
+  // Used by the Firebase Admin SDK to set the verifyIdToken audience; ADC supplies it in prod.
+  firebaseProjectId: process.env.FIREBASE_PROJECT_ID ?? process.env.GOOGLE_CLOUD_PROJECT,
 };
 
 if (config.nodeEnv === 'production' && !config.apiKey) {
   throw new Error('API_KEY environment variable is required in production');
+}
+
+if (config.nodeEnv === 'production' && config.adminEmails.length === 0) {
+  throw new Error('ADMIN_EMAILS environment variable is required in production');
 }
