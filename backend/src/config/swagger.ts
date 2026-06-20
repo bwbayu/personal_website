@@ -23,7 +23,6 @@ const swaggerSpec = {
           id: { type: 'string' },
           name: { type: 'string' },
           email: { type: 'string' },
-          headline: { type: 'string' },
         },
       },
       Achievement: {
@@ -36,6 +35,14 @@ const swaggerSpec = {
           descriptions: { type: 'array', items: { type: 'string' } },
           githubUrl: { type: 'array', items: { type: 'string' } },
           resultUrl: { type: 'array', items: { type: 'string' } },
+        },
+      },
+      Category: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          name: { type: 'string' },
+          order: { type: 'integer' },
         },
       },
       Certification: {
@@ -91,14 +98,7 @@ const swaggerSpec = {
           description: { type: 'string' },
           technologies: {
             type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                name: { type: 'string' },
-                iconClass: { type: 'string' },
-                iconImage: { type: 'string' },
-              },
-            },
+            items: { type: 'string' },
           },
           url: { type: 'string' },
           githubUrl: { type: 'string' },
@@ -112,41 +112,18 @@ const swaggerSpec = {
           name: { type: 'string' },
           iconClass: { type: 'string' },
           iconImage: { type: 'string' },
-          category: {
-            type: 'string',
-            enum: [
-              'Programming Languages',
-              'Web/Cross Platform Framework & Libraries',
-              'DevOps Tools',
-              'Databases',
-              'Cloud Platforms',
-              'Data/AI Framework & Libraries',
-            ],
-          },
-          proficiency: { type: 'string' },
+          categoryId: { type: 'string' },
+          order: { type: 'integer' },
           isShow: { type: 'boolean' },
         },
       },
       Resume: {
         type: 'object',
         properties: {
+          educations: { type: 'array', items: { $ref: '#/components/schemas/Education' } },
           experiences: { type: 'array', items: { $ref: '#/components/schemas/Experience' } },
-          skills: { type: 'array', items: { $ref: '#/components/schemas/Skill' } },
-          projects: { type: 'array', items: { $ref: '#/components/schemas/Project' } },
-          educations: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                id: { type: 'string' },
-                institution: { type: 'string' },
-                degree: { type: 'string' },
-                field: { type: 'string' },
-                startDate: { type: 'string', format: 'date', example: '2025-01-15' },
-                endDate: { type: 'string', format: 'date', example: '2025-01-15' },
-              },
-            },
-          },
+          certifications: { type: 'array', items: { $ref: '#/components/schemas/Certification' } },
+          achievements: { type: 'array', items: { $ref: '#/components/schemas/Achievement' } },
         },
       },
       SuccessResponse: {
@@ -220,6 +197,45 @@ const swaggerSpec = {
       delete: {
         tags: ['Achievements'],
         summary: 'Delete an achievement',
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: {
+          '200': { description: 'Deleted', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+    },
+    '/api/categories': {
+      get: {
+        tags: ['Categories'],
+        summary: 'Get all categories',
+        responses: {
+          '200': { description: 'Success', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+      post: {
+        tags: ['Categories'],
+        summary: 'Create a category',
+        security: [{ ApiKeyAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/Category' } } } },
+        responses: {
+          '201': { description: 'Created', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+    },
+    '/api/categories/{id}': {
+      patch: {
+        tags: ['Categories'],
+        summary: 'Update a category',
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/Category' } } } },
+        responses: {
+          '200': { description: 'Updated', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+      delete: {
+        tags: ['Categories'],
+        summary: 'Delete a category',
         security: [{ ApiKeyAuth: [] }],
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
         responses: {

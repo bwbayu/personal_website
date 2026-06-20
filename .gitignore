@@ -19,5 +19,8 @@ Thumbs.db
 keys/
 secrets/
 
-# Claude
-.claude/
+# Claude (share workflow commands; keep machine-local settings out)
+.claude/*
+!.claude/commands/
+
+# planning/ is tracked (workflow handoff docs shared so the wf-* flow is portable)
