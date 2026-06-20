@@ -199,6 +199,10 @@ harness reopens CI. Agreed design:
   (TS/Express + Next static export + Firestore); fixed test refs (pytest→vitest) and
   the tsc `-b` note (FE is single-config, bare `--noEmit` is correct); added
   `planning/` to .gitignore.
+- 2026-06-20 — planning/ moved from gitignored to tracked in git (wf-* workflow now
+  portable across machines); PR.md added to gitignore; `.claude/commands/` tracked.
+  `wf-roadmap` command added as Phase 0 for multi-session architectural discussions.
+  PRs are opened by the user only; Claude drafts title+desc into PR.md.
 - 2026-06-19 — Convention LOCKED: commits do NOT include a Co-Authored-By/Claude
   attribution trailer (per user edit to CLAUDE.md).
 - 2026-06-19 — Release strategy LOCKED: `main` = prod (CI auto-deploys); `develop` =
@@ -225,14 +229,20 @@ harness reopens CI. Agreed design:
 dependent; split when large or different domain). Each session spins off its own
 `planning/<slug>/` doc when it goes deep.
 
-| Session | Tasks | Notes |
-|---------|-------|-------|
-| **S0 — Backend test harness + CI wiring** | (new) | Vitest, unit-heavy + thin Firestore-emulator layer; establish `backend/tests/<slug>/` convention. PLUS wire CI: new `ci.yml` (PR gate) + 3-layer deploy gating (see T1 CI/CD design). The wf-* workflow depends on this; do FIRST. |
-| **S1 — Data-model cleanup** | T4 → T8-categories → T2 → T3 | Small & interdependent; same area (skills/projects/about). Do in this order. |
-| **S2 — Auth** | T6 | Isolated: security-sensitive + prerequisite for admin. Prove it works first. |
-| **S3 — Admin CMS scaffold** | T5 + T7 + T8 additive CRUD endpoints | Config-driven scaffold + wire all domains. **Auth swap on write routes (x-api-key → Firebase token) happens here.** |
-| **S4 — Blog** | T9 (part 1: `posts`) | BE domain + admin widget + public pages + **rebuild-on-publish webhook** (shared foundation). |
-| **S5 — Daily log** | T9 (part 2: `dailyLogs`) | Reuses S4 foundation (webhook, markdown render); lighter. |
+**Progress (as of 2026-06-20):**
+- S0 DONE — slug `test-harness`, PR #1 merged into develop
+- S1 DONE — slug `data-model-cleanup`, PR #2 merged into develop
+- develop -> main release (S0+S1 batch) drafted in PR.md; not yet shipped to prod
+- **Next: S2 (auth, T6)**
+
+| Session | Tasks | Status | Notes |
+|---------|-------|--------|-------|
+| **S0 — Backend test harness + CI wiring** | (new) | DONE | Vitest, unit-heavy + thin Firestore-emulator layer; establish `backend/tests/<slug>/` convention. PLUS wire CI: new `ci.yml` (PR gate) + 3-layer deploy gating (see T1 CI/CD design). The wf-* workflow depends on this; do FIRST. |
+| **S1 — Data-model cleanup** | T4 → T8-categories → T2 → T3 | DONE | Small & interdependent; same area (skills/projects/about). Do in this order. |
+| **S2 — Auth** | T6 | NEXT | Isolated: security-sensitive + prerequisite for admin. Prove it works first. |
+| **S3 — Admin CMS scaffold** | T5 + T7 + T8 additive CRUD endpoints | | Config-driven scaffold + wire all domains. **Auth swap on write routes (x-api-key → Firebase token) happens here.** |
+| **S4 — Blog** | T9 (part 1: `posts`) | | BE domain + admin widget + public pages + **rebuild-on-publish webhook** (shared foundation). |
+| **S5 — Daily log** | T9 (part 2: `dailyLogs`) | | Reuses S4 foundation (webhook, markdown render); lighter. |
 
 - **Test coverage is incremental per-session (decided 2026-06-19, see
   [planning/test-harness/DISCUSSION.md](../test-harness/DISCUSSION.md)).** S0 ships the
