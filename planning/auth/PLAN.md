@@ -259,7 +259,7 @@ then perform one authenticated write (skill PATCH) and show the result. Chrome l
 ## Ticket -> commit SHA (filled during /wf-implement)
 | Ticket | Subject | SHA |
 |--------|---------|-----|
-| AUTH-1 | feat(backend): parse ADMIN_EMAILS + FIREBASE_PROJECT_ID env | |
+| AUTH-1 | feat(backend): parse ADMIN_EMAILS + FIREBASE_PROJECT_ID env | 099b641 |
 | AUTH-2 | feat(backend): add firebase-admin init module | |
 | AUTH-3 | feat(backend): verify Firebase ID token alongside x-api-key | |
 | AUTH-4 | feat(frontend): add Firebase Web SDK client init | |
