@@ -149,7 +149,7 @@ Audit `feat/auth` against [PLAN.md](PLAN.md) (AUTH-1..6), the LOCKED
 | §2 firebase-admin 14 vs Node 20 image | BLOCKER | **[FIXED] ffeaa2e** | Bump Dockerfile builder+runner to `node:22-alpine` (aligns CI/dev). |
 | §3 NEXT_PUBLIC_FIREBASE_* not built in | BLOCKER | **[FIXED] b850af2** | Add the 4 `NEXT_PUBLIC_FIREBASE_*` to frontend-deploy.yml Build SSG `env:` from secrets. **Operator prereq: register the secrets (not yet in GitHub); FE public values OK as secrets per user.** |
 | §4 FIREBASE_PROJECT_ID not deployed | SHOULD-FIX | **[FIXED] 0be32d6** | Inline literal `FIREBASE_PROJECT_ID=personal-website-490704` in backend-deploy.yml (not a secret — project id is already hardcoded in the workflow). Bundle with §1 (same file, separate concern; one commit for the deploy-env change is fine). |
-| §5 signed-out reject is client-side | NICE-TO-HAVE | **FIX** | Doc-only: clarify in the manual-e2e steps that the backend reject proof uses a non-allowlisted Google account (signed-out is rejected client-side by authedFetch). |
+| §5 signed-out reject is client-side | NICE-TO-HAVE | **[FIXED] acc5f4d** | Doc-only: clarify in the manual-e2e steps that the backend reject proof uses a non-allowlisted Google account (signed-out is rejected client-side by authedFetch). |
 | §6 CORS Authorization unverified | NICE-TO-HAVE | **NO-ACTION** | Correct by cors default; verify during manual e2e. Do NOT pre-add `allowedHeaders` (per PLAN note). |
 | §7 `decoded` implicit any | NICE-TO-HAVE | **[FIXED] d32a4ff** | One-liner: `let decoded: DecodedIdToken;` in auth.middleware.ts. |
 | §8 firebase ^12 vs plan note | NICE-TO-HAVE | **NO-ACTION** | "Latest stable" intent honored; noted for traceability only. |
