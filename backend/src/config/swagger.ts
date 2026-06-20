@@ -98,14 +98,7 @@ const swaggerSpec = {
           description: { type: 'string' },
           technologies: {
             type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                name: { type: 'string' },
-                iconClass: { type: 'string' },
-                iconImage: { type: 'string' },
-              },
-            },
+            items: { type: 'string' },
           },
           url: { type: 'string' },
           githubUrl: { type: 'string' },
