@@ -23,7 +23,6 @@ const swaggerSpec = {
           id: { type: 'string' },
           name: { type: 'string' },
           email: { type: 'string' },
-          headline: { type: 'string' },
         },
       },
       Achievement: {
