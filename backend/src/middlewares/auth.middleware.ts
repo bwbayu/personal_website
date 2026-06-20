@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { timingSafeEqual } from 'crypto';
+import type { DecodedIdToken } from 'firebase-admin/auth';
 import { config } from '../config/env';
 import { verifyIdToken } from '../config/firebase-admin';
 
@@ -17,7 +18,7 @@ export const authMiddleware = async (
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.slice('Bearer '.length).trim();
 
-    let decoded;
+    let decoded: DecodedIdToken;
     try {
       decoded = await verifyIdToken(token);
     } catch (err) {
