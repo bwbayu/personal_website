@@ -120,23 +120,10 @@ const swaggerSpec = {
       Resume: {
         type: 'object',
         properties: {
+          educations: { type: 'array', items: { $ref: '#/components/schemas/Education' } },
           experiences: { type: 'array', items: { $ref: '#/components/schemas/Experience' } },
-          skills: { type: 'array', items: { $ref: '#/components/schemas/Skill' } },
-          projects: { type: 'array', items: { $ref: '#/components/schemas/Project' } },
-          educations: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                id: { type: 'string' },
-                institution: { type: 'string' },
-                degree: { type: 'string' },
-                field: { type: 'string' },
-                startDate: { type: 'string', format: 'date', example: '2025-01-15' },
-                endDate: { type: 'string', format: 'date', example: '2025-01-15' },
-              },
-            },
-          },
+          certifications: { type: 'array', items: { $ref: '#/components/schemas/Certification' } },
+          achievements: { type: 'array', items: { $ref: '#/components/schemas/Achievement' } },
         },
       },
       SuccessResponse: {
