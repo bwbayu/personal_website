@@ -166,3 +166,72 @@ Touches: `backend-deploy.yml`, `frontend-deploy.yml`, `backend/Dockerfile`,
 `backend/src/middlewares/auth.middleware.ts` (§7), and a doc clarification (§5).
 Note: §1/§3/§4 are CI/CD workflow files filtered on `backend/**` / `frontend/**`; they
 are real code changes for this feature even though no AUTH-N ticket listed them.
+
+---
+
+# Pass 2 review (re-review of the Phase-4 fix delta)
+
+Fresh-eyes verification of the six FIX findings closed since the Phase-4 audit. Delta
+base = `2089bf6` (last commit the Phase-4 pass reviewed). REVIEW-only: no code changed.
+
+- **Delta scoped** (`git log --oneline 2089bf6..HEAD`, fix commits + their doc-mark
+  commits): `0be32d6` (§1/§4), `ffeaa2e` (§2), `b850af2` (§3), `d32a4ff` (§7),
+  `acc5f4d` (§5), plus the `docs: mark ... fixed` REVIEW/PLAN updates.
+- **Diff touched** (`git diff 2089bf6..HEAD --stat`): `backend-deploy.yml`,
+  `frontend-deploy.yml`, `backend/Dockerfile`, `auth.middleware.ts`, new
+  `backend/tests/auth/deploy-config.test.ts`, and doc files (PLAN.md/REVIEW.md). No
+  Firestore-touching code (repositories / domain queries / `*.routes.ts` / endpoints).
+- **Tests run by the reviewer:**
+  - `npx vitest run tests/auth` -> **25 passed** (4 files) — was 18; +7 from the new
+    `deploy-config.test.ts` guard suite.
+  - `cd frontend; npm run typecheck` -> **clean**.
+  - `cd backend; npx tsc --noEmit` -> **clean** (verifies the new `DecodedIdToken`
+    type-only import compiles).
+  - `cd backend; npm run test:emulator` -> **13 passed** (5 files), green (Temurin 21
+    present). Not strictly required (no Firestore code in the delta) but run as the
+    pre-PR gate; confirms the fixes did not regress the emulator slice.
+
+## Status of previous FIX findings
+
+| § | Finding | Verdict | Evidence |
+|---|---------|---------|----------|
+| §1 | `ADMIN_EMAILS` not deployed (BLOCKER) | **verified-fixed** | [backend-deploy.yml:105](../../.github/workflows/backend-deploy.yml#L105) now appends `@ADMIN_EMAILS=${{ secrets.ADMIN_EMAILS }}` inside the `^@^`-delimited `--set-env-vars` (custom `@` delimiter keeps a comma-separated allowlist intact — same proven pattern as `ALLOWED_ORIGINS`). The prod guard at [env.ts:23-25](../../backend/src/config/env.ts#L23-L25) is now satisfiable at deploy. Guarded by `deploy-config.test.ts`. **Operator prereq stands: register the `ADMIN_EMAILS` secret in GitHub** (code can't assert the value exists). |
+| §2 | firebase-admin 14 vs Node 20 image (BLOCKER) | **verified-fixed** | [Dockerfile:1,11](../../backend/Dockerfile#L1) both `builder` and `runner` are now `node:22-alpine`, aligning the runtime with CI/dev. `deploy-config.test.ts` asserts every `FROM` line is `node:22-alpine`, so a future drift fails fast. |
+| §3 | `NEXT_PUBLIC_FIREBASE_*` absent at build (BLOCKER) | **verified-fixed** | [frontend-deploy.yml:54-57](../../.github/workflows/frontend-deploy.yml#L54-L57) injects the four keys at the Build-SSG step. Set matches exactly the four `firebase.ts` reads ([firebase.ts:7-10](../../frontend/lib/firebase.ts#L7-L10)) and `.env.example:3-6` — no extra/missing key (no `storageBucket`/`messagingSenderId`, neither of which the module uses). Guarded by `deploy-config.test.ts` (`it.each` over all four). **Operator prereq stands: register the four secrets.** |
+| §4 | `FIREBASE_PROJECT_ID` not deployed (SHOULD-FIX) | **verified-fixed** | [backend-deploy.yml:105](../../.github/workflows/backend-deploy.yml#L105) appends literal `FIREBASE_PROJECT_ID=personal-website-490704`; matches the project id already used throughout the workflow (lines 65/73/93/98/101/109), so the `verifyIdToken` audience is now set explicitly instead of relying on ADC metadata discovery. Guarded by `deploy-config.test.ts`. |
+| §5 | signed-out reject is client-side (NICE-TO-HAVE) | **verified-fixed** | Doc-only: [PLAN.md AUTH-6 ACs + Manual-e2e](PLAN.md) now state the live backend reject is observed with a signed-in NON-allowlisted account (403), and that a fully signed-out attempt is short-circuited by `authedFetch` before any request leaves the browser. Matches the code at [authedFetch.ts:15-17](../../frontend/lib/authedFetch.ts#L15-L17). No test needed (doc). |
+| §7 | `decoded` implicit `any` (NICE-TO-HAVE) | **verified-fixed** | [auth.middleware.ts:3,21](../../backend/src/middlewares/auth.middleware.ts#L21) `import type { DecodedIdToken }` + `let decoded: DecodedIdToken;`. Type-only import (not emitted to JS, no runtime/bundle impact). `email`/`email_verified` accesses are now type-checked; `tsc --noEmit` clean. Verified by the compiler + the existing `auth.middleware.test.ts` (still green); a pure type annotation has no behavioral delta to unit-test, so no dedicated test is expected here. |
+
+**Test-shipped-with-fix check (task C):** §1/§2/§3/§4 all ship with a scoped guard
+suite, `backend/tests/auth/deploy-config.test.ts` (7 cases) — notable because
+deploy-wiring is normally untested and these findings were exactly "invisible until the
+`develop -> main` ship"; the suite now fails fast on a workflow/Dockerfile regression.
+§5 is doc-only (untestable). §7 is a type annotation proven by `tsc` (no behavioral
+test required). No fix shipped "without a test" in any way that matters.
+
+## New findings
+
+None. No regression, no broken adjacent behavior, no violated LOCKED decision (D1-D8
+all still honored — the deltas only add deploy env + a type annotation + docs; the
+middleware control flow and route wiring are byte-for-byte unchanged), no type error,
+no missing/weak test. Numbering would continue after §9; nothing to add.
+
+Observation (NOT a finding, no action): `deploy-config.test.ts` asserts string
+*presence* in the workflows, not gcloud-syntax correctness (e.g. that the `^@^`
+delimiter is present so a comma-separated `ADMIN_EMAILS` isn't split). This is fine —
+the delimiter predates this change and is already proven by the comma-separated
+`ALLOWED_ORIGINS` shipping on the same line; the guard's job is regression-detection of
+the keys, which it does.
+
+## Recommendation
+
+**CLOSE.** All six FIX findings are verified-fixed with file:line evidence; the four
+deploy BLOCKER/SHOULD-FIX items ship with a dedicated guard suite; no new FIX-worthy
+findings and no regressions in the delta. Scoped unit (25), frontend typecheck, backend
+`tsc`, and the emulator slice (13) are all green locally. NO-ACTION items §6/§8/§9 stand
+as triaged. The two operator prerequisites carry forward as human-gated steps before the
+`develop -> main` ship (the code wires the env through; only the *secret values* must be
+registered in GitHub):
+- register secret **`ADMIN_EMAILS`** (else the prod backend throws at startup — §1);
+- register secrets **`NEXT_PUBLIC_FIREBASE_API_KEY` / `_AUTH_DOMAIN` / `_PROJECT_ID` /
+  `_APP_ID`** (else prod sign-in is broken — §3).
