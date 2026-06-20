@@ -12,8 +12,8 @@ import { clearFirestore, withApiKey } from '../helpers/emulator';
 // PLAN edge-case note) — do not add more write assertions to this file.
 const validSkill = {
   name: 'Go',
-  category: 'Programming Languages',
-  proficiency: '2+ years',
+  categoryId: 'programming-languages',
+  order: 0,
   isShow: true,
 };
 
@@ -59,7 +59,7 @@ describe('skill endpoint smoke (emulator)', () => {
     const res = await request(app)
       .post('/api/skills')
       .set(withApiKey())
-      .send({ category: 'Programming Languages', proficiency: '1 year', isShow: true }); // missing name
+      .send({ categoryId: 'programming-languages', order: 0, isShow: true }); // missing name
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
     expect(res.body.message).toContain('name');
@@ -81,9 +81,9 @@ describe('skill endpoint smoke (emulator)', () => {
     const updated = await request(app)
       .patch('/api/skills/go')
       .set(withApiKey())
-      .send({ proficiency: '3+ years' });
+      .send({ order: 3 });
     expect(updated.status).toBe(200);
-    expect(updated.body.data.proficiency).toBe('3+ years');
+    expect(updated.body.data.order).toBe(3);
 
     // DELETE
     const removed = await request(app).delete('/api/skills/go').set(withApiKey());
