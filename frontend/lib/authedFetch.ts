@@ -1,4 +1,4 @@
-import { auth } from "./firebase";
+import { getFirebaseAuth } from "./firebase";
 
 /**
  * Authenticated fetch for admin write calls. Attaches a fresh Firebase ID token
@@ -11,7 +11,7 @@ export async function authedFetch(
   input: RequestInfo | URL,
   init: RequestInit = {},
 ): Promise<Response> {
-  const user = auth.currentUser;
+  const user = getFirebaseAuth().currentUser;
   if (!user) {
     throw new Error("Not authenticated");
   }
