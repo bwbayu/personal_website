@@ -22,3 +22,15 @@ describe('backend-deploy.yml Cloud Run env', () => {
     expect(yml).toContain('FIREBASE_PROJECT_ID=personal-website-490704');
   });
 });
+
+describe('backend Dockerfile runtime', () => {
+  const dockerfile = read('backend/Dockerfile');
+
+  it('runs on a Node 22 base image (firebase-admin 14 requires Node >=22)', () => {
+    const bases = [...dockerfile.matchAll(/^FROM\s+(\S+)/gm)].map((m) => m[1]);
+    expect(bases.length).toBeGreaterThan(0);
+    for (const base of bases) {
+      expect(base).toBe('node:22-alpine');
+    }
+  });
+});
