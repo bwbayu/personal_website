@@ -8,15 +8,65 @@ import Image from "next/image";
 import { isSafeUrl } from "@/lib/url";
 import { useApi } from "@/lib/useApi";
 import { fetchProjects } from "@/app/api/projects";
+import { fetchSkills } from "@/app/api/skills";
+import { SkillType } from "@/app/types/resume";
 import Loading from "@/components/Loading";
 import ErrorMessage from "@/components/ErrorMessage";
 
+// Resolve a project's technology ids against the skill map (single source of truth
+// for icons + names). Unknown/dangling ids are silently skipped. Shared by the
+// "Recent" and "All" project lists so their tech markup stays in sync.
+function TechStack({
+  technologies,
+  skillMap,
+}: {
+  technologies: string[];
+  skillMap: Map<string, SkillType>;
+}) {
+  return (
+    <div className="flex flex-wrap gap-4">
+      {technologies.map((techId) => {
+        const skill = skillMap.get(techId);
+        if (!skill) return null;
+        return (
+          <Tooltip content={skill.name} key={techId}>
+            <div className="group relative flex flex-col items-center">
+              {skill.iconClass ? (
+                <i
+                  className={`${skill.iconClass} transition-transform group-hover:scale-110`}
+                ></i>
+              ) : skill.iconImage && isSafeUrl(skill.iconImage) ? (
+                <div className="flex size-8 items-center justify-center rounded-md bg-white p-0.5">
+                  <Image
+                    src={skill.iconImage}
+                    alt={skill.name}
+                    width={32}
+                    height={32}
+                    className="size-full object-contain transition-transform group-hover:scale-110"
+                  />
+                </div>
+              ) : null}
+            </div>
+          </Tooltip>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function ProjectsClient() {
-  const { data: projects, loading, error } = useApi(fetchProjects);
+  const { data, loading, error } = useApi(async () => {
+    // Skills are fetched UNFILTERED: project-only skills are isShow:false but still
+    // need to resolve here for their icon + name.
+    const [projects, skills] = await Promise.all([fetchProjects(), fetchSkills()]);
+    return { projects, skills };
+  });
 
   if (loading) return <Loading />;
-  if (error || !projects) return <ErrorMessage message="Failed to load projects. Please try again later." />;
+  if (error || !data) return <ErrorMessage message="Failed to load projects. Please try again later." />;
 
+  const { projects, skills } = data;
+  const skillMap = new Map(skills.map((skill) => [skill.id, skill]));
   const recent = projects.slice(0, 3);
 
   return (
@@ -72,29 +122,10 @@ export default function ProjectsClient() {
                       }}
                     >
                       {/* Tech Stack */}
-                      <div className="flex flex-wrap gap-4">
-                        {project.technologies.map((tech, idx) => (
-                          <Tooltip content={tech.name} key={idx}>
-                            <div className="group relative flex flex-col items-center">
-                              {tech.iconClass ? (
-                                <i
-                                  className={`${tech.iconClass} transition-transform group-hover:scale-110`}
-                                ></i>
-                              ) : tech.iconImage && isSafeUrl(tech.iconImage) ? (
-                                <div className="flex size-8 items-center justify-center rounded-md bg-white p-0.5">
-                                  <Image
-                                    src={tech.iconImage}
-                                    alt={tech.name}
-                                    width={32}
-                                    height={32}
-                                    className="size-full object-contain transition-transform group-hover:scale-110"
-                                  />
-                                </div>
-                              ) : null}
-                            </div>
-                          </Tooltip>
-                        ))}
-                      </div>
+                      <TechStack
+                        technologies={project.technologies}
+                        skillMap={skillMap}
+                      />
                       <div className="flex flex-row items-center gap-3 rounded-lg border border-gray-700 bg-gray-800/60 px-3 py-1.5 empty:hidden">
                         {project.githubUrl && isSafeUrl(project.githubUrl) && (
                           <Tooltip content="View Repository">
@@ -192,29 +223,10 @@ export default function ProjectsClient() {
                       }}
                     >
                       {/* Tech Stack */}
-                      <div className="flex flex-wrap gap-4">
-                        {project.technologies.map((tech, idx) => (
-                          <Tooltip content={tech.name} key={idx}>
-                            <div className="group relative flex flex-col items-center">
-                              {tech.iconClass ? (
-                                <i
-                                  className={`${tech.iconClass} transition-transform group-hover:scale-110`}
-                                ></i>
-                              ) : tech.iconImage && isSafeUrl(tech.iconImage) ? (
-                                <div className="flex size-8 items-center justify-center rounded-md bg-white p-0.5">
-                                  <Image
-                                    src={tech.iconImage}
-                                    alt={tech.name}
-                                    width={32}
-                                    height={32}
-                                    className="size-full object-contain transition-transform group-hover:scale-110"
-                                  />
-                                </div>
-                              ) : null}
-                            </div>
-                          </Tooltip>
-                        ))}
-                      </div>
+                      <TechStack
+                        technologies={project.technologies}
+                        skillMap={skillMap}
+                      />
                       <div className="flex flex-row items-center gap-3 rounded-lg border border-gray-700 bg-gray-800/60 px-3 py-1.5 empty:hidden">
                         {project.githubUrl && isSafeUrl(project.githubUrl) && (
                           <Tooltip content="View Repository">

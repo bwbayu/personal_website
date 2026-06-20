@@ -41,7 +41,7 @@ export type ProjectType = {
   url?: string;
   youtubeUrl?: string;
   role: string[];
-  technologies: { name: string; iconClass?: string; iconImage?: string }[];
+  technologies: string[];
   category: string[];
 };
 
