@@ -294,3 +294,11 @@ then perform one authenticated write (skill PATCH) and show the result. Chrome l
 - (public)/(admin) route-group refactor for clean admin chrome.
 - Firebase custom claims / role-based auth; token revocation check; session cookies.
 - Real admin CMS UI (S3).
+- Login-gating for non-allowlisted accounts (S3, decided 2026-06-21): in S2 a
+  non-allowlisted Google account can sign in (Firebase) and only the backend write is
+  rejected (403) — by design, since the FE does not hold the allowlist (D3). S3 adds an
+  authenticated `GET /api/admin/me` (returns the email when allowlisted, 403 otherwise);
+  the FE calls it right after sign-in and signs out + shows "not authorized" on 403, and
+  reuses it to gate the whole admin UI. Heavier Firebase blocking-functions / custom-claims
+  route stays parked (DISCUSSION §6). Login-gating is UX only; the backend stays the
+  authority on every write.
