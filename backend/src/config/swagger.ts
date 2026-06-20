@@ -37,6 +37,14 @@ const swaggerSpec = {
           resultUrl: { type: 'array', items: { type: 'string' } },
         },
       },
+      Category: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          name: { type: 'string' },
+          order: { type: 'integer' },
+        },
+      },
       Certification: {
         type: 'object',
         properties: {
@@ -219,6 +227,45 @@ const swaggerSpec = {
       delete: {
         tags: ['Achievements'],
         summary: 'Delete an achievement',
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: {
+          '200': { description: 'Deleted', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+    },
+    '/api/categories': {
+      get: {
+        tags: ['Categories'],
+        summary: 'Get all categories',
+        responses: {
+          '200': { description: 'Success', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+      post: {
+        tags: ['Categories'],
+        summary: 'Create a category',
+        security: [{ ApiKeyAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/Category' } } } },
+        responses: {
+          '201': { description: 'Created', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+    },
+    '/api/categories/{id}': {
+      patch: {
+        tags: ['Categories'],
+        summary: 'Update a category',
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/Category' } } } },
+        responses: {
+          '200': { description: 'Updated', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+      delete: {
+        tags: ['Categories'],
+        summary: 'Delete a category',
         security: [{ ApiKeyAuth: [] }],
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
         responses: {

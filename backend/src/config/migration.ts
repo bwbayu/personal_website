@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import { db } from './firestore';
 import { skillsSeed }         from '../database/seeds/skills.seed';
+import { categoriesSeed }     from '../database/seeds/categories.seed';
 import { projectsSeed }       from '../database/seeds/projects.seed';
 import { experiencesSeed }    from '../database/seeds/experiences.seed';
 import { educationsSeed }     from '../database/seeds/educations.seed';
@@ -45,6 +46,23 @@ async function seedSkills() {
   console.log(`[done] 'skills' seeded with ${skillsSeed.length} documents`);
 }
 
+async function seedCategories() {
+  const snapshot = await db.collection('categories').limit(1).get();
+  if (!snapshot.empty) {
+    console.log(`[skip] 'categories' already has data`);
+    return;
+  }
+
+  const batch = db.batch();
+  // categories use the name-slug as doc ID (also stored as id field)
+  categoriesSeed.forEach(category => {
+    const ref = db.collection('categories').doc(category.id);
+    batch.set(ref, category);
+  });
+  await batch.commit();
+  console.log(`[done] 'categories' seeded with ${categoriesSeed.length} documents`);
+}
+
 async function seedAbout() {
   const ref = db.collection('about').doc('main');
   const doc = await ref.get();
@@ -59,6 +77,7 @@ async function seedAbout() {
 async function migrate() {
   console.log('Starting migration...\n');
 
+  await seedCategories();
   await seedSkills();
   await seedCollection('projects',       projectsSeed       as Record<string, any>[]);
   await seedCollection('experiences',    experiencesSeed    as Record<string, any>[]);
