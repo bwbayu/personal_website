@@ -146,7 +146,7 @@ Audit `feat/auth` against [PLAN.md](PLAN.md) (AUTH-1..6), the LOCKED
 | Finding | Severity | Triage | Note |
 |---------|----------|--------|------|
 | §1 ADMIN_EMAILS not deployed | BLOCKER | **[FIXED] 0be32d6** | In this `auth` branch. Add `ADMIN_EMAILS` to backend-deploy.yml `--set-env-vars` from `secrets.ADMIN_EMAILS`. **Operator prereq: register the secret (not yet in GitHub).** |
-| §2 firebase-admin 14 vs Node 20 image | BLOCKER | **FIX** | Bump Dockerfile builder+runner to `node:22-alpine` (aligns CI/dev). |
+| §2 firebase-admin 14 vs Node 20 image | BLOCKER | **[FIXED] ffeaa2e** | Bump Dockerfile builder+runner to `node:22-alpine` (aligns CI/dev). |
 | §3 NEXT_PUBLIC_FIREBASE_* not built in | BLOCKER | **FIX** | Add the 4 `NEXT_PUBLIC_FIREBASE_*` to frontend-deploy.yml Build SSG `env:` from secrets. **Operator prereq: register the secrets (not yet in GitHub); FE public values OK as secrets per user.** |
 | §4 FIREBASE_PROJECT_ID not deployed | SHOULD-FIX | **[FIXED] 0be32d6** | Inline literal `FIREBASE_PROJECT_ID=personal-website-490704` in backend-deploy.yml (not a secret — project id is already hardcoded in the workflow). Bundle with §1 (same file, separate concern; one commit for the deploy-env change is fine). |
 | §5 signed-out reject is client-side | NICE-TO-HAVE | **FIX** | Doc-only: clarify in the manual-e2e steps that the backend reject proof uses a non-allowlisted Google account (signed-out is rejected client-side by authedFetch). |
