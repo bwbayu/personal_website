@@ -263,7 +263,7 @@ then perform one authenticated write (skill PATCH) and show the result. Chrome l
 | AUTH-2 | feat(backend): add firebase-admin init module | ea0e130 |
 | AUTH-3 | feat(backend): verify Firebase ID token alongside x-api-key | e1c8018 |
 | AUTH-4 | feat(frontend): add Firebase Web SDK client init | aa2b5d2 |
-| AUTH-5 | feat(frontend): add auth context and authed fetch helper | |
+| AUTH-5 | feat(frontend): add auth context and authed fetch helper | f2873b6 |
 | AUTH-6 | feat(frontend): add /admin login and prove authed write | |
 
 ## Out of scope (parked — DISCUSSION §6 / roadmap S3)
