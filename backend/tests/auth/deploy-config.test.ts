@@ -23,6 +23,24 @@ describe('backend-deploy.yml Cloud Run env', () => {
   });
 });
 
+describe('frontend-deploy.yml static-build env', () => {
+  const yml = read('.github/workflows/frontend-deploy.yml');
+
+  // NEXT_PUBLIC_* is inlined at build time; absent values ship as undefined and
+  // break getAuth() in the browser. Every key lib/firebase.ts reads must be
+  // injected from a secret at build.
+  const FIREBASE_KEYS = [
+    'NEXT_PUBLIC_FIREBASE_API_KEY',
+    'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
+    'NEXT_PUBLIC_FIREBASE_PROJECT_ID',
+    'NEXT_PUBLIC_FIREBASE_APP_ID',
+  ];
+
+  it.each(FIREBASE_KEYS)('injects %s from a secret at build', (key) => {
+    expect(yml).toContain(`${key}: \${{ secrets.${key} }}`);
+  });
+});
+
 describe('backend Dockerfile runtime', () => {
   const dockerfile = read('backend/Dockerfile');
 
