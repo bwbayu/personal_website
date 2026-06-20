@@ -35,6 +35,14 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: Cache Firestore emulator
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: |
+            firebase-emulators-
+
       - name: Run emulator tests
         run: npm run test:emulator
 
