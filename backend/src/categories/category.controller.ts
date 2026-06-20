@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
-import { ProjectService } from './project.service';
+import { CategoryService } from './category.service';
 import { sendSuccess } from '../utils/response.util';
-import { randomUUID } from 'crypto';
+import { toSlug } from '../utils/slug.util';
 
-export const createProjectController = (service: ProjectService) => ({
+export const createCategoryController = (service: CategoryService) => ({
   getAll: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const projects = await service.getAll();
-      sendSuccess(res, projects);
+      const categories = await service.getAll();
+      sendSuccess(res, categories);
     } catch (err) {
       next(err);
     }
@@ -15,8 +15,8 @@ export const createProjectController = (service: ProjectService) => ({
 
   insert: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const project = await service.insert({ ...req.body, id: randomUUID() });
-      sendSuccess(res, project, 201);
+      const category = await service.insert({ ...req.body, id: toSlug(req.body.name) });
+      sendSuccess(res, category, 201);
     } catch (err) {
       next(err);
     }
@@ -24,12 +24,12 @@ export const createProjectController = (service: ProjectService) => ({
 
   update: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const project = await service.update(req.params.id, req.body);
-      if (!project) {
-        res.status(404).json({ success: false, message: 'Project not found' });
+      const category = await service.update(req.params.id, req.body);
+      if (!category) {
+        res.status(404).json({ success: false, message: 'Category not found' });
         return;
       }
-      sendSuccess(res, project);
+      sendSuccess(res, category);
     } catch (err) {
       next(err);
     }
@@ -39,7 +39,7 @@ export const createProjectController = (service: ProjectService) => ({
     try {
       const deleted = await service.deleteById(req.params.id);
       if (!deleted) {
-        res.status(404).json({ success: false, message: 'Project not found' });
+        res.status(404).json({ success: false, message: 'Category not found' });
         return;
       }
       sendSuccess(res, null);

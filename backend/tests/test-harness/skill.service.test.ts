@@ -16,8 +16,8 @@ const makeFakeRepo = () =>
 const sampleSkill: Skill = {
   id: 'typescript',
   name: 'TypeScript',
-  category: 'Programming Languages',
-  proficiency: '3+ years',
+  categoryId: 'programming-languages',
+  order: 0,
   isShow: true,
 };
 
@@ -45,7 +45,7 @@ describe('skill service', () => {
   });
 
   it('update forwards id + partial and returns the updated skill', async () => {
-    const partial = { proficiency: '4+ years' };
+    const partial = { order: 2 };
     const updated = { ...sampleSkill, ...partial };
     repo.update.mockResolvedValue(updated);
     const result = await service.update('typescript', partial);

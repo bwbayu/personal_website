@@ -2,6 +2,7 @@ import { Router } from 'express';
 import projectRoutes from '../projects/project.routes';
 import experienceRoutes from '../experiences/experience.routes';
 import skillRoutes from '../skills/skill.routes';
+import categoryRoutes from '../categories/category.routes';
 import resumeRoutes from '../resume/resume.routes';
 import aboutRoutes from '../about/about.routes';
 import achievementRoutes from '../achievements/achievements.routes';
@@ -18,6 +19,7 @@ router.get('/', (_req, res) => {
 router.use('/projects', projectRoutes);
 router.use('/experiences', experienceRoutes);
 router.use('/skills', skillRoutes);
+router.use('/categories', categoryRoutes);
 router.use('/resume', resumeRoutes);
 router.use('/about', aboutRoutes);
 router.use('/achievements', achievementRoutes);

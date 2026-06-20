@@ -10,7 +10,8 @@
     "test:emulator": "firebase emulators:exec --only firestore --project demo-test \"vitest run --config vitest.emulator.config.ts\"",
     "test:all": "npm test && npm run test:emulator",
     "migrate": "ts-node src/config/migration.ts",
-    "patch:media-socials": "ts-node src/config/patch-media-socials.ts"
+    "patch:media-socials": "ts-node src/config/patch-media-socials.ts",
+    "patch:data-model-cleanup": "ts-node src/config/patch-data-model-cleanup.ts"
   },
   "dependencies": {
     "@google-cloud/firestore": "^7.5.0",

@@ -1,18 +1,14 @@
-import * as ProjectRepository from './project.repository';
 import { Project } from './project.type';
+import { ProjectRepository } from './project.repository';
 
-export const getAll = (): Promise<Project[]> => {
-  return ProjectRepository.findAll();
-};
+export const createProjectService = (repo: ProjectRepository) => ({
+  getAll: (): Promise<Project[]> => repo.findAll(),
 
-export const insert = (data: Project): Promise<Project> => {
-  return ProjectRepository.save(data);
-};
+  insert: (data: Project): Promise<Project> => repo.save(data),
 
-export const update = (id: string, data: Partial<Project>): Promise<Project | null> => {
-  return ProjectRepository.update(id, data);
-};
+  update: (id: string, data: Partial<Project>): Promise<Project | null> => repo.update(id, data),
 
-export const deleteById = (id: string): Promise<boolean> => {
-  return ProjectRepository.remove(id);
-};
+  deleteById: (id: string): Promise<boolean> => repo.remove(id),
+});
+
+export type ProjectService = ReturnType<typeof createProjectService>;
