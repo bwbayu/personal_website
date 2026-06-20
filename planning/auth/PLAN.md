@@ -273,6 +273,11 @@ then perform one authenticated write (skill PATCH) and show the result. Chrome l
   exported `verifyIdToken` seam contract is unchanged (PLAN allowed `getApps()`).
 - **AUTH-3:** verify-path errors are split by code — Firebase `auth/*` errors -> 401
   ("Invalid or expired token"); any other verify failure -> 500 ("Server misconfigured").
+- **AUTH-3 follow-up (`6ac89c4`):** added `"ts-node": { "files": true }` to
+  `backend/tsconfig.json`. ts-node compiles only the import graph, so the unreferenced
+  global augmentation `src/types/express.d.ts` was skipped and `npm run dev` failed with
+  TS2339 on `req.adminEmail`. `tsc --noEmit` (full-project) and vitest (transpile-only)
+  both missed it; verified by booting `ts-node ./bin/www` (server listens -> compile clean).
 - **AUTH-4..6:** `lib/firebase.ts` exports `getFirebaseAuth()` (a lazy, cached accessor)
   instead of an eager `auth` const. Calling `getAuth()` at import time made the static
   export prerender fail on the server (`auth/invalid-api-key`, no `NEXT_PUBLIC_*` env
