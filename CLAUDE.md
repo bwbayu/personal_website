@@ -142,18 +142,23 @@ code + tests only. `.claude/commands/` is tracked too; `.claude/settings.local.j
 
 **Branching & release.** `main` is the only branch CI deploys (push to `main` ->
 prod). `develop` is a pure integration branch (no deploy). Each feature is a
-`feat/<slug>` cut from `develop`; when its review loop closes, open a PR into
-`develop` (`gh pr create --base develop`). Only after a coherent batch of features is
-merged into `develop` do you open ONE PR `develop` -> `main` to ship everything to
-prod in a single coordinated deploy. Never commit to `develop` or `main` directly.
+`feat/<slug>` cut from `develop`; when its review loop closes, the user opens a PR into
+`develop`. Only after a coherent batch of features is merged into `develop` does the
+user open ONE PR `develop` -> `main` to ship everything to prod in a single coordinated
+deploy. Never commit to `develop` or `main` directly.
+
+**Pull requests are opened by the user, not by Claude.** Claude never runs
+`gh pr create` and never opens or merges PRs. When a PR is ready, Claude drafts its
+title + description into [PR.md](PR.md) (root, gitignored) following PR.md's existing
+format; the user copies it into GitHub.
 
 **Commit convention.** One commit per ticket/finding. Subject:
 `<type>(<scope>): <subject>` — NO ticket/issue/finding/doc suffix (no `(slug TH-2)`,
 no `(review §N)`). `<type>` = feat/fix/refactor/perf/chore/docs/test; `<scope>` =
 `backend` / `frontend`. Body = a few SHORT bullet points of WHAT changed,
 self-contained and readable by anyone cloning the public repo — do NOT reference
-DISCUSSION/PLAN/REVIEW, ticket IDs, finding numbers, or "decisions N" (planning/ is
-gitignored; external readers don't have those files). Keep it simple; no long prose.
+DISCUSSION/PLAN/REVIEW, ticket IDs, finding numbers, or "decisions N" (keep each
+message self-contained and readable on its own). Keep it simple; no long prose.
 Track the ticket/finding -> commit SHA mapping inside PLAN.md / REVIEW.md instead.
 Do NOT add a `Co-Authored-By` / any Claude/Anthropic attribution trailer. Never push
 until the user explicitly approves the specific push; never push to `main`/`develop`
