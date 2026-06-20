@@ -102,7 +102,7 @@ jobs:
             --allow-unauthenticated \
             --port 8080 \
             --max-instances=1 \
-            --set-env-vars "^@^NODE_ENV=production@API_KEY=${{ secrets.API_KEY }}@ALLOWED_ORIGINS=${{ secrets.ALLOWED_ORIGINS }}"
+            --set-env-vars "^@^NODE_ENV=production@API_KEY=${{ secrets.API_KEY }}@ALLOWED_ORIGINS=${{ secrets.ALLOWED_ORIGINS }}@ADMIN_EMAILS=${{ secrets.ADMIN_EMAILS }}@FIREBASE_PROJECT_ID=personal-website-490704"
 
       - name: Verify deployment
         run: |
