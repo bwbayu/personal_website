@@ -1,0 +1,11 @@
+rules_version = '2';
+
+// Emulator-only permissive rules. NEVER deployed to production Firestore
+// (prod access is via Application Default Credentials + IAM, not these rules).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
