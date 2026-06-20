@@ -30,14 +30,14 @@ ticket's scoped tests:
 - frontend: npm run typecheck
 - emulator slice (LOCAL gate, before commit): when the ticket touches Firestore-backed
   code (repositories, domain queries, endpoints), run `cd backend; npm run test:emulator`
-  (needs Java/Temurin 17) BEFORE committing. Your sandbox may lack Java; if so, STOP and
+  (needs Java/Temurin 21) BEFORE committing. Your sandbox may lack Java; if so, STOP and
   have the operator run it locally - do not commit until it is green. CI re-runs this
   slice on the PR as a backstop, but catch failures here, not by bouncing off CI.
 "Never advance while tests fail" applies, scoped to the ticket.
 
-Working-doc note: planning/$1/* is GITIGNORED. Update PLAN.md to mark tickets done
-for tracking, but NEVER git add anything under planning/. Each commit is code +
-tests only.
+Working-doc note: planning/$1/* is tracked in git, but keep planning updates in
+separate commits — never fold them into a code commit. Update PLAN.md to mark tickets
+done, then commit it separately. Each code commit is code + tests only.
 
 Per-ticket loop (Stage A/B/C/D):
 A understand - re-read the ticket; open every file it touches; confirm current
@@ -49,9 +49,9 @@ C implement + scoped test - make the edits; test EVERY acceptance criterion; run
   touches Firestore-backed code); fix until green.
 D commit - ONE commit. Subject `<type>(<scope>): <subject>` (NO ticket-id / doc
   suffix). Body = a few SHORT self-contained bullets of WHAT changed; do NOT reference
-  DISCUSSION/PLAN/tickets/decisions (planning/ is gitignored, external readers lack
-  them); no long prose; no Co-Authored-By. Record the commit SHA next to the ticket in
-  PLAN.md (NO git add of planning/). Verify with git log --oneline -3.
+  DISCUSSION/PLAN/tickets/decisions (keep each message self-contained); no long prose;
+  no Co-Authored-By. Record the commit SHA next to the ticket in PLAN.md; commit that
+  planning/ update separately. Verify with git log --oneline -3.
 Do NOT advance until the current ticket is green + committed.
 
 Final: run the union of the feature's scoped tests; report a table

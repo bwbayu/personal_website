@@ -8,6 +8,10 @@ You are my design partner for a NEW feature. We DISCUSS until the design is clea
 Arguments: $ARGUMENTS
 The FIRST token is the feature SLUG (kebab-case). The rest is the task description.
 
+If this session was derived from a roadmap (e.g. `/wf-roadmap`), read
+`planning/<roadmap-slug>/DISCUSSION.md` first — its Decisions log is LOCKED and must
+not be re-opened or contradicted. Raise any conflict instead of silently diverging.
+
 Maintain a living design-notes doc at `planning/<slug>/DISCUSSION.md` (create the
 folder if missing). Update it incrementally after every exchange - do not wait
 until the end.
@@ -30,7 +34,8 @@ Rules:
 - This is a HUMAN-GATED phase: keep discussing until the user says the design is
   locked, then make sure the Decisions log is complete.
 
-Follow the repo conventions in CLAUDE.md (planning/ is gitignored working state).
+Follow the repo conventions in CLAUDE.md (planning/ is tracked in git; keep planning
+updates in separate commits, not folded into code commits).
 
 ## Handoff (run in a NEW session per phase)
 Once I confirm the design is LOCKED and the Decisions log is complete, end your

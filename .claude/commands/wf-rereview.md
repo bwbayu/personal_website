@@ -30,7 +30,7 @@ C. Confirm each fix shipped with a scoped test that proves closure; flag any
 You MAY run the feature's scoped tests (backend unit `npx vitest run tests/<slug>`,
 frontend `npm run typecheck`); do NOT run the full suite (slow). Re-review is the gate
 before the PR - if you have Java, run the emulator slice
-(`cd backend; npm run test:emulator`, Temurin 17) and confirm it is green before
+(`cd backend; npm run test:emulator`, Temurin 21) and confirm it is green before
 recommending CLOSE; flag it if you could not run it locally.
 
 Output - APPEND to planning/$1/REVIEW.md (do NOT overwrite prior passes):
@@ -51,8 +51,7 @@ End your reply with the appropriate next step:
 - If you recommend ANOTHER pass: a ready-to-paste prompt to fix the new findings
   (after I triage them) - `/wf-fix $1`.
 - If CLOSE: state the review loop is done. Remaining steps are human-gated:
-  (1) push `feat/$1` to origin and open a PR into `develop`
-  (`gh pr create --base develop`); (2) the final PR `develop` -> `main` (which
-  triggers the prod deploy) happens only AFTER all roadmap sessions are merged into
-  develop - NOT per session. Ask me for approval before pushing or opening any PR;
-  do NOT push yourself.
+  (1) push `feat/$1` to origin only after the user approves; the user then opens a
+  PR into `develop` — Claude never runs `gh pr create` or opens PRs; (2) the final
+  PR `develop` -> `main` (which triggers the prod deploy) happens only AFTER all
+  roadmap sessions are merged into develop - NOT per session.

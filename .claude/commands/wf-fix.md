@@ -34,16 +34,17 @@ C implement + scoped test - add/extend a scoped test under tests/<slug>/ that
   - frontend: npm run typecheck
   - emulator slice (LOCAL gate, before commit): if the fix touches Firestore-backed
     code (repositories, domain queries, endpoints), run `cd backend; npm run test:emulator`
-    (needs Java/Temurin 17) BEFORE committing. Your sandbox may lack Java; if so, STOP
+    (needs Java/Temurin 21) BEFORE committing. Your sandbox may lack Java; if so, STOP
     and have the operator run it locally - do not commit until green. CI re-runs it on
     the PR as a backstop, but catch failures here.
   For FE behavior you can't run in a browser, say so. Fix until green. Do NOT run the
   full suite (slow).
 D commit - mark the finding [FIXED] in planning/$1/REVIEW.md and record the commit
-  SHA there (NO git add of planning/), then ONE commit. Subject
-  `<type>(<scope>): <subject>` (NO `review §N` / doc suffix). Body = a few SHORT
-  self-contained bullets of WHAT changed; do NOT reference REVIEW/findings/planning
-  docs; no long prose; no Co-Authored-By. Verify with git log --oneline -3.
+  SHA there; commit that planning/ update separately, not in this code commit. Then ONE
+  code commit. Subject `<type>(<scope>): <subject>` (NO `review §N` / doc suffix).
+  Body = a few SHORT self-contained bullets of WHAT changed; do NOT reference
+  REVIEW/findings/planning docs (keep each message self-contained); no long prose;
+  no Co-Authored-By. Verify with git log --oneline -3.
 Do NOT advance until the current finding is green + committed.
 
 Final: run the union of touched scoped tests; report a table

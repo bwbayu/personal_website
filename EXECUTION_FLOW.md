@@ -94,8 +94,8 @@ pre-flight full-suite baseline.
   test. `<scope>`: `backend` or `frontend`.
 - **Body:** a few SHORT bullet points of WHAT changed — self-contained and readable by
   anyone cloning the public repo. Do NOT reference DISCUSSION/PLAN/REVIEW, ticket IDs,
-  finding numbers, or "decisions N" — `planning/` is gitignored, so external readers
-  don't have those files. State deviations as plain bullets, not doc references. Keep
+  finding numbers, or "decisions N" — keep each message self-contained and readable on
+  its own. State deviations as plain bullets, not doc references. Keep
   it simple; no long prose.
 - **Traceability lives in the docs, not the message:** when a ticket/finding is done,
   record its commit SHA next to it in PLAN.md / REVIEW.md (local working state).
@@ -115,8 +115,9 @@ test(backend): add repository mock seam for unit tests
 
 - **Branch model.** `main` = prod (CI deploys on push). `develop` = pure integration
   (no deploy). Work on `feat/<slug>` cut from `develop`; create it from develop if
-  missing and say so. When a feature's review loop CLOSES, open a PR into `develop`
-  (human-gated). One PR `develop` -> `main` ships a whole batch to prod at the end -
+  missing and say so. When a feature's review loop CLOSES, the user opens a PR into
+  `develop` — Claude never runs `gh pr create`. One PR `develop` -> `main` ships a
+  whole batch to prod at the end -
   never per-feature, so the live site never gets a half-finished feature.
 - **Never push until the user approves that specific push.** A prior "yes" does not
   carry forward. Never push between tickets. Never commit to `develop` or `main`
@@ -125,8 +126,9 @@ test(backend): add repository mock seam for unit tests
   `--no-gpg-sign` without an explicit instruction for that exact command.
 - Never `git reset --hard` / `git checkout --` / `git clean -f` / `git branch -D`
   unless explicitly asked.
-- Never `git add` secrets (`.env`, `keys/`, `*.pem`) or anything under `planning/`.
-  Name files explicitly instead of `git add -A`.
+- Never `git add` secrets (`.env`, `keys/`, `*.pem`). Name files explicitly instead
+  of `git add -A`. Planning updates (`planning/`) are committed separately from code
+  commits — never fold them together.
 
 ## Review phase (Phase 4)
 
