@@ -264,7 +264,25 @@ then perform one authenticated write (skill PATCH) and show the result. Chrome l
 | AUTH-3 | feat(backend): verify Firebase ID token alongside x-api-key | e1c8018 |
 | AUTH-4 | feat(frontend): add Firebase Web SDK client init | aa2b5d2 |
 | AUTH-5 | feat(frontend): add auth context and authed fetch helper | f2873b6 |
-| AUTH-6 | feat(frontend): add /admin login and prove authed write | |
+| AUTH-6 | feat(frontend): add /admin login and prove authed write | a1a1005 |
+
+## Implementation notes / deviations (filled during /wf-implement)
+- **AUTH-2:** firebase-admin v14 exposes the modular API at the root (no legacy
+  `admin.apps` / `admin.auth()`), so the init module uses `getApps()` / `initializeApp`
+  (`firebase-admin/app`) and `getAuth().verifyIdToken` (`firebase-admin/auth`). The
+  exported `verifyIdToken` seam contract is unchanged (PLAN allowed `getApps()`).
+- **AUTH-3:** verify-path errors are split by code — Firebase `auth/*` errors -> 401
+  ("Invalid or expired token"); any other verify failure -> 500 ("Server misconfigured").
+- **AUTH-4..6:** `lib/firebase.ts` exports `getFirebaseAuth()` (a lazy, cached accessor)
+  instead of an eager `auth` const. Calling `getAuth()` at import time made the static
+  export prerender fail on the server (`auth/invalid-api-key`, no `NEXT_PUBLIC_*` env
+  there). `AuthContext`/`authedFetch` call the accessor in browser-only paths. No locked
+  decision constrains the export name; D5's deliverables (context, guard, `authedFetch`)
+  are intact.
+- **AUTH-6 manual e2e (NOT run — requires D8 console setup + a browser):** Google popup
+  sign-in, session persistence across reload, and the accept(200)/reject(401/403) of the
+  proof write cannot be exercised headless. Verified here: `tsc --noEmit` and
+  `next build` (static export) both pass with the new `/admin` routes.
 
 ## Out of scope (parked — DISCUSSION §6 / roadmap S3)
 - Removing `x-api-key` from write routes ("swap") — S3 nicety, not S2 (D1/D2).
