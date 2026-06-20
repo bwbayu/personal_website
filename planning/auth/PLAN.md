@@ -241,18 +241,23 @@ then perform one authenticated write (skill PATCH) and show the result. Chrome l
 - Visiting `/admin` unauthenticated redirects to `/admin/login`.
 - Google popup sign-in succeeds for an allowlisted account; session persists across reload
   (Firebase IndexedDB persistence).
-- The proof control performs an authenticated write that the backend ACCEPTS (200), and a
-  signed-out / non-allowlisted attempt is rejected (401/403) — confirming AUTH-3
-  end-to-end.
+- The proof control performs an authenticated write that the backend ACCEPTS (200). The
+  live backend reject is confirmed with a signed-in but NON-allowlisted Google account
+  (backend returns 403). A fully signed-out attempt is rejected client-side by
+  `authedFetch` before any request leaves the browser, so it does not exercise a backend
+  401/403 — the backend reject paths are covered by the AUTH-3 unit tests.
 - `npm run build` (static export) still succeeds with the new `/admin` routes.
 
 **Tests**
 - Typecheck: `cd frontend; npm run typecheck`.
 - Build smoke: `cd frontend; npm run build` (static export must not break).
 - **Manual e2e (operator):** after the D8 console setup, run BE + FE locally, sign in with
-  the allowlisted Google account, trigger the proof write, confirm 200; then sign out (or
-  use a non-allowlisted account) and confirm rejection. FE auth cannot be exercised
-  headless — call this out in the ticket per EXECUTION_FLOW Stage C.
+  the allowlisted Google account, trigger the proof write, confirm 200; then sign in with a
+  NON-allowlisted Google account and confirm the backend rejects the write with 403. (A
+  fully signed-out attempt is short-circuited by `authedFetch` client-side and never
+  reaches the backend, so use the non-allowlisted account to observe the live backend
+  reject.) FE auth cannot be exercised headless — call this out in the ticket per
+  EXECUTION_FLOW Stage C.
 
 ---
 
