@@ -48,16 +48,22 @@ export type ProjectType = {
 export type AboutMeType = {
   name: string;
   email: string;
-  headline: string;
 };
 
 export type SkillType = {
+  id: string;
   name: string;
   iconClass?: string;
   iconImage?: string;
-  proficiency: string;
-  category: string;
+  categoryId: string;
+  order: number;
   isShow: boolean;
+};
+
+export type CategoryType = {
+  id: string;
+  name: string;
+  order: number;
 };
 
 export type MediaSocialType = {

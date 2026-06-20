@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { Accordion, Tooltip } from "flowbite-react";
 import Image from "next/image";
-import { SkillType } from "@/app/types/resume";
+import { CategoryType, SkillType } from "@/app/types/resume";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { isSafeUrl } from "@/lib/url";
 import { useApi } from "@/lib/useApi";
 import { fetchAbout } from "@/app/api/about";
 import { fetchSkills } from "@/app/api/skills";
+import { fetchCategories } from "@/app/api/categories";
 import Loading from "@/components/Loading";
 import ErrorMessage from "@/components/ErrorMessage";
 
@@ -20,8 +21,12 @@ const roles = [
 
 export default function HomeClient() {
   const { data, loading, error } = useApi(async () => {
-    const [aboutMe, skills] = await Promise.all([fetchAbout(), fetchSkills()]);
-    return { aboutMe, skills: skills.filter((s) => s.isShow) };
+    const [aboutMe, skills, categories] = await Promise.all([
+      fetchAbout(),
+      fetchSkills(),
+      fetchCategories(),
+    ]);
+    return { aboutMe, skills: skills.filter((s) => s.isShow), categories };
   });
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [showContactInfo, setShowContactInfo] = useState(false);
@@ -37,18 +42,31 @@ export default function HomeClient() {
   if (loading) return <Loading />;
   if (error || !data) return <ErrorMessage />;
 
-  const { aboutMe, skills } = data;
+  const { aboutMe, skills, categories } = data;
 
-  const groupedSkills = skills.reduce(
+  // Group shown skills by categoryId.
+  const skillsByCategory = skills.reduce(
     (acc, skill) => {
-      if (!acc[skill.category]) {
-        acc[skill.category] = [];
+      if (!acc[skill.categoryId]) {
+        acc[skill.categoryId] = [];
       }
-      acc[skill.category].push(skill);
+      acc[skill.categoryId].push(skill);
       return acc;
     },
     {} as Record<string, SkillType[]>,
   );
+
+  // Join skills to their category, sort categories by `order` and skills within a
+  // category by `order` (2-level sort), and drop categories with no shown skills.
+  const orderedCategories = [...categories]
+    .sort((a, b) => a.order - b.order)
+    .map((category: CategoryType) => ({
+      category,
+      skills: (skillsByCategory[category.id] ?? []).sort(
+        (a, b) => a.order - b.order,
+      ),
+    }))
+    .filter((group) => group.skills.length > 0);
 
   return (
     <main className="flex grow flex-col items-center justify-center gap-10 bg-gray-900 px-10 dark:bg-gray-900">
@@ -137,12 +155,12 @@ export default function HomeClient() {
           My Toolbox
         </h2>
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {Object.keys(groupedSkills).length === 0 && (
+          {orderedCategories.length === 0 && (
             <p className="col-span-full text-center text-gray-400">No skills to display.</p>
           )}
-          {Object.entries(groupedSkills).map(([category, skills], idx) => (
+          {orderedCategories.map(({ category, skills }, idx) => (
             <div
-              key={category}
+              key={category.id}
               className="animate-fade-in-left-top opacity-0"
               style={{
                 animationDelay: `${idx * 0.2}s`,
@@ -152,7 +170,7 @@ export default function HomeClient() {
               <Accordion collapseAll>
                 <Accordion.Panel>
                   <Accordion.Title>
-                    <p className="text-white">{category}</p>
+                    <p className="text-white">{category.name}</p>
                   </Accordion.Title>
                   <Accordion.Content>
                     <div
@@ -162,15 +180,12 @@ export default function HomeClient() {
                         animationFillMode: "forwards",
                       }}
                     >
-                      {skills.map((skill, idx) => (
+                      {skills.map((skill) => (
                         <Tooltip
-                          key={idx}
+                          key={skill.id}
                           content={
                             <div className="text-center">
                               <p className="font-semibold">{skill.name}</p>
-                              <p className="text-sm text-gray-500">
-                                {skill.proficiency}
-                              </p>
                             </div>
                           }
                         >
