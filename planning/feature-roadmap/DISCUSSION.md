@@ -229,18 +229,19 @@ harness reopens CI. Agreed design:
 dependent; split when large or different domain). Each session spins off its own
 `planning/<slug>/` doc when it goes deep.
 
-**Progress (as of 2026-06-20):**
+**Progress (as of 2026-06-21):**
 - S0 DONE — slug `test-harness`, PR #1 merged into develop
 - S1 DONE — slug `data-model-cleanup`, PR #2 merged into develop
-- develop -> main release (S0+S1 batch) drafted in PR.md; not yet shipped to prod
-- **Next: S2 (auth, T6)**
+- S2 DONE — slug `auth`, PR merged into develop
+- develop -> main release (S0+S1+S2 batch) drafted in PR.md; not yet shipped to prod
+- **Next: S3 (admin CMS scaffold, T5+T7+T8)**
 
 | Session | Tasks | Status | Notes |
 |---------|-------|--------|-------|
 | **S0 — Backend test harness + CI wiring** | (new) | DONE | Vitest, unit-heavy + thin Firestore-emulator layer; establish `backend/tests/<slug>/` convention. PLUS wire CI: new `ci.yml` (PR gate) + 3-layer deploy gating (see T1 CI/CD design). The wf-* workflow depends on this; do FIRST. |
 | **S1 — Data-model cleanup** | T4 → T8-categories → T2 → T3 | DONE | Small & interdependent; same area (skills/projects/about). Do in this order. |
-| **S2 — Auth** | T6 | NEXT | Isolated: security-sensitive + prerequisite for admin. Prove it works first. |
-| **S3 — Admin CMS scaffold** | T5 + T7 + T8 additive CRUD endpoints | | Config-driven scaffold + wire all domains. **Auth swap on write routes (x-api-key → Firebase token) happens here.** |
+| **S2 — Auth** | T6 | DONE | Isolated: security-sensitive + prerequisite for admin. Prove it works first. |
+| **S3 — Admin CMS scaffold** | T5 + T7 + T8 additive CRUD endpoints | NEXT | Config-driven scaffold + wire all domains. **Auth swap on write routes (x-api-key → Firebase token) happens here.** |
 | **S4 — Blog** | T9 (part 1: `posts`) | | BE domain + admin widget + public pages + **rebuild-on-publish webhook** (shared foundation). |
 | **S5 — Daily log** | T9 (part 2: `dailyLogs`) | | Reuses S4 foundation (webhook, markdown render); lighter. |
 
