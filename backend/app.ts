@@ -13,13 +13,19 @@ import { db } from './src/config/firestore';
 
 const app = express();
 
+// Behind Cloud Run's load balancer the real client IP arrives via X-Forwarded-For;
+// trust exactly one proxy hop so the rate limiters key on the client IP (per-IP),
+// not the shared proxy address. A fixed hop count (not `true`) avoids X-Forwarded-For
+// spoofing.
+app.set('trust proxy', 1);
+
 app.use(helmet());
 app.use(cors({ origin: config.allowedOrigins.length ? config.allowedOrigins : false }));
 app.use(logger(config.nodeEnv === 'production' ? 'combined' : 'dev'));
 app.use(express.json({ limit: '64kb' }));
 
-const readLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 200, standardHeaders: true, legacyHeaders: false });
-const writeLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, standardHeaders: true, legacyHeaders: false });
+const readLimiter = rateLimit({ windowMs: 60 * 1000, max: 60, standardHeaders: true, legacyHeaders: false });
+const writeLimiter = rateLimit({ windowMs: 60 * 1000, max: 10, standardHeaders: true, legacyHeaders: false });
 
 app.use('/api', readLimiter);
 app.use('/api', (req, res, next) => {
