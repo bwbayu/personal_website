@@ -14,40 +14,44 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   const linkClass = (active: boolean) =>
     `rounded px-3 py-2 text-sm ${
-      active ? "bg-blue-600 text-white" : "text-gray-700 hover:bg-gray-100"
+      active
+        ? "bg-blue-600 text-white"
+        : "text-gray-300 hover:bg-gray-700 hover:text-white"
     }`;
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-8 md:flex-row">
-      <aside className="w-full shrink-0 md:w-56">
-        <nav className="flex flex-col gap-1">
-          <Link href="/admin" className={linkClass(pathname === "/admin")}>
-            Dashboard
-          </Link>
-          {registry.map((domain) => (
-            <Link
-              key={domain.slug}
-              href={`/admin/${domain.slug}`}
-              className={linkClass(pathname.startsWith(`/admin/${domain.slug}`))}
-            >
-              {domain.label}
+    <div className="flex flex-1 flex-col bg-gray-900">
+      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-8 md:flex-row">
+        <aside className="w-full shrink-0 md:w-56">
+          <nav className="flex flex-col gap-1 rounded-lg border border-gray-700 bg-gray-800 p-2">
+            <Link href="/admin" className={linkClass(pathname === "/admin")}>
+              Dashboard
             </Link>
-          ))}
-        </nav>
-      </aside>
+            {registry.map((domain) => (
+              <Link
+                key={domain.slug}
+                href={`/admin/${domain.slug}`}
+                className={linkClass(pathname.startsWith(`/admin/${domain.slug}`))}
+              >
+                {domain.label}
+              </Link>
+            ))}
+          </nav>
+        </aside>
 
-      <div className="flex-1">
-        <header className="mb-6 flex items-center justify-between border-b border-gray-200 pb-4">
-          <span className="text-sm text-gray-600">{user?.email}</span>
-          <button
-            type="button"
-            onClick={() => signOut()}
-            className="text-sm text-blue-600 hover:underline"
-          >
-            Sign out
-          </button>
-        </header>
-        {children}
+        <div className="flex-1">
+          <header className="mb-6 flex items-center justify-between rounded-lg border border-gray-700 bg-gray-800 px-4 py-3">
+            <span className="text-sm text-gray-400">{user?.email}</span>
+            <button
+              type="button"
+              onClick={() => signOut()}
+              className="text-sm text-blue-500 hover:text-blue-400"
+            >
+              Sign out
+            </button>
+          </header>
+          <div className="animate-fade-in">{children}</div>
+        </div>
       </div>
     </div>
   );

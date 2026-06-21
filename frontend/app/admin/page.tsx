@@ -8,8 +8,8 @@ import { registry } from "@/lib/admin/config";
 export default function AdminDashboardPage() {
   return (
     <div>
-      <h1 className="mb-2 text-2xl font-semibold">Admin dashboard</h1>
-      <p className="mb-6 text-sm text-gray-600">
+      <h1 className="mb-2 text-2xl font-semibold text-white">Admin dashboard</h1>
+      <p className="mb-6 text-sm text-gray-400">
         Manage the site content. Select a section to get started.
       </p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -17,9 +17,9 @@ export default function AdminDashboardPage() {
           <Link
             key={domain.slug}
             href={`/admin/${domain.slug}`}
-            className="rounded border border-gray-200 p-4 transition hover:border-blue-400 hover:shadow"
+            className="rounded-lg border border-gray-700 bg-gray-800 p-4 transition hover:border-blue-500 hover:bg-gray-700/50"
           >
-            <span className="font-medium">{domain.label}</span>
+            <span className="font-medium text-gray-100">{domain.label}</span>
           </Link>
         ))}
       </div>

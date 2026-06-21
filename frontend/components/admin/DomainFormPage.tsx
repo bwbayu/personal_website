@@ -75,15 +75,15 @@ function errorMessage(err: unknown): string {
 }
 
 function Loading() {
-  return <p className="text-sm text-gray-600">Loading...</p>;
+  return <p className="text-sm text-gray-400">Loading...</p>;
 }
 
 function NotFound({ message, backHref }: { message: string; backHref: string }) {
   return (
-    <div className="text-sm text-gray-600">
-      <h1 className="mb-2 text-xl font-semibold text-gray-900">Not found</h1>
+    <div className="text-sm text-gray-400">
+      <h1 className="mb-2 text-xl font-semibold text-white">Not found</h1>
       <p className="mb-3">{message}</p>
-      <Link href={backHref} className="text-blue-600 hover:underline">
+      <Link href={backHref} className="text-blue-500 hover:text-blue-400">
         Back to list
       </Link>
     </div>

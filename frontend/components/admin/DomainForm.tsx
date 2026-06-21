@@ -55,23 +55,26 @@ export function DomainForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-2xl">
-      <h1 className="mb-4 text-xl font-semibold">
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-2xl rounded-lg border border-gray-700 bg-gray-800 p-6"
+    >
+      <h1 className="mb-4 text-xl font-semibold text-white">
         {mode === "new" ? "New" : "Edit"} {config.label}
       </h1>
 
       {notice && (
-        <p className="mb-3 rounded border border-green-300 bg-green-50 px-3 py-2 text-sm text-green-700">
+        <p className="mb-3 rounded border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm text-green-300">
           {notice}
         </p>
       )}
       {error && (
-        <p className="mb-3 rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="mb-3 rounded border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">
           {error}
         </p>
       )}
       {missing.length > 0 && (
-        <p className="mb-3 rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="mb-3 rounded border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">
           Please fill in the required fields: {missing.join(", ")}
         </p>
       )}
@@ -79,9 +82,9 @@ export function DomainForm({
       <div className="flex flex-col gap-4">
         {config.fields.map((field) => (
           <div key={field.key} className="flex flex-col gap-1">
-            <label htmlFor={field.key} className="text-sm font-medium">
+            <label htmlFor={field.key} className="text-sm font-medium text-gray-300">
               {field.label}
-              {field.required && <span className="text-red-600"> *</span>}
+              {field.required && <span className="text-red-400"> *</span>}
             </label>
             <FieldInput
               field={field}
@@ -104,7 +107,7 @@ export function DomainForm({
           type="button"
           onClick={onCancel}
           disabled={submitting}
-          className="rounded border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50 disabled:opacity-50"
+          className="rounded border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 disabled:opacity-50"
         >
           Cancel
         </button>

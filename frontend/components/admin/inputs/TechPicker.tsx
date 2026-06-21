@@ -7,7 +7,8 @@ import { listDomain } from "@/lib/admin/api";
 
 type Skill = { id: string; name: string };
 
-const baseSelect = "w-full rounded border border-gray-300 px-3 py-2 text-sm";
+const baseSelect =
+  "w-full rounded border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500";
 
 // Project tech-picker (D6a): multi-select of skill ids shown by skill name. Stores the
 // skill ids. An id that no longer matches a skill (dangling reference) still renders as
@@ -46,19 +47,19 @@ export function TechPicker({ value, onChange }: FieldInputProps) {
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap gap-2">
         {selected.length === 0 && (
-          <span className="text-xs text-gray-500">No technologies selected.</span>
+          <span className="text-xs text-gray-400">No technologies selected.</span>
         )}
         {selected.map((id) => (
           <span
             key={id}
-            className="inline-flex items-center gap-1 rounded bg-gray-100 px-2 py-1 text-xs"
+            className="inline-flex items-center gap-1 rounded bg-gray-700 px-2 py-1 text-xs text-gray-200"
           >
             {nameFor(id)}
             <button
               type="button"
               aria-label={`Remove ${nameFor(id)}`}
               onClick={() => remove(id)}
-              className="text-red-600 hover:text-red-700"
+              className="text-red-400 hover:text-red-300"
             >
               x
             </button>
@@ -66,7 +67,7 @@ export function TechPicker({ value, onChange }: FieldInputProps) {
         ))}
       </div>
       {skills === null ? (
-        <p className="text-sm text-gray-500">Loading skills...</p>
+        <p className="text-sm text-gray-400">Loading skills...</p>
       ) : (
         <select
           value=""
@@ -82,7 +83,7 @@ export function TechPicker({ value, onChange }: FieldInputProps) {
           ))}
         </select>
       )}
-      {error && <p className="mt-1 text-xs text-amber-600">{error}</p>}
+      {error && <p className="mt-1 text-xs text-amber-400">{error}</p>}
     </div>
   );
 }
