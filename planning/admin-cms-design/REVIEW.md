@@ -204,7 +204,7 @@ operator's manual e2e pass per each ticket's checklist.
 | SS1 drawer scroll-lock / focus / dialog | NICE-TO-HAVE | **FIX** [FIXED 0ead605] | body-scroll-lock + role=dialog/aria-modal + focus return |
 | SS2 nav landmark label | NICE-TO-HAVE | **FIX** [FIXED 0ead605] | folded with SS1 (drawer a11y); add aria-label to desktop nav |
 | SS3 modal copy / button order | NICE-TO-HAVE | NO-ACTION | operator: no need to name the item; button order left as-is |
-| SS4 sticky desktop sidebar | NICE-TO-HAVE | **FIX** | `md:sticky md:top-8 md:self-start` |
+| SS4 sticky desktop sidebar | NICE-TO-HAVE | **FIX** [FIXED 587fc7c] | `md:sticky md:top-8 md:self-start` |
 | SS5 comment typo | NICE-TO-HAVE | **FIX** | trivial, folded into the fix pass |
 | SS6 empty copy / fetch fan-out | NICE-TO-HAVE | DEFERRED | DD3-locked fan-out; see SS10 |
 | SS7 reorder partial-failure | OUT-OF-SCOPE | DEFERRED (backend) | frontend can't make it atomic; operator will fix on the backend (transactional swap). Do NOT touch frontend. |
