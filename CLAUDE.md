@@ -76,11 +76,11 @@ single config (not project references), so bare `tsc --noEmit` — which is what
 
 ### Backend (`backend/`)
 
-Express + TypeScript. [backend/app.ts](backend/app.ts) wires helmet, CORS
-(allow-list from `config.allowedOrigins`), morgan, JSON body limit (64kb), read/write
-rate limiters (read 200 / write 20 per 15 min), a `Cache-Control` header on GETs,
-`/health` (pings Firestore), Swagger at `/api-docs` (non-prod only), then the API
-router under `/api`.
+Express + TypeScript. [backend/app.ts](backend/app.ts) wires `trust proxy` (1 hop, so
+rate limits key on the real client IP behind Cloud Run), helmet, CORS (allow-list from
+`config.allowedOrigins`), morgan, JSON body limit (64kb), read/write rate limiters
+(read 60 / write 10 per minute), a `Cache-Control` header on GETs, `/health` (pings
+Firestore), Swagger at `/api-docs` (non-prod only), then the API router under `/api`.
 
 Per-domain module pattern — each domain has
 `controller / service / repository / routes / schema / type` under
