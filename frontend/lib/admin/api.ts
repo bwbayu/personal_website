@@ -71,3 +71,18 @@ export async function deleteItem(apiPath: string, id: string): Promise<void> {
   });
   await unwrap<null>(res);
 }
+
+// Atomic bulk reorder: one PATCH to `${apiPath}/reorder` with a bare array of
+// { id, order } pairs (the server writes them in a single Firestore batch). The
+// Content-Type header is required so the array body is parsed as JSON.
+export async function reorderItems(
+  apiPath: string,
+  updates: { id: string; order: number }[],
+): Promise<void> {
+  const res = await authedFetch(`${API_URL}${apiPath}/reorder`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updates),
+  });
+  await unwrap<null>(res);
+}

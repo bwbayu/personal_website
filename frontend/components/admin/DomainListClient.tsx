@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { Modal, type CustomFlowbiteTheme } from "flowbite-react";
 import { bySlug, type DomainConfig } from "@/lib/admin/config";
-import { listDomain, deleteItem, updateItem, ApiError } from "@/lib/admin/api";
+import { listDomain, deleteItem, reorderItems, ApiError } from "@/lib/admin/api";
 import { adminKeys } from "@/lib/queries";
 import { SingletonForm } from "./DomainFormPage";
 import { useAdminToast } from "./ToastProvider";
@@ -128,8 +128,9 @@ function DomainList({ config }: { config: DomainConfig }) {
     error ??
     (isError ? (queryError instanceof Error ? queryError.message : "Failed to load data") : null);
 
-  // Reorder via the existing per-item PATCH: swap `order` with the adjacent item in the
-  // same group (two PATCHes), then invalidate to reflect server state. No bulk endpoint.
+  // Reorder via the atomic bulk endpoint: swap `order` with the adjacent item in the
+  // same group in ONE request (server writes both in a single batch, so no partial /
+  // duplicate order is possible), then invalidate to reflect server state.
   const move = async (row: Row, direction: "up" | "down") => {
     const neighbors = buildReorderNeighbors(config, rows);
     const neighborId =
@@ -141,9 +142,9 @@ function DomainList({ config }: { config: DomainConfig }) {
     setError(null);
     setNotice(null);
     try {
-      await Promise.all([
-        updateItem(config.apiPath, row.id, { order: Number(neighbor.order ?? 0) }),
-        updateItem(config.apiPath, neighbor.id, { order: Number(row.order ?? 0) }),
+      await reorderItems(config.apiPath, [
+        { id: row.id, order: Number(neighbor.order ?? 0) },
+        { id: neighbor.id, order: Number(row.order ?? 0) },
       ]);
       await queryClient.invalidateQueries({ queryKey });
     } catch (err) {
