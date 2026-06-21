@@ -322,6 +322,8 @@ Suggested commit: `feat(frontend): reorder admin items via the atomic bulk endpo
 
 ## ACMP-6 — Frontend: "View site" link in the admin topbar (PD6)
 
+> Status: DONE — commit `ce5fa24`.
+
 **Scope.** Add a "View site" link to the admin topbar -> `/`, navigating in the same tab
 (Firebase session persists).
 
