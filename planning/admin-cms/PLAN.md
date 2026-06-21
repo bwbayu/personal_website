@@ -203,6 +203,7 @@ this file with code).
 - **Commit**: `refactor(backend): convert educations to factory DI`.
 
 #### ADMIN-CMS-4 — Convert `certifications` to factory DI
+- **Status**: DONE — `2ba1935`.
 - Same pattern; `findAllOrdered('issued')`, `randomUUID()`, `validateId`.
 - **Files**: certification.{repository,service,controller,routes}.ts; resume.repository.ts.
 - **Tests**: `backend/tests/admin-cms/certification.service.test.ts`. Gate: emulator slice.
