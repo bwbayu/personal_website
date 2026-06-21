@@ -302,6 +302,10 @@ this file with code).
 - **Commit**: `feat(frontend): add config-driven admin list view`.
 
 #### ADMIN-CMS-11 — Generic create/edit form + simple input registry (D2, D10)
+- **Status**: DONE — `34745ee`. typecheck + build green (33 static pages). about singleton
+  edit-only form wired into the list route; complex fields show a read-only placeholder
+  (real widgets in ADMIN-CMS-12). buildPayload omits empty strings, so clearing an
+  optional field does not unset it via PATCH (acceptable for S3 scale).
 - **Scope**: one shared form view + a field-type -> input-component registry for the
   SIMPLE types (text, textarea, number, boolean, date, url). Routes
   `app/admin/[domain]/new/page.tsx` and `app/admin/[domain]/edit/page.tsx` (thin server
