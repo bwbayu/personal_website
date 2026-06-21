@@ -195,6 +195,7 @@ this file with code).
 > Verify resume in the emulator gate after each.
 
 #### ADMIN-CMS-3 — Convert `educations` to factory DI
+- **Status**: DONE — `9b8a092`.
 - Same pattern; `findAll: () => repo.findAllOrdered('endDate')`, `randomUUID()`,
   `validateId`. Update resume wiring per the chosen convention.
 - **Files**: education.{repository,service,controller,routes}.ts; resume.repository.ts.
