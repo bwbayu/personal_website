@@ -1,28 +1,8 @@
-"use client";
+import { DashboardClient } from "@/components/admin/DashboardClient";
 
-import Link from "next/link";
-import { registry } from "@/lib/admin/config";
-
-// Admin dashboard: an index of every manageable content domain. The auth guard and
-// shell are applied by the admin layout, so this page only renders the content.
+// Admin dashboard: a card per manageable content domain with a live item count and
+// quick links. The auth guard and shell are applied by the admin layout, so this page
+// only renders the content.
 export default function AdminDashboardPage() {
-  return (
-    <div>
-      <h1 className="mb-2 text-2xl font-semibold text-white">Admin dashboard</h1>
-      <p className="mb-6 text-sm text-gray-400">
-        Manage the site content. Select a section to get started.
-      </p>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {registry.map((domain) => (
-          <Link
-            key={domain.slug}
-            href={`/admin/${domain.slug}`}
-            className="rounded-lg border border-gray-700 bg-gray-800 p-4 transition hover:border-blue-500 hover:bg-gray-700/50"
-          >
-            <span className="font-medium text-gray-100">{domain.label}</span>
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
+  return <DashboardClient />;
 }
