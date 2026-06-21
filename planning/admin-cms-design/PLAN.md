@@ -324,7 +324,7 @@ commit this file with the code commits - planning updates are separate).
 ---
 
 ### ADMIN-CMS-DESIGN-6 - DD6: responsive (mobile drawer + table scroll)
-- **Status**: TODO
+- **Status**: DONE (8629157)
 - **Goal**: desktop-first layout where the (now grouped) sidebar collapses to a mobile
   off-canvas drawer behind a topbar toggle; tables scroll horizontally on small screens.
 - **Scope**:
