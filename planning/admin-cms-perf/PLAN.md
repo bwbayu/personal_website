@@ -348,6 +348,8 @@ Suggested commit: `feat(frontend): add View site link to the admin topbar`.
 
 ## ACMP-7 — Docs: describe the TanStack Query data layer (PD5 re-scoped)
 
+> Status: DONE — commit `2e49e9f`.
+
 **Scope.** Make the docs match reality (per Phase 0 drift). No rate-limit number change
 (CLAUDE.md already correct).
 
