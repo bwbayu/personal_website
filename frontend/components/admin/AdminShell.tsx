@@ -92,7 +92,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
     <div className="flex flex-1 flex-col bg-gray-900">
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-8 md:flex-row">
         {/* Desktop sidebar (md and up) */}
-        <aside className="hidden w-56 shrink-0 md:block">
+        <aside className="hidden w-56 shrink-0 md:sticky md:top-8 md:block md:self-start">
           <nav
             aria-label="Primary"
             className="flex flex-col gap-1 rounded-lg border border-gray-700 bg-gray-800 p-2"
