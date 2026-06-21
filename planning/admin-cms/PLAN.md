@@ -246,6 +246,9 @@ this file with code).
 ### Frontend (the scaffold) — branch `feat/admin-cms`
 
 #### ADMIN-CMS-8 — Config core: types, registry, admin API client
+- **Status**: DONE — `2bc5aeb`. Note: `about` doc (about/main) stores only name+email
+  (no `id`) yet its PATCH route uses `validateId` (UUID) - the about edit form must
+  PATCH with a placeholder UUID (repo ignores the id). Handled in ADMIN-CMS-11.
 - **Scope**: the foundation consumed by every later FE ticket. No UI yet.
 - **Files**: `frontend/lib/admin/config.ts` (the `DomainConfig` types + the 9-domain
   registry of §2.1/2.2), `frontend/lib/admin/api.ts` (the client + `ApiError` of §2.3).
