@@ -279,6 +279,8 @@ this file with code).
 - **Commit**: `feat(frontend): add admin shell and not-allowlisted login guard`.
 
 #### ADMIN-CMS-10 — Generic list view + `/admin/[domain]` route
+- **Status**: DONE — `b75e56f`. Build generates all 9 [domain] params (17 static pages).
+  about renders a singleton placeholder for now; its real edit form lands in ADMIN-CMS-11.
 - **Scope**: one shared list view driven by `config.columns`. Dynamic route
   `app/admin/[domain]/page.tsx` = thin **server** component exporting
   `generateStaticParams` (all registry slugs) + rendering a `"use client"`
