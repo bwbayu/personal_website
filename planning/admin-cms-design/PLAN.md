@@ -284,7 +284,7 @@ commit this file with the code commits - planning updates are separate).
 ---
 
 ### ADMIN-CMS-DESIGN-5 - DD4: toast on save + confirm modal on delete + 400 banner
-- **Status**: TODO
+- **Status**: DONE (6ecfe02)
 - **Goal**: replace the native delete confirm with a Flowbite `Modal`, add a Flowbite
   `Toast` on save success, and ensure the inline BE-400 banner is consistent (fold in only
   what is missing - the red banners already exist).
