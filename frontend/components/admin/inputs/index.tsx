@@ -3,6 +3,9 @@
 import { type ComponentType } from "react";
 import type { FieldConfig, FieldType } from "@/lib/admin/config";
 import { isSafeUrl } from "@/lib/url";
+import { StringArrayInput } from "./StringArrayInput";
+import { CategorySelect } from "./CategorySelect";
+import { TechPicker } from "./TechPicker";
 
 // One input component per simple field type. Complex types (string-array,
 // category-ref, tech-picker) are added to the registry in a later step; until then
@@ -124,6 +127,9 @@ export const fieldInputRegistry: Partial<Record<FieldType, ComponentType<FieldIn
   boolean: BooleanInput,
   date: DateInput,
   url: UrlInput,
+  "string-array": StringArrayInput,
+  "category-ref": CategorySelect,
+  "tech-picker": TechPicker,
 };
 
 export function FieldInput(props: FieldInputProps) {
