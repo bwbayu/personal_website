@@ -134,3 +134,46 @@ Nothing is pending; the feature is fully built.
 |---------|----------|----------------------------------------|-------|
 | §1 TechPicker/CategorySelect uncached | SHOULD-FIX | **FIX** | Migrate both option-list loaders to `useQuery` + `adminKeys.domain(...)`; FE-only, typecheck. **[FIXED]** `6ea228b`. |
 | §2 separate public/admin keys | OUT-OF-SCOPE | **NO-ACTION** | By design (ACMP-4); duplication is theoretical. |
+
+# Pass 2 review
+
+Fresh-eyes re-review of the §1 fix delta only (not a full re-audit). Delta base
+`2845fcb`; range `2845fcb..HEAD` = `6ea228b` (the §1 fix) + `27573cd` (doc: mark
+finding fixed). The §1 fix is FE-only — two component files; no backend/Firestore
+code changed in the delta. No code changed by this review.
+
+## Status of previous FIX findings
+
+| Finding | Verdict | Evidence |
+|---------|---------|----------|
+| §1 TechPicker/CategorySelect uncached | **verified-fixed** | Both loaders now use `useQuery`, not `useEffect`+`listDomain`. `TechPicker` keys on `adminKeys.domain(bySlug["skills"].apiPath)` ([TechPicker.tsx:22-25](../../frontend/components/admin/inputs/TechPicker.tsx#L22-L25)); `CategorySelect` on `adminKeys.domain(bySlug["categories"].apiPath)` ([CategorySelect.tsx:22-25](../../frontend/components/admin/inputs/CategorySelect.tsx#L22-L25)). Both `useEffect`/`useState` loaders are gone (diff removes them wholesale). |
+
+**Key-share proven (the whole point of the fix).** [config.ts:59,80](../../frontend/lib/admin/config.ts#L59-L80) gives `bySlug["skills"].apiPath === '/api/skills'` and `bySlug["categories"].apiPath === '/api/categories'`. The list view ([DomainListClient.tsx:104,116](../../frontend/components/admin/DomainListClient.tsx#L104-L116)) and dashboard count ([DashboardClient.tsx:16-17](../../frontend/components/admin/DashboardClient.tsx#L16-L17)) key on `adminKeys.domain(config.apiPath)` with the *same* `apiPath` string from the *same* config source. So the two inputs produce byte-identical keys `["admin","/api/skills"]` / `["admin","/api/categories"]` — they dedup into the already-fetched list/dashboard cache entry (one request) and are invalidated by a skills/categories write ([DomainFormPage.tsx:110](../../frontend/components/admin/DomainFormPage.tsx#L110), [DomainListClient.tsx:149](../../frontend/components/admin/DomainListClient.tsx#L149)). This fully resolves the stated problem: no more per-open `no-store` GET and no StrictMode double-fire. PD2 (caching scope = public + admin) is now completely realized; ACMP-4's "Partial" in §2 of Pass 1 is closed.
+
+**Behavioral parity confirmed (no regression).**
+- Loading: old `skills === null` / `categories === null` -> new `isPending`. On a cache hit `isPending` is already false, so the loader skips the spinner entirely — strictly better.
+- Error: old `catch` set `[]` + `error` and still rendered the select; new path on `isError` has `data` undefined -> `skills/categories = data ?? []`, `errorMessage` mapped, select still renders. Same UX. The global `retry:1` default now applies before the error shows — consistent with every other migrated admin read, an improvement not a regression.
+- `nameFor` / `available` / `knownCurrent` now read a guaranteed array (`data ?? []`) instead of `skills?.`/`(skills ?? [])`; logic unchanged.
+
+## New findings
+
+(Highest existing § is §2; continuing at §3.)
+
+### §3 — Fix shipped without a unit test (by FE convention; gate is typecheck)
+- **Severity:** INFO / NO-ACTION
+- **What:** No automated test accompanies `6ea228b`. Per CLAUDE.md the frontend has
+  **no test runner** ("Frontend: typecheck only"), so a unit test is neither expected
+  nor possible here; the contractual FE gate is `npm run typecheck`.
+- **Verification in lieu of a test:** `npm run typecheck` -> clean; code inspection
+  confirms identical cache keys (above) and behavioral parity. Recorded transparently
+  per the re-review checklist item "flag any fixed-without-a-test" — this one is
+  acceptable because it matches the project's FE testing convention, not a gap.
+
+## Recommendation
+
+**CLOSE.** §1 is verified-fixed and fully resolves its stated problem; the delta
+introduces no regression and no new FIX-worthy finding (§3 is INFO/NO-ACTION by FE
+convention). Gates green on this branch: FE `npm run typecheck` clean; backend
+emulator slice `npm run test:emulator` 6 files / 15 tests pass (Temurin 21 present) —
+re-run for branch health even though the delta touches no backend code. Nothing blocks
+close.
