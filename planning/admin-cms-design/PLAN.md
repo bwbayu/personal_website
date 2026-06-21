@@ -255,7 +255,7 @@ commit this file with the code commits - planning updates are separate).
 ---
 
 ### ADMIN-CMS-DESIGN-4 - DD3: dashboard cards with counts + quick links
-- **Status**: TODO
+- **Status**: DONE (3bb51bc)
 - **Goal**: turn `/admin` into a real landing dashboard - one card per domain showing the
   item count and quick "Manage" / "Add new" links.
 - **Scope**:
