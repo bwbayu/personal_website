@@ -156,6 +156,8 @@ Suggested commit: `feat(backend): add atomic bulk reorder endpoint for skills an
 
 ## ACMP-2 — Frontend: TanStack Query provider + defaults
 
+> Status: DONE — commit `4234ab4`.
+
 **Scope.** Install the dep and mount a single `QueryClientProvider` at the app root so
 both the public group and the admin area share one client. Inert until consumers migrate
 (ACMP-3/4).
