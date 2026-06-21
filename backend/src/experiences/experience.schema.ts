@@ -8,7 +8,6 @@ export const experienceInsertSchema = z.object({
   location: z.string().min(1).max(500),
   startDate: safeDate,
   endDate: safeDate.optional(),
-  technologies: z.array(z.string().min(1).max(200)).max(30).optional(),
 });
 
 export const experienceUpdateSchema = experienceInsertSchema.partial();
