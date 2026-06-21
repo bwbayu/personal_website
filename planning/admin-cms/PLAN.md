@@ -258,6 +258,8 @@ this file with code).
 - **Commit**: `feat(frontend): add admin domain config registry and API client`.
 
 #### ADMIN-CMS-9 — Admin shell + route guard with probe-on-login (D4, D11)
+- **Status**: DONE — `e3f7b3e`. typecheck + static build green; AdminGuard has an extra
+  "error" state (network failure) that does NOT sign out. Behavioural ACs are manual e2e.
 - **Scope**: replace the throwaway [admin/page.tsx](../../frontend/app/admin/page.tsx)
   with a real shell: a sidebar/nav listing all registry domains (links to
   `/admin/<slug>`), an index/dashboard, and a reusable `AdminGuard`. The guard: waits for
