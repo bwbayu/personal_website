@@ -1,18 +1,14 @@
-import * as MediaSocialRepository from './mediaSocial.repository';
 import { MediaSocial } from './mediaSocial.type';
+import { MediaSocialRepository } from './mediaSocial.repository';
 
-export const getAll = (): Promise<MediaSocial[]> => {
-  return MediaSocialRepository.findAll();
-};
+export const createMediaSocialService = (repo: MediaSocialRepository) => ({
+  getAll: (): Promise<MediaSocial[]> => repo.findAll(),
 
-export const insert = (data: MediaSocial): Promise<MediaSocial> => {
-  return MediaSocialRepository.save(data);
-};
+  insert: (data: MediaSocial): Promise<MediaSocial> => repo.save(data),
 
-export const update = (id: string, data: Partial<MediaSocial>): Promise<MediaSocial | null> => {
-  return MediaSocialRepository.update(id, data);
-};
+  update: (id: string, data: Partial<MediaSocial>): Promise<MediaSocial | null> => repo.update(id, data),
 
-export const deleteById = (id: string): Promise<boolean> => {
-  return MediaSocialRepository.remove(id);
-};
+  deleteById: (id: string): Promise<boolean> => repo.remove(id),
+});
+
+export type MediaSocialService = ReturnType<typeof createMediaSocialService>;
