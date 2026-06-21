@@ -1,18 +1,14 @@
-import * as AboutRepository from './about.repository';
 import { About } from './about.type';
+import { AboutRepository } from './about.repository';
 
-export const get = (): Promise<About | null> => {
-  return AboutRepository.findOne();
-};
+export const createAboutService = (repo: AboutRepository) => ({
+  get: (): Promise<About | null> => repo.findOne(),
 
-export const insert = (data: About): Promise<About> => {
-  return AboutRepository.save(data);
-};
+  insert: (data: About): Promise<About> => repo.save(data),
 
-export const update = (id: string, data: Partial<About>): Promise<About | null> => {
-  return AboutRepository.update(id, data);
-};
+  update: (id: string, data: Partial<About>): Promise<About | null> => repo.update(id, data),
 
-export const deleteById = (id: string): Promise<boolean> => {
-  return AboutRepository.remove(id);
-};
+  deleteById: (id: string): Promise<boolean> => repo.remove(id),
+});
+
+export type AboutService = ReturnType<typeof createAboutService>;
