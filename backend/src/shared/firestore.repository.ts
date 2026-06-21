@@ -35,4 +35,15 @@ export class FirestoreRepository<T extends { id: string }> {
     await ref.delete();
     return true;
   }
+
+  // Atomically set the `order` of many docs in one write. `batch.update` requires
+  // every target doc to already exist, so a missing id makes the whole commit reject
+  // with nothing written (all-or-nothing). Other fields are left untouched.
+  async reorder(updates: { id: string; order: number }[]): Promise<void> {
+    const batch = this.db.batch();
+    for (const { id, order } of updates) {
+      batch.update(this.db.collection(this.collection).doc(id), { order });
+    }
+    await batch.commit();
+  }
 }

@@ -19,6 +19,18 @@ export const createCategoryService = (repo: CategoryRepository) => ({
   update: (id: string, data: Partial<Category>): Promise<Category | null> => repo.update(id, data),
 
   deleteById: (id: string): Promise<boolean> => repo.remove(id),
+
+  // Bulk-reorder categories atomically. Validates that every id exists before touching
+  // Firestore; on any unknown id it returns the offenders and writes nothing.
+  reorder: async (
+    updates: { id: string; order: number }[],
+  ): Promise<{ ok: true } | { ok: false; missing: string[] }> => {
+    const ids = new Set((await repo.findAll()).map((c) => c.id));
+    const missing = updates.filter((u) => !ids.has(u.id)).map((u) => u.id);
+    if (missing.length) return { ok: false, missing };
+    await repo.reorder(updates);
+    return { ok: true };
+  },
 });
 
 export type CategoryService = ReturnType<typeof createCategoryService>;

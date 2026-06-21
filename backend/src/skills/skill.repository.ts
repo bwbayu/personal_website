@@ -11,6 +11,7 @@ export const createSkillRepository = (db?: Firestore) => {
     save:    (data: Skill) => repo.save(data),
     update:  (id: string, data: Partial<Skill>) => repo.update(id, data),
     remove:  (id: string) => repo.remove(id),
+    reorder: (updates: { id: string; order: number }[]) => repo.reorder(updates),
   };
 };
 
