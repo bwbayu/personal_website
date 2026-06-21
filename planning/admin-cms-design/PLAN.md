@@ -233,7 +233,7 @@ commit this file with the code commits - planning updates are separate).
 ---
 
 ### ADMIN-CMS-DESIGN-3 - DD2: grouped sidebar sections
-- **Status**: TODO
+- **Status**: DONE (2ba0f76)
 - **Goal**: replace the flat sidebar list with grouped sections + a Dashboard link.
 - **Scope**:
   - Add `navGroups` to [lib/admin/config.ts](../../frontend/lib/admin/config.ts) (§2.2).
