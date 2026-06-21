@@ -1,18 +1,14 @@
-import * as ExperienceRepository from './experience.repository';
 import { Experience } from './experience.type';
+import { ExperienceRepository } from './experience.repository';
 
-export const getAll = (): Promise<Experience[]> => {
-  return ExperienceRepository.findAll();
-};
+export const createExperienceService = (repo: ExperienceRepository) => ({
+  getAll: (): Promise<Experience[]> => repo.findAll(),
 
-export const insert = (data: Experience): Promise<Experience> => {
-  return ExperienceRepository.save(data);
-};
+  insert: (data: Experience): Promise<Experience> => repo.save(data),
 
-export const update = (id: string, data: Partial<Experience>): Promise<Experience | null> => {
-  return ExperienceRepository.update(id, data);
-};
+  update: (id: string, data: Partial<Experience>): Promise<Experience | null> => repo.update(id, data),
 
-export const deleteById = (id: string): Promise<boolean> => {
-  return ExperienceRepository.remove(id);
-};
+  deleteById: (id: string): Promise<boolean> => repo.remove(id),
+});
+
+export type ExperienceService = ReturnType<typeof createExperienceService>;
