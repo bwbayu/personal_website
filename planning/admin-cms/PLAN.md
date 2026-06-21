@@ -162,6 +162,9 @@ this file with code).
 - **Commit**: `refactor(backend): drop unused technologies field from experiences`.
 
 #### ADMIN-CMS-2 — Convert `experiences` to factory DI
+- **Status**: DONE — `02810ed`. Convention chosen: repo modules export ONLY the
+  `createXxxRepository(db?)` factory; `resume.repository.ts` is a mini composition root
+  that instantiates each factory once and calls `.findAll()` (repeat for 3/4/5).
 - **Scope**: convert repository/service/controller/routes to the factory pattern
   (`createExperienceRepository(db?)` wrapping `FirestoreRepository<Experience>('experiences')`
   with `findAll: () => repo.findAllOrdered('startDate')`, plus save/update/remove;
