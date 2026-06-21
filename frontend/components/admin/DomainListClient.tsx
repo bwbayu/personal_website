@@ -2,11 +2,33 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { Modal, type CustomFlowbiteTheme } from "flowbite-react";
 import { bySlug, type DomainConfig } from "@/lib/admin/config";
 import { listDomain, deleteItem, updateItem, ApiError } from "@/lib/admin/api";
 import { SingletonForm } from "./DomainFormPage";
+import { useAdminToast } from "./ToastProvider";
 
 type Row = Record<string, unknown> & { id: string };
+
+// Force the Flowbite modal onto the layered-dark palette in both OS color schemes
+// (the admin is dark-always; Flowbite defaults to a light panel with a dark: variant).
+const confirmModalTheme: CustomFlowbiteTheme["modal"] = {
+  content: {
+    inner:
+      "relative flex max-h-[90dvh] flex-col rounded-lg border border-gray-700 bg-gray-800 shadow",
+  },
+  header: {
+    base: "flex items-start justify-between rounded-t border-b border-gray-700 p-5",
+    title: "text-xl font-medium text-white",
+    close: {
+      base: "ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-700 hover:text-white",
+      icon: "h-5 w-5",
+    },
+  },
+  footer: {
+    base: "flex items-center space-x-2 rounded-b border-gray-700 p-6",
+  },
+};
 
 // Reorder grouping: skills are ordered within their category; other reorderable
 // domains (categories) share one global group.
@@ -62,11 +84,11 @@ function formatCell(value: unknown): string {
 
 function NotFoundView() {
   return (
-    <div className="text-sm text-gray-600">
-      <h1 className="mb-2 text-xl font-semibold text-gray-900">Section not found</h1>
+    <div className="text-sm text-gray-400">
+      <h1 className="mb-2 text-xl font-semibold text-white">Section not found</h1>
       <p>
         No admin section matches this URL.{" "}
-        <Link href="/admin" className="text-blue-600 hover:underline">
+        <Link href="/admin" className="text-blue-500 hover:text-blue-400">
           Back to dashboard
         </Link>
       </p>
@@ -75,10 +97,12 @@ function NotFoundView() {
 }
 
 function DomainList({ config }: { config: DomainConfig }) {
+  const { show } = useAdminToast();
   const [rows, setRows] = useState<Row[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [reordering, setReordering] = useState(false);
 
   const load = useCallback(async () => {
@@ -122,13 +146,28 @@ function DomainList({ config }: { config: DomainConfig }) {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Delete this item? This cannot be undone.")) return;
+  // Open the confirm modal for a row (replaces the native window.confirm).
+  const requestDelete = (id: string) => {
+    setNotice(null);
+    setError(null);
+    setPendingDeleteId(id);
+  };
+
+  // Dismiss the confirm modal, unless a delete is already in flight.
+  const cancelDelete = () => {
+    if (deletingId) return;
+    setPendingDeleteId(null);
+  };
+
+  const confirmDelete = async () => {
+    const id = pendingDeleteId;
+    if (!id) return;
     setDeletingId(id);
     setNotice(null);
     setError(null);
     try {
       await deleteItem(config.apiPath, id);
+      show("Deleted");
       await load();
     } catch (err) {
       if (err instanceof ApiError && err.status === 404) {
@@ -139,6 +178,7 @@ function DomainList({ config }: { config: DomainConfig }) {
       }
     } finally {
       setDeletingId(null);
+      setPendingDeleteId(null);
     }
   };
 
@@ -148,7 +188,7 @@ function DomainList({ config }: { config: DomainConfig }) {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{config.label}</h1>
+        <h1 className="text-xl font-semibold text-white">{config.label}</h1>
         <Link
           href={`/admin/${config.slug}/new`}
           className="rounded bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
@@ -158,41 +198,41 @@ function DomainList({ config }: { config: DomainConfig }) {
       </div>
 
       {notice && (
-        <p className="mb-3 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+        <p className="mb-3 rounded border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-300">
           {notice}
         </p>
       )}
       {error && (
-        <p className="mb-3 rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="mb-3 rounded border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">
           {error}
         </p>
       )}
 
       {rows === null ? (
-        <p className="text-sm text-gray-600">Loading...</p>
+        <p className="text-sm text-gray-400">Loading...</p>
       ) : rows.length === 0 ? (
-        <p className="text-sm text-gray-600">No items yet. Use the New button to add one.</p>
+        <p className="text-sm text-gray-400">No items yet. Use the New button to add one.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left text-sm">
+        <div className="overflow-x-auto rounded-lg border border-gray-700 bg-gray-800">
+          <table className="w-full min-w-[640px] border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-gray-200">
+              <tr className="border-b border-gray-700">
                 {config.columns.map((col) => (
-                  <th key={col.key} className="px-3 py-2 font-medium text-gray-700">
+                  <th key={col.key} className="px-3 py-2 font-medium text-gray-400">
                     {col.label}
                   </th>
                 ))}
                 {config.reorderable && (
-                  <th className="px-3 py-2 font-medium text-gray-700">Reorder</th>
+                  <th className="px-3 py-2 font-medium text-gray-400">Reorder</th>
                 )}
-                <th className="px-3 py-2 font-medium text-gray-700">Actions</th>
+                <th className="px-3 py-2 font-medium text-gray-400">Actions</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.id} className="border-b border-gray-100">
+                <tr key={row.id} className="border-b border-gray-700 hover:bg-gray-700/50">
                   {config.columns.map((col) => (
-                    <td key={col.key} className="px-3 py-2 text-gray-800">
+                    <td key={col.key} className="px-3 py-2 text-gray-300">
                       {formatCell(row[col.key])}
                     </td>
                   ))}
@@ -203,7 +243,7 @@ function DomainList({ config }: { config: DomainConfig }) {
                           type="button"
                           onClick={() => move(row, "up")}
                           disabled={reordering || !neighbors?.get(row.id)?.prevId}
-                          className="rounded border border-gray-300 px-2 py-1 text-xs hover:bg-gray-50 disabled:opacity-40"
+                          className="rounded border border-gray-600 px-2 py-1 text-xs text-gray-300 hover:bg-gray-700 disabled:opacity-40"
                         >
                           Up
                         </button>
@@ -211,7 +251,7 @@ function DomainList({ config }: { config: DomainConfig }) {
                           type="button"
                           onClick={() => move(row, "down")}
                           disabled={reordering || !neighbors?.get(row.id)?.nextId}
-                          className="rounded border border-gray-300 px-2 py-1 text-xs hover:bg-gray-50 disabled:opacity-40"
+                          className="rounded border border-gray-600 px-2 py-1 text-xs text-gray-300 hover:bg-gray-700 disabled:opacity-40"
                         >
                           Down
                         </button>
@@ -222,15 +262,15 @@ function DomainList({ config }: { config: DomainConfig }) {
                     <div className="flex gap-3">
                       <Link
                         href={`/admin/${config.slug}/edit?id=${encodeURIComponent(row.id)}`}
-                        className="text-blue-600 hover:underline"
+                        className="text-blue-500 hover:text-blue-400"
                       >
                         Edit
                       </Link>
                       <button
                         type="button"
-                        onClick={() => handleDelete(row.id)}
+                        onClick={() => requestDelete(row.id)}
                         disabled={deletingId === row.id}
-                        className="text-red-600 hover:underline disabled:opacity-50"
+                        className="text-red-400 hover:text-red-300 disabled:opacity-50"
                       >
                         {deletingId === row.id ? "Deleting..." : "Delete"}
                       </button>
@@ -242,6 +282,39 @@ function DomainList({ config }: { config: DomainConfig }) {
           </table>
         </div>
       )}
+
+      <Modal
+        show={pendingDeleteId !== null}
+        size="md"
+        dismissible
+        onClose={cancelDelete}
+        theme={confirmModalTheme}
+      >
+        <Modal.Header>Delete item</Modal.Header>
+        <Modal.Body>
+          <p className="text-sm text-gray-300">
+            Delete this item? This cannot be undone.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            type="button"
+            onClick={confirmDelete}
+            disabled={deletingId !== null}
+            className="rounded bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700 disabled:opacity-50"
+          >
+            {deletingId !== null ? "Deleting..." : "Delete"}
+          </button>
+          <button
+            type="button"
+            onClick={cancelDelete}
+            disabled={deletingId !== null}
+            className="rounded border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 disabled:opacity-50"
+          >
+            Cancel
+          </button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

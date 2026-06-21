@@ -16,7 +16,8 @@ export interface FieldInputProps {
   onChange: (value: unknown) => void;
 }
 
-const baseInput = "w-full rounded border border-gray-300 px-3 py-2 text-sm";
+const baseInput =
+  "w-full rounded border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-gray-100 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500";
 
 function asString(value: unknown): string {
   return typeof value === "string" ? value : "";
@@ -65,7 +66,7 @@ function BooleanInput({ field, value, onChange }: FieldInputProps) {
       id={field.key}
       checked={value === true}
       onChange={(e) => onChange(e.target.checked)}
-      className="size-4"
+      className="size-4 accent-blue-600"
     />
   );
 }
@@ -96,7 +97,7 @@ function UrlInput({ field, value, onChange }: FieldInputProps) {
         className={baseInput}
       />
       {warn && (
-        <p className="mt-1 text-xs text-amber-600">
+        <p className="mt-1 text-xs text-amber-400">
           This does not look like an http(s) URL; the server will reject an invalid value.
         </p>
       )}
@@ -113,7 +114,7 @@ function PlaceholderInput({ value }: FieldInputProps) {
       : value.join(", ")
     : asString(value) || "(empty)";
   return (
-    <div className="rounded border border-dashed border-gray-300 px-3 py-2 text-sm text-gray-500">
+    <div className="rounded border border-dashed border-gray-700 px-3 py-2 text-sm text-gray-400">
       <span className="break-words">{summary}</span>
       <span className="ml-2 italic">- dedicated editor coming soon</span>
     </div>

@@ -15,7 +15,7 @@ type Status = "checking" | "authorized" | "denied" | "error";
 
 function Centered({ children }: { children: ReactNode }) {
   return (
-    <main className="flex flex-1 items-center justify-center px-4 py-16 text-sm text-gray-600">
+    <main className="flex flex-1 items-center justify-center bg-gray-900 px-4 py-16 text-sm text-gray-400">
       {children}
     </main>
   );
@@ -73,9 +73,9 @@ export function AdminGuard({ children }: { children: ReactNode }) {
 
   if (status === "denied") {
     return (
-      <main className="mx-auto flex max-w-md flex-1 flex-col items-center justify-center gap-4 px-4 py-16 text-center">
-        <h1 className="text-xl font-semibold">You are not authorized</h1>
-        <p className="text-sm text-gray-600">
+      <main className="flex flex-1 flex-col items-center justify-center gap-4 bg-gray-900 px-4 py-16 text-center">
+        <h1 className="text-xl font-semibold text-white">You are not authorized</h1>
+        <p className="max-w-md text-sm text-gray-400">
           This account is not allowed to access the admin area. You have been signed out.
         </p>
         <button
@@ -99,9 +99,9 @@ export function AdminGuard({ children }: { children: ReactNode }) {
 
   if (status === "error") {
     return (
-      <main className="mx-auto flex max-w-md flex-1 flex-col items-center justify-center gap-4 px-4 py-16 text-center">
-        <h1 className="text-xl font-semibold">Could not verify admin access</h1>
-        <p className="text-sm text-gray-600">
+      <main className="flex flex-1 flex-col items-center justify-center gap-4 bg-gray-900 px-4 py-16 text-center">
+        <h1 className="text-xl font-semibold text-white">Could not verify admin access</h1>
+        <p className="max-w-md text-sm text-gray-400">
           Something went wrong while checking your access. Please try again.
         </p>
         <button

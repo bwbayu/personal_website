@@ -204,3 +204,31 @@ export const registry: DomainConfig[] = [
 export const bySlug: Record<string, DomainConfig> = Object.fromEntries(
   registry.map((domain) => [domain.slug, domain]),
 );
+
+// Presentation-only sidebar grouping (DD2). `registry` stays the source of truth for
+// order, labels, and fields; this only buckets the domains into sidebar sections. The
+// singleton (about) sits under Profile like any other link.
+export const navGroups: { label: string; slugs: string[] }[] = [
+  { label: 'Profile', slugs: ['about', 'media-socials'] },
+  { label: 'Portfolio', slugs: ['projects', 'skills', 'categories'] },
+  { label: 'Resume', slugs: ['experiences', 'educations', 'certifications', 'achievements'] },
+];
+
+// Fail loudly if a domain is added to `registry` without being placed in exactly one
+// nav group, so the sidebar can never silently drop (or duplicate) a section.
+const groupedSlugs = navGroups.flatMap((group) => group.slugs);
+const missingFromGroups = registry
+  .map((domain) => domain.slug)
+  .filter((slug) => !groupedSlugs.includes(slug));
+const unknownInGroups = groupedSlugs.filter((slug) => !bySlug[slug]);
+if (
+  missingFromGroups.length > 0 ||
+  unknownInGroups.length > 0 ||
+  groupedSlugs.length !== new Set(groupedSlugs).size
+) {
+  throw new Error(
+    `navGroups must cover every registry slug exactly once ` +
+      `(missing: ${missingFromGroups.join(', ') || 'none'}; ` +
+      `unknown: ${unknownInGroups.join(', ') || 'none'})`,
+  );
+}

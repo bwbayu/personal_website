@@ -5,7 +5,8 @@ import type { FieldInputProps } from "./index";
 // Array-of-strings editor (D6d): add / edit / remove rows. Used by list-valued fields
 // such as role, category, descriptions, and the url-array fields. Empty rows are left
 // for the backend to validate (it is the source of truth).
-const rowInput = "flex-1 rounded border border-gray-300 px-3 py-2 text-sm";
+const rowInput =
+  "flex-1 rounded border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-gray-100 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500";
 
 export function StringArrayInput({ field, value, onChange }: FieldInputProps) {
   const items = Array.isArray(value) ? value.map((entry) => String(entry)) : [];
@@ -18,7 +19,7 @@ export function StringArrayInput({ field, value, onChange }: FieldInputProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      {items.length === 0 && <p className="text-xs text-gray-500">No entries.</p>}
+      {items.length === 0 && <p className="text-xs text-gray-400">No entries.</p>}
       {items.map((item, index) => (
         <div key={index} className="flex gap-2">
           <input
@@ -31,7 +32,7 @@ export function StringArrayInput({ field, value, onChange }: FieldInputProps) {
           <button
             type="button"
             onClick={() => removeAt(index)}
-            className="rounded border border-gray-300 px-3 py-2 text-sm text-red-600 hover:bg-gray-50"
+            className="rounded border border-gray-700 px-3 py-2 text-sm text-red-400 hover:bg-gray-700"
           >
             Remove
           </button>
@@ -40,7 +41,7 @@ export function StringArrayInput({ field, value, onChange }: FieldInputProps) {
       <button
         type="button"
         onClick={add}
-        className="self-start rounded border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50"
+        className="self-start rounded border border-gray-700 px-3 py-2 text-sm text-gray-300 hover:bg-gray-700"
       >
         Add
       </button>

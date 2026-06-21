@@ -7,7 +7,8 @@ import { listDomain } from "@/lib/admin/api";
 
 type Category = { id: string; name: string };
 
-const baseSelect = "w-full rounded border border-gray-300 px-3 py-2 text-sm";
+const baseSelect =
+  "w-full rounded border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500";
 
 // Single-select category picker (D6b): a dropdown of categories that stores the
 // category id (skill.categoryId). A current value missing from the list (e.g. a
@@ -34,7 +35,7 @@ export function CategorySelect({ field, value, onChange }: FieldInputProps) {
   }, []);
 
   if (categories === null) {
-    return <p className="text-sm text-gray-500">Loading categories...</p>;
+    return <p className="text-sm text-gray-400">Loading categories...</p>;
   }
 
   const knownCurrent = current === "" || categories.some((category) => category.id === current);
@@ -55,7 +56,7 @@ export function CategorySelect({ field, value, onChange }: FieldInputProps) {
         ))}
         {!knownCurrent && <option value={current}>{current} (unknown)</option>}
       </select>
-      {error && <p className="mt-1 text-xs text-amber-600">{error}</p>}
+      {error && <p className="mt-1 text-xs text-amber-400">{error}</p>}
     </div>
   );
 }
