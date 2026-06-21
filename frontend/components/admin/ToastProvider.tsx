@@ -21,7 +21,7 @@ const AUTO_DISMISS_MS = 3000;
 
 // Force the Flowbite toast onto the layered-dark palette in both OS color schemes
 // (the admin is dark-always, while Flowbite's default theme is light with a dark:
-// variant). Overriding the theme leaves replaces the light/dark pair outright.
+// variant). Overriding the theme replaces the light/dark pair outright.
 const toastDarkTheme: CustomFlowbiteTheme["toast"] = {
   root: {
     base: "flex w-full max-w-xs items-center gap-3 rounded-lg border border-gray-700 bg-gray-800 p-4 text-sm text-gray-200 shadow",
