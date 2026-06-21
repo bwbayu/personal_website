@@ -214,7 +214,7 @@ function DomainList({ config }: { config: DomainConfig }) {
         <p className="text-sm text-gray-400">No items yet. Use the New button to add one.</p>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-gray-700 bg-gray-800">
-          <table className="w-full border-collapse text-left text-sm">
+          <table className="w-full min-w-[640px] border-collapse text-left text-sm">
             <thead>
               <tr className="border-b border-gray-700">
                 {config.columns.map((col) => (
