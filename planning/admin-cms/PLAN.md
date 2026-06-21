@@ -355,6 +355,7 @@ this file with code).
 - **Commit**: `feat(frontend): add custom admin field widgets`.
 
 #### ADMIN-CMS-13 — Reorder controls (D3)
+- **Status**: DONE — `e1d1a7b`. typecheck + build green. ALL TICKETS COMPLETE.
 - **Scope**: up/down (or order-number) reorder for the two `reorderable` domains via the
   existing per-item `PATCH /:id { order }` (no bulk endpoint):
   - **categories**: global list sorted by `order asc`; up/down swaps `order` with the
