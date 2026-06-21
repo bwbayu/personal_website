@@ -211,3 +211,84 @@ operator's manual e2e pass per each ticket's checklist.
 | SS8 public lint warnings | OUT-OF-SCOPE | NO-ACTION | pre-existing, not in diff |
 | SS9 DELETE probe (404) | OUT-OF-SCOPE | NO-ACTION | not a bug; locked D4 probe-on-login |
 | SS10 read limiter 429 | OUT-OF-SCOPE | DEFERRED | backend change, not now; operator-owned |
+
+---
+
+# Pass 2 review
+
+> Fresh-eyes re-review of the fix delta only. Delta base `8ffda41` -> `HEAD` on
+> `feat/admin-cms-design`. Scope = the 4 FIX findings closed since Pass 1 (SS1, SS2,
+> SS4, SS5) plus any regression the fixes introduced. NOT a full re-audit. No code
+> changed in this phase.
+
+Fix commits in range (`8ffda41..HEAD`, code only):
+
+| SHA | Closes | Subject |
+|---|---|---|
+| 0ead605 | SS1 + SS2 | make the admin mobile drawer an accessible dialog |
+| 587fc7c | SS4 | keep the admin desktop sidebar in view while scrolling |
+| 0f12ade | SS5 | fix garbled comment in the admin toast provider |
+
+Touched files: [AdminShell.tsx](../../frontend/components/admin/AdminShell.tsx) (+35/-5),
+[ToastProvider.tsx](../../frontend/components/admin/ToastProvider.tsx) (1 line). No other
+source changed. Frontend-only delta -> no backend/Vitest/emulator slice applies (same as
+Pass 1).
+
+**Gates run this pass:**
+- `npm run typecheck` -> clean.
+- No frontend test runner exists by project design (CLAUDE.md / PLAN SS0: typecheck only),
+  so all 4 fixes ship without an automated test - expected here, not a "fixed without a
+  test" gap. The a11y/CSS behaviors (scroll-lock, focus return, sticky sidebar) are
+  verified by code reading + the operator's manual e2e, consistent with Pass 1.
+
+## Status of previous FIX findings
+
+| § | Decision (Pass 1) | Verdict | Evidence |
+|---|---|---|---|
+| SS1 | FIX (scroll-lock + role=dialog/aria-modal + focus return) | **verified-fixed** | Body-scroll-lock effect toggles `document.body.style.overflow="hidden"` while open and restores the prior value on cleanup ([AdminShell.tsx:43-50](../../frontend/components/admin/AdminShell.tsx#L43-L50)); panel gets `role="dialog"` + `aria-modal` while open ([:118-119](../../frontend/components/admin/AdminShell.tsx#L118-L119)); focus moves to the close button on open and returns to the hamburger on close via `hasOpened` guard ([:53-60](../../frontend/components/admin/AdminShell.tsx#L53-L60), refs at [:125](../../frontend/components/admin/AdminShell.tsx#L125),[:156](../../frontend/components/admin/AdminShell.tsx#L156)). All three agreed parts present. Full Tab focus-trap was deliberately out of the agreed scope (decision said "focus return", not "trap") - see SS11. |
+| SS2 | FIX (label desktop nav distinctly) | **verified-fixed** | Desktop `<nav aria-label="Primary">` ([:96-98](../../frontend/components/admin/AdminShell.tsx#L96-L98)); drawer `<nav aria-label="Mobile">` ([:147](../../frontend/components/admin/AdminShell.tsx#L147)). Both nav landmarks now named and distinct; the "one unnamed navigation landmark" condition is gone. |
+| SS4 | FIX (`md:sticky md:top-8 md:self-start`) | **verified-fixed** | Desktop aside is `hidden w-56 shrink-0 md:sticky md:top-8 md:block md:self-start` ([:95](../../frontend/components/admin/AdminShell.tsx#L95)). `self-start` correctly un-stretches the flex item so `sticky` engages; `top-8` matches the locked class. |
+| SS5 | FIX (reword comment) | **verified-fixed** | "Overriding the theme replaces the light/dark pair outright." - garbled "leaves replaces" gone ([ToastProvider.tsx:24](../../frontend/components/admin/ToastProvider.tsx#L24)). |
+
+No prior FIX finding is partial, not-fixed, or regressed.
+
+## New findings
+
+### SS11 - `aria-modal="true"` declared on the drawer without an enforced focus trap - NICE-TO-HAVE
+- **File:** [AdminShell.tsx:118-119](../../frontend/components/admin/AdminShell.tsx#L118-L119)
+- **What:** The SS1 fix marks the open panel `role="dialog" aria-modal="true"` and moves
+  focus to the close button, but Tab is not contained inside the panel and the rest of the
+  page is not `inert`/hidden. `aria-modal="true"` tells assistive tech that everything
+  outside the dialog is inert; here a user can still Tab out into the page behind it, so the
+  attribute slightly over-promises. (The off-canvas nav links are also still tabbable when
+  the drawer is closed - pre-existing, not introduced by this fix.)
+- **Why it matters:** Minor a11y inconsistency, surfaced *because* the fix added the
+  `aria-modal` attribute. This was knowingly out of the agreed remediation scope (Pass 1
+  decision: "focus return", not "focus trap"), so it does not reopen SS1 - it is the small
+  residual the new attribute exposes. References SS1.
+- **Fix (if taken):** add a Tab-wrap handler (or a small focus-trap) within the panel, or
+  drop to `aria-modal` only once the trap exists. Pure DOM, honors D7. Defer-friendly.
+
+### SS12 - Body scroll-lock can persist after an md resize while the drawer is open - NICE-TO-HAVE
+- **File:** [AdminShell.tsx:42-50](../../frontend/components/admin/AdminShell.tsx#L42-L50)
+- **What:** If the drawer is opened below `md` and the viewport is then widened to `md+`
+  without closing it, the drawer/backdrop/close button all go `md:hidden` but `drawerOpen`
+  stays true, so `document.body.style.overflow` remains `"hidden"` (page scroll locked) with
+  no visible control to release it. Recoverable via Escape (the global keydown listener is
+  not viewport-gated, [:33-40](../../frontend/components/admin/AdminShell.tsx#L33-L40)) or
+  any route navigation (close-on-pathname effect). The "stuck-open on resize" state itself is
+  pre-existing; the fix newly couples scroll-lock to it.
+- **Why it matters:** Very obscure (requires resizing mid-open) and self-recoverable; noted
+  for completeness. Personal single-operator admin.
+- **Fix (if taken):** close the drawer on a `md` breakpoint crossing (matchMedia listener),
+  which also clears the lock. Optional.
+
+## Recommendation
+
+**CLOSE.** All four triaged FIX findings (SS1, SS2, SS4, SS5) are verified-fixed with
+file:line evidence and fully satisfy their agreed remediation scope; none regressed. The
+delta is class/attribute/effect-only, introduces no functional or type regression
+(`typecheck` clean), and honors the LOCKED decisions (D7 hand-rolled drawer, DD2/DD6).
+The two new findings (SS11, SS12) are both NICE-TO-HAVE a11y/edge-case polish, knowingly
+adjacent to the already-deferred a11y bucket, and neither blocks close. Nothing
+FIX-worthy remains.
