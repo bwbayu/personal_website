@@ -234,6 +234,9 @@ Suggested commit: `refactor(frontend): fetch public reads via TanStack Query`.
 
 ## ACMP-4 — Frontend: migrate admin reads to useQuery + invalidate on writes
 
+> Status: DONE — commit `b9f5678`. The reorder `move()` `await load()` was swapped for
+> `invalidateQueries` here (load() is gone); ACMP-5 rewrites the body to the bulk endpoint.
+
 **Scope.** Move the admin read paths (list, dashboard counts, edit loader, singleton
 loader) onto `useQuery`, keyed per domain so the list and its dashboard count share one
 entry. After every successful create/update/delete, `invalidateQueries` for that domain
