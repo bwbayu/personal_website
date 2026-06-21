@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { bySlug, type DomainConfig } from "@/lib/admin/config";
 import { listDomain, deleteItem, ApiError } from "@/lib/admin/api";
+import { SingletonForm } from "./DomainFormPage";
 
 type Row = Record<string, unknown> & { id: string };
 
@@ -26,17 +27,6 @@ function NotFoundView() {
           Back to dashboard
         </Link>
       </p>
-    </div>
-  );
-}
-
-// Placeholder for the about singleton until the shared form lands (it reuses this
-// route as its edit form). Listed here so the sidebar entry resolves.
-function SingletonView({ config }: { config: DomainConfig }) {
-  return (
-    <div>
-      <h1 className="mb-2 text-xl font-semibold">{config.label}</h1>
-      <p className="text-sm text-gray-600">This section manages a single record.</p>
     </div>
   );
 }
@@ -166,6 +156,6 @@ function DomainList({ config }: { config: DomainConfig }) {
 export function DomainListClient({ slug }: { slug: string }) {
   const config = bySlug[slug];
   if (!config) return <NotFoundView />;
-  if (config.singleton) return <SingletonView config={config} />;
+  if (config.singleton) return <SingletonForm config={config} />;
   return <DomainList config={config} />;
 }
