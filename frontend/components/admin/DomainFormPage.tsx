@@ -12,6 +12,7 @@ import {
   updateItem,
 } from "@/lib/admin/api";
 import { DomainForm } from "./DomainForm";
+import { useAdminToast } from "./ToastProvider";
 
 type Item = Record<string, unknown> & { id: string };
 
@@ -92,6 +93,7 @@ function NotFound({ message, backHref }: { message: string; backHref: string }) 
 
 function CreateForm({ config }: { config: DomainConfig }) {
   const router = useRouter();
+  const { show } = useAdminToast();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const backHref = `/admin/${config.slug}`;
@@ -101,6 +103,7 @@ function CreateForm({ config }: { config: DomainConfig }) {
     setError(null);
     try {
       await createItem(config.apiPath, buildPayload(config, values));
+      show("Created");
       router.push(backHref);
     } catch (err) {
       setError(errorMessage(err));
@@ -123,6 +126,7 @@ function CreateForm({ config }: { config: DomainConfig }) {
 
 function EditForm({ config }: { config: DomainConfig }) {
   const router = useRouter();
+  const { show } = useAdminToast();
   const searchParams = useSearchParams();
   const id = searchParams.get("id") ?? "";
   const backHref = `/admin/${config.slug}`;
@@ -159,6 +163,7 @@ function EditForm({ config }: { config: DomainConfig }) {
     setError(null);
     try {
       await updateItem(config.apiPath, id, buildPayload(config, values));
+      show("Updated");
       router.push(backHref);
     } catch (err) {
       if (err instanceof ApiError && err.status === 404) {
@@ -197,13 +202,13 @@ function EditForm({ config }: { config: DomainConfig }) {
 // PATCH targets the fixed doc with a placeholder id.
 export function SingletonForm({ config }: { config: DomainConfig }) {
   const router = useRouter();
+  const { show } = useAdminToast();
   const [record, setRecord] = useState<Record<string, unknown> | null | undefined>(
     undefined,
   );
   const [loadError, setLoadError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setRecord(undefined);
@@ -234,10 +239,9 @@ export function SingletonForm({ config }: { config: DomainConfig }) {
   const onSubmit = async (values: Record<string, unknown>) => {
     setSubmitting(true);
     setError(null);
-    setNotice(null);
     try {
       await updateItem(config.apiPath, SINGLETON_PATCH_ID, buildPayload(config, values));
-      setNotice("Saved.");
+      show("Saved");
     } catch (err) {
       setError(errorMessage(err));
     } finally {
@@ -257,7 +261,6 @@ export function SingletonForm({ config }: { config: DomainConfig }) {
       initialValues={seedFromRecord(config, record)}
       submitting={submitting}
       error={error}
-      notice={notice}
       onSubmit={onSubmit}
       onCancel={() => router.push("/admin")}
     />

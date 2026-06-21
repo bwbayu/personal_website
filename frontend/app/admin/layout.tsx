@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { AuthProvider } from "@/lib/AuthContext";
 import { AdminGuard } from "@/components/admin/AdminGuard";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { AdminToastProvider } from "@/components/admin/ToastProvider";
 
 // Nested layout for the admin area: provides the auth context to every /admin route.
 // Every page except the login screen is wrapped in the access guard (probe-on-login)
@@ -20,7 +21,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         children
       ) : (
         <AdminGuard>
-          <AdminShell>{children}</AdminShell>
+          <AdminToastProvider>
+            <AdminShell>{children}</AdminShell>
+          </AdminToastProvider>
         </AdminGuard>
       )}
     </AuthProvider>

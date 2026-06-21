@@ -10,7 +10,6 @@ export interface DomainFormProps {
   initialValues: Record<string, unknown>;
   submitting: boolean;
   error: string | null;
-  notice?: string | null;
   onSubmit: (values: Record<string, unknown>) => void;
   onCancel: () => void;
 }
@@ -31,7 +30,6 @@ export function DomainForm({
   initialValues,
   submitting,
   error,
-  notice,
   onSubmit,
   onCancel,
 }: DomainFormProps) {
@@ -63,11 +61,6 @@ export function DomainForm({
         {mode === "new" ? "New" : "Edit"} {config.label}
       </h1>
 
-      {notice && (
-        <p className="mb-3 rounded border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm text-green-300">
-          {notice}
-        </p>
-      )}
       {error && (
         <p className="mb-3 rounded border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">
           {error}

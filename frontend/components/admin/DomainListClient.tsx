@@ -2,11 +2,33 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { Modal, type CustomFlowbiteTheme } from "flowbite-react";
 import { bySlug, type DomainConfig } from "@/lib/admin/config";
 import { listDomain, deleteItem, updateItem, ApiError } from "@/lib/admin/api";
 import { SingletonForm } from "./DomainFormPage";
+import { useAdminToast } from "./ToastProvider";
 
 type Row = Record<string, unknown> & { id: string };
+
+// Force the Flowbite modal onto the layered-dark palette in both OS color schemes
+// (the admin is dark-always; Flowbite defaults to a light panel with a dark: variant).
+const confirmModalTheme: CustomFlowbiteTheme["modal"] = {
+  content: {
+    inner:
+      "relative flex max-h-[90dvh] flex-col rounded-lg border border-gray-700 bg-gray-800 shadow",
+  },
+  header: {
+    base: "flex items-start justify-between rounded-t border-b border-gray-700 p-5",
+    title: "text-xl font-medium text-white",
+    close: {
+      base: "ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-700 hover:text-white",
+      icon: "h-5 w-5",
+    },
+  },
+  footer: {
+    base: "flex items-center space-x-2 rounded-b border-gray-700 p-6",
+  },
+};
 
 // Reorder grouping: skills are ordered within their category; other reorderable
 // domains (categories) share one global group.
@@ -75,10 +97,12 @@ function NotFoundView() {
 }
 
 function DomainList({ config }: { config: DomainConfig }) {
+  const { show } = useAdminToast();
   const [rows, setRows] = useState<Row[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [reordering, setReordering] = useState(false);
 
   const load = useCallback(async () => {
@@ -122,13 +146,28 @@ function DomainList({ config }: { config: DomainConfig }) {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Delete this item? This cannot be undone.")) return;
+  // Open the confirm modal for a row (replaces the native window.confirm).
+  const requestDelete = (id: string) => {
+    setNotice(null);
+    setError(null);
+    setPendingDeleteId(id);
+  };
+
+  // Dismiss the confirm modal, unless a delete is already in flight.
+  const cancelDelete = () => {
+    if (deletingId) return;
+    setPendingDeleteId(null);
+  };
+
+  const confirmDelete = async () => {
+    const id = pendingDeleteId;
+    if (!id) return;
     setDeletingId(id);
     setNotice(null);
     setError(null);
     try {
       await deleteItem(config.apiPath, id);
+      show("Deleted");
       await load();
     } catch (err) {
       if (err instanceof ApiError && err.status === 404) {
@@ -139,6 +178,7 @@ function DomainList({ config }: { config: DomainConfig }) {
       }
     } finally {
       setDeletingId(null);
+      setPendingDeleteId(null);
     }
   };
 
@@ -228,7 +268,7 @@ function DomainList({ config }: { config: DomainConfig }) {
                       </Link>
                       <button
                         type="button"
-                        onClick={() => handleDelete(row.id)}
+                        onClick={() => requestDelete(row.id)}
                         disabled={deletingId === row.id}
                         className="text-red-400 hover:text-red-300 disabled:opacity-50"
                       >
@@ -242,6 +282,39 @@ function DomainList({ config }: { config: DomainConfig }) {
           </table>
         </div>
       )}
+
+      <Modal
+        show={pendingDeleteId !== null}
+        size="md"
+        dismissible
+        onClose={cancelDelete}
+        theme={confirmModalTheme}
+      >
+        <Modal.Header>Delete item</Modal.Header>
+        <Modal.Body>
+          <p className="text-sm text-gray-300">
+            Delete this item? This cannot be undone.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            type="button"
+            onClick={confirmDelete}
+            disabled={deletingId !== null}
+            className="rounded bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700 disabled:opacity-50"
+          >
+            {deletingId !== null ? "Deleting..." : "Delete"}
+          </button>
+          <button
+            type="button"
+            onClick={cancelDelete}
+            disabled={deletingId !== null}
+            className="rounded border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 disabled:opacity-50"
+          >
+            Cancel
+          </button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
