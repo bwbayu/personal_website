@@ -227,6 +227,7 @@ this file with code).
 - **Commit**: `refactor(backend): convert media-socials to factory DI`.
 
 #### ADMIN-CMS-7 — Convert `about` to factory DI (singleton, custom repo)
+- **Status**: DONE — `96d8747`. Backend batch (1-7) complete.
 - **Scope**: convert about to factories WITHOUT switching to `FirestoreRepository<T>`.
   `createAboutRepository(db?)` returns `{ findOne, save, update, remove }` backed by the
   existing `db.collection('about').doc('main')` logic (id ignored). `createAboutService(repo)`
