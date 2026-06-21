@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type ReactNode } from "react";
 import { useAuth } from "@/lib/AuthContext";
-import { registry } from "@/lib/admin/config";
+import { bySlug, navGroups } from "@/lib/admin/config";
 
 // Sidebar + content shell for the authenticated admin area. The sidebar lists every
 // registered domain; the content slot renders the active page.
@@ -27,14 +27,25 @@ export function AdminShell({ children }: { children: ReactNode }) {
             <Link href="/admin" className={linkClass(pathname === "/admin")}>
               Dashboard
             </Link>
-            {registry.map((domain) => (
-              <Link
-                key={domain.slug}
-                href={`/admin/${domain.slug}`}
-                className={linkClass(pathname.startsWith(`/admin/${domain.slug}`))}
-              >
-                {domain.label}
-              </Link>
+            {navGroups.map((group) => (
+              <div key={group.label} className="mt-3 flex flex-col gap-1">
+                <span className="px-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                  {group.label}
+                </span>
+                {group.slugs.map((slug) => {
+                  const domain = bySlug[slug];
+                  if (!domain) return null;
+                  return (
+                    <Link
+                      key={slug}
+                      href={`/admin/${slug}`}
+                      className={linkClass(pathname.startsWith(`/admin/${slug}`))}
+                    >
+                      {domain.label}
+                    </Link>
+                  );
+                })}
+              </div>
             ))}
           </nav>
         </aside>
