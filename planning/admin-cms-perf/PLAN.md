@@ -69,6 +69,8 @@ Implement in order. Backend first (FE reorder consumes it); FE infra before FE c
 
 ## ACMP-1 — Backend: atomic bulk reorder endpoint (skills + categories)
 
+> Status: DONE — commit `5d18c37`.
+
 **Scope.** Add a batch reorder primitive to the generic repository and expose it as an
 auth-gated `PATCH /api/<domain>/reorder` for the two reorderable domains. Body is a bare
 array `[{ id, order }]` (PD4). The write is a single Firestore `batch()` (atomic). The
