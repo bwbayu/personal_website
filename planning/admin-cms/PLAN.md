@@ -219,6 +219,7 @@ this file with code).
 - **Commit**: `refactor(backend): convert achievements to factory DI`.
 
 #### ADMIN-CMS-6 — Convert `media-socials` to factory DI
+- **Status**: DONE — `aa3fd84`.
 - Same pattern; `findAll: () => repo.findAll()` (unordered, as today), `randomUUID()`,
   `validateId`. media-socials is NOT in resume aggregation, so no resume change.
 - **Files**: mediaSocial.{repository,service,controller,routes}.ts.
