@@ -189,7 +189,7 @@ commit this file with the code commits - planning updates are separate).
 ---
 
 ### ADMIN-CMS-DESIGN-2 - DD5: layered-dark palette + shared surface styling
-- **Status**: TODO
+- **Status**: DONE (0e62e8e)
 - **Goal**: restyle every admin surface to the §2.1 layered-dark system so the admin
   matches the public site's dark look; establish the visual baseline the remaining tickets
   build on.
