@@ -186,6 +186,11 @@ Suggested commit: `feat(frontend): add TanStack Query provider`.
 
 ## ACMP-3 — Frontend: migrate public reads to useQuery; delete useApi
 
+> Status: DONE — commit `db204d3`. Hooks carry explicit `UseQueryResult<...>` return
+> types so `data` stays typed across the import boundary (otherwise TS2742 degrades it
+> to `any`). Network dedup/cache behavior verified by typecheck + build; live-network
+> check is manual.
+
 **Scope.** Replace `useApi(fetcher)` in the 5 public consumers with per-endpoint
 `useQuery`, keyed so shared endpoints dedup (Navbar + Footer media-socials -> one fetch;
 skills shared by Home + Projects). Reuse the existing `app/api/*` fetchers as query
