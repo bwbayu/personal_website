@@ -286,6 +286,8 @@ Suggested commit: `refactor(frontend): fetch admin reads via TanStack Query with
 
 ## ACMP-5 — Frontend: admin reorder via the bulk endpoint + invalidate
 
+> Status: DONE — commit `7c08ce7`.
+
 **Scope.** Replace the two-PATCH swap in `move()` with ONE call to the ACMP-1 bulk
 endpoint (atomic; no more partial-failure split order — REVIEW SS7), then invalidate the
 domain. Generic over both reorderable domains via `config`.
