@@ -1,6 +1,7 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { bySlug, type DomainConfig, type FieldType } from "@/lib/admin/config";
@@ -11,6 +12,7 @@ import {
   listDomain,
   updateItem,
 } from "@/lib/admin/api";
+import { adminKeys } from "@/lib/queries";
 import { DomainForm } from "./DomainForm";
 import { useAdminToast } from "./ToastProvider";
 
@@ -94,6 +96,7 @@ function NotFound({ message, backHref }: { message: string; backHref: string }) 
 function CreateForm({ config }: { config: DomainConfig }) {
   const router = useRouter();
   const { show } = useAdminToast();
+  const queryClient = useQueryClient();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const backHref = `/admin/${config.slug}`;
@@ -104,6 +107,7 @@ function CreateForm({ config }: { config: DomainConfig }) {
     try {
       await createItem(config.apiPath, buildPayload(config, values));
       show("Created");
+      await queryClient.invalidateQueries({ queryKey: adminKeys.domain(config.apiPath) });
       router.push(backHref);
     } catch (err) {
       setError(errorMessage(err));
@@ -127,36 +131,23 @@ function CreateForm({ config }: { config: DomainConfig }) {
 function EditForm({ config }: { config: DomainConfig }) {
   const router = useRouter();
   const { show } = useAdminToast();
+  const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const id = searchParams.get("id") ?? "";
   const backHref = `/admin/${config.slug}`;
+  const queryKey = adminKeys.domain(config.apiPath);
 
-  const [item, setItem] = useState<Item | null | undefined>(undefined);
-  const [loadError, setLoadError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // D2: no GET /:id. Fetch the list and select the item by id (works on a direct
-  // refresh of the edit URL with nothing in memory).
-  useEffect(() => {
-    let active = true;
-    setItem(undefined);
-    setLoadError(null);
-    (async () => {
-      try {
-        const rows = await listDomain<Item>(config.apiPath);
-        if (!active) return;
-        setItem(rows.find((row) => row.id === id) ?? null);
-      } catch (err) {
-        if (!active) return;
-        setItem(null);
-        setLoadError(errorMessage(err));
-      }
-    })();
-    return () => {
-      active = false;
-    };
-  }, [config, id]);
+  // D2: no GET /:id. Fetch the list (cached, shared with the list view) and select the
+  // item by id — works on a direct refresh of the edit URL with nothing in memory.
+  const {
+    data: rows,
+    isPending,
+    isError,
+    error: queryError,
+  } = useQuery({ queryKey, queryFn: () => listDomain<Item>(config.apiPath) });
 
   const onSubmit = async (values: Record<string, unknown>) => {
     setSubmitting(true);
@@ -164,6 +155,7 @@ function EditForm({ config }: { config: DomainConfig }) {
     try {
       await updateItem(config.apiPath, id, buildPayload(config, values));
       show("Updated");
+      await queryClient.invalidateQueries({ queryKey });
       router.push(backHref);
     } catch (err) {
       if (err instanceof ApiError && err.status === 404) {
@@ -175,11 +167,15 @@ function EditForm({ config }: { config: DomainConfig }) {
     }
   };
 
-  if (item === undefined) return <Loading />;
+  if (isPending) return <Loading />;
+  if (isError) {
+    return <NotFound message={errorMessage(queryError)} backHref={backHref} />;
+  }
+  const item = (rows ?? []).find((row: Item) => row.id === id) ?? null;
   if (item === null) {
     return (
       <NotFound
-        message={loadError ?? "This item could not be found. It may have been deleted."}
+        message="This item could not be found. It may have been deleted."
         backHref={backHref}
       />
     );
@@ -203,38 +199,23 @@ function EditForm({ config }: { config: DomainConfig }) {
 export function SingletonForm({ config }: { config: DomainConfig }) {
   const router = useRouter();
   const { show } = useAdminToast();
-  const [record, setRecord] = useState<Record<string, unknown> | null | undefined>(
-    undefined,
-  );
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const queryKey = adminKeys.domain(config.apiPath);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    setRecord(undefined);
-    setLoadError(null);
-    try {
-      const data = await getSingleton<Record<string, unknown>>(config.apiPath);
-      setRecord(data ?? {});
-    } catch (err) {
-      // 404 = the single record has not been created yet; allow editing an empty form.
-      if (err instanceof ApiError && err.status === 404) setRecord({});
-      else {
-        setRecord(null);
-        setLoadError(errorMessage(err));
-      }
-    }
-  }, [config]);
-
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      if (active) await load();
-    })();
-    return () => {
-      active = false;
-    };
-  }, [load]);
+  // A 404 means the single record has not been created yet, so don't retry it — treat
+  // it as an editable empty form below.
+  const {
+    data,
+    isPending,
+    isError,
+    error: queryError,
+  } = useQuery({
+    queryKey,
+    queryFn: () => getSingleton<Record<string, unknown>>(config.apiPath),
+    retry: false,
+  });
 
   const onSubmit = async (values: Record<string, unknown>) => {
     setSubmitting(true);
@@ -242,6 +223,7 @@ export function SingletonForm({ config }: { config: DomainConfig }) {
     try {
       await updateItem(config.apiPath, SINGLETON_PATCH_ID, buildPayload(config, values));
       show("Saved");
+      await queryClient.invalidateQueries({ queryKey });
     } catch (err) {
       setError(errorMessage(err));
     } finally {
@@ -249,10 +231,13 @@ export function SingletonForm({ config }: { config: DomainConfig }) {
     }
   };
 
-  if (record === undefined) return <Loading />;
-  if (record === null) {
-    return <NotFound message={loadError ?? "Could not load this record."} backHref="/admin" />;
+  if (isPending) return <Loading />;
+  const is404 = queryError instanceof ApiError && queryError.status === 404;
+  if (isError && !is404) {
+    return <NotFound message={errorMessage(queryError)} backHref="/admin" />;
   }
+  // 404 (not yet created) -> empty form; otherwise the loaded record (or {} if null).
+  const record = is404 ? {} : (data ?? {});
 
   return (
     <DomainForm

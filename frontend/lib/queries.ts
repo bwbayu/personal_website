@@ -28,6 +28,13 @@ export const queryKeys = {
   mediaSocials: ["media-socials"],
 } as const;
 
+// Admin reads are keyed by API path so a domain's list view and its dashboard count
+// share one cache entry (one fetch, one invalidation refreshes both). Distinct from
+// the public keys above: admin lists are unfiltered and refetched on write.
+export const adminKeys = {
+  domain: (apiPath: string) => ["admin", apiPath] as const,
+};
+
 type Data<F extends () => Promise<unknown>> = Awaited<ReturnType<F>>;
 
 export const useAbout = (): UseQueryResult<Data<typeof fetchAbout>, Error> =>

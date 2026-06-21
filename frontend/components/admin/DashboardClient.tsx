@@ -1,44 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import { registry, type DomainConfig } from "@/lib/admin/config";
 import { listDomain } from "@/lib/admin/api";
+import { adminKeys } from "@/lib/queries";
 
-type CountState =
-  | { status: "loading" }
-  | { status: "ok"; count: number }
-  | { status: "error" };
-
-// One dashboard card per domain. Non-singleton cards fetch their list once on mount
-// for a live item count (public GET, no-store) and offer Manage / Add-new links; a
-// failed count degrades to a dash instead of breaking the grid. The singleton (about)
-// has no list, so it shows an Edit link and no count.
+// One dashboard card per domain. Non-singleton cards show a live item count derived
+// from the domain's list query (shared cache key with the list view, so one fetch
+// serves both and one invalidation refreshes both); a failed count degrades to a dash
+// instead of breaking the grid. The singleton (about) has no list, so it shows an Edit
+// link and no count.
 function DomainCard({ config }: { config: DomainConfig }) {
-  const [state, setState] = useState<CountState>({ status: "loading" });
+  const { data: count, isPending, isError } = useQuery({
+    queryKey: adminKeys.domain(config.apiPath),
+    queryFn: () => listDomain(config.apiPath),
+    enabled: !config.singleton,
+    select: (rows) => rows.length,
+  });
 
-  useEffect(() => {
-    if (config.singleton) return;
-    let active = true;
-    setState({ status: "loading" });
-    listDomain(config.apiPath)
-      .then((rows) => {
-        if (active) setState({ status: "ok", count: rows.length });
-      })
-      .catch(() => {
-        if (active) setState({ status: "error" });
-      });
-    return () => {
-      active = false;
-    };
-  }, [config]);
-
-  const countLabel =
-    state.status === "loading"
-      ? "..."
-      : state.status === "error"
-        ? "-"
-        : `${state.count} item${state.count === 1 ? "" : "s"}`;
+  const countLabel = isPending
+    ? "..."
+    : isError
+      ? "-"
+      : `${count} item${count === 1 ? "" : "s"}`;
 
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-gray-700 bg-gray-800 p-4">
