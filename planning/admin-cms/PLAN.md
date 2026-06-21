@@ -330,6 +330,8 @@ this file with code).
 - **Commit**: `feat(frontend): add config-driven admin create/edit form`.
 
 #### ADMIN-CMS-12 — Custom widgets (D6)
+- **Status**: DONE — `d556c39`. typecheck + build green. about singleton (D6c) already
+  edit-only from ADMIN-CMS-11, so no DomainForm change was needed.
 - **Scope**: the four custom field widgets, registered into the input registry:
   - **array-of-strings editor** (D6d): add/remove/edit rows; used by
     project.role/category, experience.description, achievement.descriptions, and the
