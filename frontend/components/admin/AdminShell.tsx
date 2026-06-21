@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { bySlug, navGroups } from "@/lib/admin/config";
 
@@ -13,6 +13,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { user, signOut } = useAuth();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const openButtonRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const hasOpened = useRef(false);
 
   const linkClass = (active: boolean) =>
     `rounded px-3 py-2 text-sm ${
@@ -34,6 +37,26 @@ export function AdminShell({ children }: { children: ReactNode }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, [drawerOpen]);
+
+  // Lock body scroll while the drawer is open so the page behind it does not move.
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [drawerOpen]);
+
+  // Move focus into the drawer when it opens and return it to the toggle on close.
+  useEffect(() => {
+    if (drawerOpen) {
+      hasOpened.current = true;
+      closeButtonRef.current?.focus();
+    } else if (hasOpened.current) {
+      openButtonRef.current?.focus();
+    }
   }, [drawerOpen]);
 
   // Single source of nav links, rendered into both the desktop sidebar and the drawer.
@@ -70,7 +93,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-8 md:flex-row">
         {/* Desktop sidebar (md and up) */}
         <aside className="hidden w-56 shrink-0 md:block">
-          <nav className="flex flex-col gap-1 rounded-lg border border-gray-700 bg-gray-800 p-2">
+          <nav
+            aria-label="Primary"
+            className="flex flex-col gap-1 rounded-lg border border-gray-700 bg-gray-800 p-2"
+          >
             {navLinks}
           </nav>
         </aside>
@@ -89,11 +115,14 @@ export function AdminShell({ children }: { children: ReactNode }) {
           className={`fixed inset-y-0 left-0 z-50 w-64 overflow-y-auto bg-gray-800 p-3 transition-transform md:hidden ${
             drawerOpen ? "translate-x-0" : "-translate-x-full"
           }`}
+          role={drawerOpen ? "dialog" : undefined}
+          aria-modal={drawerOpen ? true : undefined}
           aria-label="Admin navigation"
         >
           <div className="mb-3 flex items-center justify-between px-1">
             <span className="text-sm font-semibold text-white">Menu</span>
             <button
+              ref={closeButtonRef}
               type="button"
               onClick={() => setDrawerOpen(false)}
               aria-label="Close menu"
@@ -115,13 +144,16 @@ export function AdminShell({ children }: { children: ReactNode }) {
               </svg>
             </button>
           </div>
-          <nav className="flex flex-col gap-1">{navLinks}</nav>
+          <nav aria-label="Mobile" className="flex flex-col gap-1">
+            {navLinks}
+          </nav>
         </aside>
 
         <div className="min-w-0 flex-1">
           <header className="mb-6 flex items-center justify-between gap-3 rounded-lg border border-gray-700 bg-gray-800 px-4 py-3">
             <div className="flex min-w-0 items-center gap-3">
               <button
+                ref={openButtonRef}
                 type="button"
                 onClick={() => setDrawerOpen(true)}
                 aria-label="Open menu"
