@@ -176,13 +176,18 @@ export function AdminShell({ children }: { children: ReactNode }) {
               </button>
               <span className="truncate text-sm text-gray-400">{user?.email}</span>
             </div>
-            <button
-              type="button"
-              onClick={() => signOut()}
-              className="shrink-0 text-sm text-blue-500 hover:text-blue-400"
-            >
-              Sign out
-            </button>
+            <div className="flex shrink-0 items-center gap-4">
+              <Link href="/" className="text-sm text-blue-500 hover:text-blue-400">
+                View site
+              </Link>
+              <button
+                type="button"
+                onClick={() => signOut()}
+                className="text-sm text-blue-500 hover:text-blue-400"
+              >
+                Sign out
+              </button>
+            </div>
           </header>
           <div className="animate-fade-in">{children}</div>
         </div>
