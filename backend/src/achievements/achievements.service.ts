@@ -1,18 +1,14 @@
-import * as AchievementRepository from './achievements.repository';
 import { Achievement } from './achievements.type';
+import { AchievementRepository } from './achievements.repository';
 
-export const getAll = (): Promise<Achievement[]> => {
-  return AchievementRepository.findAll();
-};
+export const createAchievementService = (repo: AchievementRepository) => ({
+  getAll: (): Promise<Achievement[]> => repo.findAll(),
 
-export const insert = (data: Achievement): Promise<Achievement> => {
-  return AchievementRepository.save(data);
-};
+  insert: (data: Achievement): Promise<Achievement> => repo.save(data),
 
-export const update = (id: string, data: Partial<Achievement>): Promise<Achievement | null> => {
-  return AchievementRepository.update(id, data);
-};
+  update: (id: string, data: Partial<Achievement>): Promise<Achievement | null> => repo.update(id, data),
 
-export const deleteById = (id: string): Promise<boolean> => {
-  return AchievementRepository.remove(id);
-};
+  deleteById: (id: string): Promise<boolean> => repo.remove(id),
+});
+
+export type AchievementService = ReturnType<typeof createAchievementService>;

@@ -1,18 +1,14 @@
-import * as CertificationRepository from './certification.repository';
 import { Certification } from './certification.type';
+import { CertificationRepository } from './certification.repository';
 
-export const getAll = (): Promise<Certification[]> => {
-  return CertificationRepository.findAll();
-};
+export const createCertificationService = (repo: CertificationRepository) => ({
+  getAll: (): Promise<Certification[]> => repo.findAll(),
 
-export const insert = (data: Certification): Promise<Certification> => {
-  return CertificationRepository.save(data);
-};
+  insert: (data: Certification): Promise<Certification> => repo.save(data),
 
-export const update = (id: string, data: Partial<Certification>): Promise<Certification | null> => {
-  return CertificationRepository.update(id, data);
-};
+  update: (id: string, data: Partial<Certification>): Promise<Certification | null> => repo.update(id, data),
 
-export const deleteById = (id: string): Promise<boolean> => {
-  return CertificationRepository.remove(id);
-};
+  deleteById: (id: string): Promise<boolean> => repo.remove(id),
+});
+
+export type CertificationService = ReturnType<typeof createCertificationService>;

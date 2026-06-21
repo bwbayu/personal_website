@@ -6,5 +6,4 @@ export interface Experience {
   location: string;
   startDate: string;
   endDate?: string;
-  technologies?: string[];
 }

@@ -77,7 +77,6 @@ const swaggerSpec = {
           location: { type: 'string' },
           startDate: { type: 'string', format: 'date', example: '2025-01-15' },
           endDate: { type: 'string', format: 'date', example: '2025-01-15' },
-          technologies: { type: 'array', items: { type: 'string' } },
         },
       },
       MediaSocial: {

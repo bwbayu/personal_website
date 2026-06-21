@@ -1,15 +1,20 @@
 import { Resume } from './resume.type';
-import * as EducationRepository from '../educations/education.repository';
-import * as ExperienceRepository from '../experiences/experience.repository';
-import * as CertificationRepository from '../certifications/certification.repository';
-import * as AchievementRepository from '../achievements/achievements.repository';
+import { createEducationRepository } from '../educations/education.repository';
+import { createExperienceRepository } from '../experiences/experience.repository';
+import { createCertificationRepository } from '../certifications/certification.repository';
+import { createAchievementRepository } from '../achievements/achievements.repository';
+
+const educationRepo = createEducationRepository();
+const experienceRepo = createExperienceRepository();
+const certificationRepo = createCertificationRepository();
+const achievementRepo = createAchievementRepository();
 
 export const findResume = async (): Promise<Resume> => {
   const results = await Promise.allSettled([
-    EducationRepository.findAll(),
-    ExperienceRepository.findAll(),
-    CertificationRepository.findAll(),
-    AchievementRepository.findAll(),
+    educationRepo.findAll(),
+    experienceRepo.findAll(),
+    certificationRepo.findAll(),
+    achievementRepo.findAll(),
   ]);
 
   return {

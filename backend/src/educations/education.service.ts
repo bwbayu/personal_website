@@ -1,18 +1,14 @@
-import * as EducationRepository from './education.repository';
 import { Education } from './education.type';
+import { EducationRepository } from './education.repository';
 
-export const getAll = (): Promise<Education[]> => {
-  return EducationRepository.findAll();
-};
+export const createEducationService = (repo: EducationRepository) => ({
+  getAll: (): Promise<Education[]> => repo.findAll(),
 
-export const insert = (data: Education): Promise<Education> => {
-  return EducationRepository.save(data);
-};
+  insert: (data: Education): Promise<Education> => repo.save(data),
 
-export const update = (id: string, data: Partial<Education>): Promise<Education | null> => {
-  return EducationRepository.update(id, data);
-};
+  update: (id: string, data: Partial<Education>): Promise<Education | null> => repo.update(id, data),
 
-export const deleteById = (id: string): Promise<boolean> => {
-  return EducationRepository.remove(id);
-};
+  deleteById: (id: string): Promise<boolean> => repo.remove(id),
+});
+
+export type EducationService = ReturnType<typeof createEducationService>;
