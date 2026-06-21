@@ -6,10 +6,7 @@ import Image from "next/image";
 import { CategoryType, SkillType } from "@/app/types/resume";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { isSafeUrl } from "@/lib/url";
-import { useApi } from "@/lib/useApi";
-import { fetchAbout } from "@/app/api/about";
-import { fetchSkills } from "@/app/api/skills";
-import { fetchCategories } from "@/app/api/categories";
+import { useAbout, useSkills, useCategories } from "@/lib/queries";
 import Loading from "@/components/Loading";
 import ErrorMessage from "@/components/ErrorMessage";
 
@@ -20,14 +17,9 @@ const roles = [
 ];
 
 export default function HomeClient() {
-  const { data, loading, error } = useApi(async () => {
-    const [aboutMe, skills, categories] = await Promise.all([
-      fetchAbout(),
-      fetchSkills(),
-      fetchCategories(),
-    ]);
-    return { aboutMe, skills: skills.filter((s) => s.isShow), categories };
-  });
+  const aboutQuery = useAbout();
+  const skillsQuery = useSkills();
+  const categoriesQuery = useCategories();
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [showContactInfo, setShowContactInfo] = useState(false);
 
@@ -39,10 +31,18 @@ export default function HomeClient() {
     return () => clearInterval(interval);
   }, []);
 
-  if (loading) return <Loading />;
-  if (error || !data) return <ErrorMessage />;
+  const loading =
+    aboutQuery.isPending || skillsQuery.isPending || categoriesQuery.isPending;
+  const error =
+    aboutQuery.isError || skillsQuery.isError || categoriesQuery.isError;
 
-  const { aboutMe, skills, categories } = data;
+  if (loading) return <Loading />;
+  if (error || !aboutQuery.data || !skillsQuery.data || !categoriesQuery.data)
+    return <ErrorMessage />;
+
+  const aboutMe = aboutQuery.data;
+  const skills = skillsQuery.data.filter((s) => s.isShow);
+  const categories = categoriesQuery.data;
 
   // Group shown skills by categoryId.
   const skillsByCategory = skills.reduce(

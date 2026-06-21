@@ -13,8 +13,7 @@ import { BsArrowUpRightCircle } from "react-icons/bs";
 import "devicon/devicon.min.css";
 import Link from "next/link";
 import { isSafeUrl } from "@/lib/url";
-import { useApi } from "@/lib/useApi";
-import { fetchResume } from "@/app/api/resume";
+import { useResume } from "@/lib/queries";
 import Loading from "@/components/Loading";
 import ErrorMessage from "@/components/ErrorMessage";
 
@@ -27,11 +26,11 @@ function formatDate(date: string): string {
 }
 
 export default function ResumeClient() {
-  const { data, loading, error } = useApi(fetchResume);
+  const { data, isPending, isError } = useResume();
   const [activeTab, setActiveTab] = useState("education");
 
-  if (loading) return <Loading />;
-  if (error || !data) return <ErrorMessage message="Failed to load resume. Please try again later." />;
+  if (isPending) return <Loading />;
+  if (isError || !data) return <ErrorMessage message="Failed to load resume. Please try again later." />;
 
   const { educations, experiences, certifications, achievements } = data;
 
