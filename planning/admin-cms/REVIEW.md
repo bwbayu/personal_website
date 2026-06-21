@@ -201,3 +201,63 @@ domains, which also resolves the `order: 0` part of §5). Everything else NO-ACT
 **Fix status:** §3 FIXED in `0d123fd` (skill/category service `insert` assigns the next
 order; client-supplied order ignored on create). The `order: 0` part of §5 is resolved by
 the same commit. No other findings actioned (all NO-ACTION / OUT-OF-SCOPE).
+
+---
+
+# Pass 2 review
+
+Fresh-eyes RE-REVIEW of the fix delta only. Delta base `c9c52e0` (last commit Pass 1
+reviewed) -> `HEAD`. Read-only; no code changed.
+
+- **Delta scoped (`c9c52e0..HEAD`):** 2 commits = 1 code + 1 docs.
+  - `0d123fd` fix(backend): auto-assign next order when creating skills and categories
+    (the single triaged FIX = §3, plus the `order: 0` sub-part of §5).
+  - `59e4ed3` docs: mark admin-cms review finding 3 fixed (REVIEW.md only).
+- **Files in the code delta:** [skill.service.ts](../../backend/src/skills/skill.service.ts),
+  [category.service.ts](../../backend/src/categories/category.service.ts) (+2 new scoped
+  test files). No schema/controller/route/type changes — confirmed the fix lives entirely
+  in the service layer.
+- **Gates run by this pass (all green):**
+  - `npx vitest run tests/admin-cms` -> **8 files, 38 tests passed** (was 6/31 in Pass 1;
+    +2 files / +7 tests, all from this fix).
+  - Emulator slice `npm run test:emulator` (Temurin 21.0.11 present) -> **5 files, 13
+    tests passed**; the live `POST /api/skills 201` round-trip confirms the new
+    `await repo.findAll()` read inside `insert` did not break create end-to-end.
+  - `npm run typecheck` (frontend) -> clean (no FE delta, but verified).
+
+## Status of previous FIX findings
+
+| § | Decision | Verdict | Evidence |
+|---|---|---|---|
+| §3 reorder no-op on equal/missing `order` | FIX | **verified-fixed** | [skill.service.ts:10-18](../../backend/src/skills/skill.service.ts#L10-L18) assigns `max(order in same categoryId) + 1` (0 for first); [category.service.ts:10-17](../../backend/src/categories/category.service.ts#L10-L17) assigns `max(order over all) + 1`. `repo.save({ ...data, order })` puts the computed `order` last, so client-supplied order is overridden. Proven by `skill.service.test.ts` (first=0, max+1, per-category scoping, client-override) and `category.service.test.ts` (first=0, global max+1, client-override). Seed data ([skills.seed.ts:55-70](../../backend/src/database/seeds/skills.seed.ts#L55-L70), [categories.seed.ts:16-19](../../backend/src/database/seeds/categories.seed.ts#L16-L19)) already assigns distinct contiguous orders, so no live row collides on 0 either — the only remaining duplicate-order path is a concurrent multi-writer race, excluded by D3. Fully closes the stated problem. |
+| §5 `buildPayload` order-0-on-create sub-part | PARTIAL FIX | **verified-fixed (the actioned sub-part)** | Same commit: new items now get a distinct server-assigned order regardless of the FE's `order: 0`. The other half ("cannot unset an optional string via PATCH") was triaged NO-ACTION and is correctly untouched. |
+
+Both fixes shipped **with** scoped tests that directly prove closure — no "fixed without a
+test."
+
+## New findings
+
+### §8 — Auto-order uses read-then-write, so concurrent creates could still collide — NICE-TO-HAVE (observation, NO-ACTION recommended)
+- **File:** [skill.service.ts:11-17](../../backend/src/skills/skill.service.ts#L11-L17),
+  [category.service.ts:11-16](../../backend/src/categories/category.service.ts#L11-L16).
+- **What:** `insert` reads all rows, computes `max(order) + 1`, then saves — not in a
+  transaction. Two near-simultaneous creates in the same category (categories: globally)
+  could read the same max and both write the same `order`, re-introducing the exact
+  duplicate-order condition §3 fixed.
+- **Why it matters:** only under concurrent writers. D3 locks a single-writer
+  personal-scale model, and the reorder path itself already carries the same single-writer
+  assumption (REVIEW Pass 1 §4 "Concurrent reorder writes -> OK-by-design"). So this is
+  consistent with the locked posture, not a new defect introduced by the fix.
+- **Recommended:** no action for S3; if multi-writer ever matters, move the read+save into
+  a Firestore transaction. Flagged only for the record.
+- **Ref:** §3 fix (`0d123fd`) / D3 single-writer assumption.
+
+## Recommendation
+
+**CLOSE.** The single triaged FIX (§3, plus §5's order-0 sub-part) is verified-fixed at
+file:line with scoped tests that prove closure; the fix is confined to the service layer
+with no schema/controller/type changes and no other `insert` callers affected. No
+regressions: all gates green (unit 8/38, emulator slice 5/13 on Temurin 21, FE typecheck
+clean). The one new finding (§8, read-then-write concurrency) is an observation that is
+inherent to the already-locked D3 single-writer model and is NOT FIX-worthy — nothing
+blocks close.
