@@ -210,6 +210,7 @@ this file with code).
 - **Commit**: `refactor(backend): convert certifications to factory DI`.
 
 #### ADMIN-CMS-5 — Convert `achievements` to factory DI
+- **Status**: DONE — `b541e06`.
 - Same pattern; `findAllOrdered('date')`, `randomUUID()`, `validateId`. (Note the file is
   `achievements.routes.ts`/`achievement.controller.ts` — keep existing filenames.)
 - **Files**: achievements.{repository,service,routes}.ts, achievement.controller.ts;
