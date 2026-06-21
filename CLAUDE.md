@@ -150,7 +150,10 @@ deploy. Never commit to `develop` or `main` directly.
 **Pull requests are opened by the user, not by Claude.** Claude never runs
 `gh pr create` and never opens or merges PRs. When a PR is ready, Claude drafts its
 title + description into [PR.md](PR.md) (root, gitignored) following PR.md's existing
-format; the user copies it into GitHub.
+format; the user copies it into GitHub. In the PR description, write each bullet or
+paragraph as ONE continuous line — do NOT hard-wrap a sentence across multiple lines
+(no mid-explanation newline) so it pastes into GitHub without broken line breaks. Only
+a new bullet / list item / paragraph starts a new line.
 
 **Commit convention.** One commit per ticket/finding. Subject:
 `<type>(<scope>): <subject>` — NO ticket/issue/finding/doc suffix (no `(slug TH-2)`,
