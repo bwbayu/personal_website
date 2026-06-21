@@ -47,4 +47,17 @@ export const createCategoryController = (service: CategoryService) => ({
       next(err);
     }
   },
+
+  reorder: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await service.reorder(req.body);
+      if (!result.ok) {
+        res.status(404).json({ success: false, message: 'Unknown id(s): ' + result.missing.join(', ') });
+        return;
+      }
+      sendSuccess(res, null);
+    } catch (err) {
+      next(err);
+    }
+  },
 });

@@ -6,9 +6,7 @@ import "devicon/devicon.min.css";
 import Link from "next/link";
 import Image from "next/image";
 import { isSafeUrl } from "@/lib/url";
-import { useApi } from "@/lib/useApi";
-import { fetchProjects } from "@/app/api/projects";
-import { fetchSkills } from "@/app/api/skills";
+import { useProjects, useSkills } from "@/lib/queries";
 import { SkillType } from "@/app/types/resume";
 import Loading from "@/components/Loading";
 import ErrorMessage from "@/components/ErrorMessage";
@@ -55,17 +53,20 @@ function TechStack({
 }
 
 export default function ProjectsClient() {
-  const { data, loading, error } = useApi(async () => {
-    // Skills are fetched UNFILTERED: project-only skills are isShow:false but still
-    // need to resolve here for their icon + name.
-    const [projects, skills] = await Promise.all([fetchProjects(), fetchSkills()]);
-    return { projects, skills };
-  });
+  const projectsQuery = useProjects();
+  // Skills are fetched UNFILTERED: project-only skills are isShow:false but still
+  // need to resolve here for their icon + name.
+  const skillsQuery = useSkills();
+
+  const loading = projectsQuery.isPending || skillsQuery.isPending;
+  const error = projectsQuery.isError || skillsQuery.isError;
 
   if (loading) return <Loading />;
-  if (error || !data) return <ErrorMessage message="Failed to load projects. Please try again later." />;
+  if (error || !projectsQuery.data || !skillsQuery.data)
+    return <ErrorMessage message="Failed to load projects. Please try again later." />;
 
-  const { projects, skills } = data;
+  const projects = projectsQuery.data;
+  const skills = skillsQuery.data;
   const skillMap = new Map(skills.map((skill) => [skill.id, skill]));
   const recent = projects.slice(0, 3);
 

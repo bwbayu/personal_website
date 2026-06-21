@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import type { FieldInputProps } from "./index";
 import { bySlug } from "@/lib/admin/config";
 import { listDomain } from "@/lib/admin/api";
+import { adminKeys } from "@/lib/queries";
 
 type Category = { id: string; name: string };
 
@@ -15,29 +16,24 @@ const baseSelect =
 // deleted category) stays selectable so it is not silently dropped.
 export function CategorySelect({ field, value, onChange }: FieldInputProps) {
   const current = typeof value === "string" ? value : "";
-  const [categories, setCategories] = useState<Category[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // Shares the admin categories list cache key, so opening a skill form reuses the
+  // already-fetched categories (one request, deduped against the list/dashboard) and a
+  // categories write invalidates this loader too.
+  const { data, isPending, isError, error } = useQuery({
+    queryKey: adminKeys.domain(bySlug["categories"].apiPath),
+    queryFn: () => listDomain<Category>(bySlug["categories"].apiPath),
+  });
 
-  useEffect(() => {
-    let active = true;
-    listDomain<Category>(bySlug["categories"].apiPath)
-      .then((data) => {
-        if (active) setCategories(data);
-      })
-      .catch((err: unknown) => {
-        if (!active) return;
-        setCategories([]);
-        setError(err instanceof Error ? err.message : "Failed to load categories");
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  if (categories === null) {
+  if (isPending) {
     return <p className="text-sm text-gray-400">Loading categories...</p>;
   }
 
+  const categories: Category[] = data ?? [];
+  const errorMessage = isError
+    ? error instanceof Error
+      ? error.message
+      : "Failed to load categories"
+    : null;
   const knownCurrent = current === "" || categories.some((category) => category.id === current);
 
   return (
@@ -56,7 +52,7 @@ export function CategorySelect({ field, value, onChange }: FieldInputProps) {
         ))}
         {!knownCurrent && <option value={current}>{current} (unknown)</option>}
       </select>
-      {error && <p className="mt-1 text-xs text-amber-400">{error}</p>}
+      {errorMessage && <p className="mt-1 text-xs text-amber-400">{errorMessage}</p>}
     </div>
   );
 }

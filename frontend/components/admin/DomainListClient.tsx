@@ -1,10 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { Modal, type CustomFlowbiteTheme } from "flowbite-react";
 import { bySlug, type DomainConfig } from "@/lib/admin/config";
-import { listDomain, deleteItem, updateItem, ApiError } from "@/lib/admin/api";
+import { listDomain, deleteItem, reorderItems, ApiError } from "@/lib/admin/api";
+import { adminKeys } from "@/lib/queries";
 import { SingletonForm } from "./DomainFormPage";
 import { useAdminToast } from "./ToastProvider";
 
@@ -98,32 +100,38 @@ function NotFoundView() {
 
 function DomainList({ config }: { config: DomainConfig }) {
   const { show } = useAdminToast();
-  const [rows, setRows] = useState<Row[] | null>(null);
+  const queryClient = useQueryClient();
+  const queryKey = adminKeys.domain(config.apiPath);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [reordering, setReordering] = useState(false);
 
-  const load = useCallback(async () => {
-    setError(null);
-    try {
-      const data = await listDomain<Row>(config.apiPath);
-      setRows(config.reorderable ? sortForReorder(config, data) : data);
-    } catch (err) {
-      setRows([]);
-      setError(err instanceof Error ? err.message : "Failed to load data");
-    }
-  }, [config]);
+  const {
+    data,
+    isPending,
+    isError,
+    error: queryError,
+  } = useQuery({ queryKey, queryFn: () => listDomain<Row>(config.apiPath) });
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  // Display rows: reorderable domains are grouped + ordered for intuitive up/down;
+  // others render as-fetched. On a load error rows are treated as empty (the error
+  // banner explains why).
+  const rows = useMemo<Row[]>(() => {
+    if (!data) return [];
+    return config.reorderable ? sortForReorder(config, data) : data;
+  }, [config, data]);
 
-  // Reorder via the existing per-item PATCH: swap `order` with the adjacent item in the
-  // same group (two PATCHes), then refetch to reflect server state. No bulk endpoint.
+  // Combined banner: a write/reorder error (state) takes precedence, else the load error.
+  const displayError =
+    error ??
+    (isError ? (queryError instanceof Error ? queryError.message : "Failed to load data") : null);
+
+  // Reorder via the atomic bulk endpoint: swap `order` with the adjacent item in the
+  // same group in ONE request (server writes both in a single batch, so no partial /
+  // duplicate order is possible), then invalidate to reflect server state.
   const move = async (row: Row, direction: "up" | "down") => {
-    if (!rows) return;
     const neighbors = buildReorderNeighbors(config, rows);
     const neighborId =
       direction === "up" ? neighbors.get(row.id)?.prevId : neighbors.get(row.id)?.nextId;
@@ -134,11 +142,11 @@ function DomainList({ config }: { config: DomainConfig }) {
     setError(null);
     setNotice(null);
     try {
-      await Promise.all([
-        updateItem(config.apiPath, row.id, { order: Number(neighbor.order ?? 0) }),
-        updateItem(config.apiPath, neighbor.id, { order: Number(row.order ?? 0) }),
+      await reorderItems(config.apiPath, [
+        { id: row.id, order: Number(neighbor.order ?? 0) },
+        { id: neighbor.id, order: Number(row.order ?? 0) },
       ]);
-      await load();
+      await queryClient.invalidateQueries({ queryKey });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Reorder failed");
     } finally {
@@ -168,11 +176,11 @@ function DomainList({ config }: { config: DomainConfig }) {
     try {
       await deleteItem(config.apiPath, id);
       show("Deleted");
-      await load();
+      await queryClient.invalidateQueries({ queryKey });
     } catch (err) {
       if (err instanceof ApiError && err.status === 404) {
         setNotice("That item was already removed. The list has been refreshed.");
-        await load();
+        await queryClient.invalidateQueries({ queryKey });
       } else {
         setError(err instanceof Error ? err.message : "Delete failed");
       }
@@ -182,8 +190,7 @@ function DomainList({ config }: { config: DomainConfig }) {
     }
   };
 
-  const neighbors =
-    rows && config.reorderable ? buildReorderNeighbors(config, rows) : null;
+  const neighbors = config.reorderable ? buildReorderNeighbors(config, rows) : null;
 
   return (
     <div>
@@ -202,13 +209,13 @@ function DomainList({ config }: { config: DomainConfig }) {
           {notice}
         </p>
       )}
-      {error && (
+      {displayError && (
         <p className="mb-3 rounded border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">
-          {error}
+          {displayError}
         </p>
       )}
 
-      {rows === null ? (
+      {isPending ? (
         <p className="text-sm text-gray-400">Loading...</p>
       ) : rows.length === 0 ? (
         <p className="text-sm text-gray-400">No items yet. Use the New button to add one.</p>

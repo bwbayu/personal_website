@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import type { FieldInputProps } from "./index";
 import { bySlug } from "@/lib/admin/config";
 import { listDomain } from "@/lib/admin/api";
+import { adminKeys } from "@/lib/queries";
 
 type Skill = { id: string; name: string };
 
@@ -15,33 +16,28 @@ const baseSelect =
 // a chip and can be removed.
 export function TechPicker({ value, onChange }: FieldInputProps) {
   const selected = Array.isArray(value) ? value.map((entry) => String(entry)) : [];
-  const [skills, setSkills] = useState<Skill[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let active = true;
-    listDomain<Skill>(bySlug["skills"].apiPath)
-      .then((data) => {
-        if (active) setSkills(data);
-      })
-      .catch((err: unknown) => {
-        if (!active) return;
-        setSkills([]);
-        setError(err instanceof Error ? err.message : "Failed to load skills");
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
+  // Shares the admin skills list cache key, so opening a project form reuses the
+  // already-fetched skills (one request, deduped against the list/dashboard) and a
+  // skills write invalidates this loader too.
+  const { data, isPending, isError, error } = useQuery({
+    queryKey: adminKeys.domain(bySlug["skills"].apiPath),
+    queryFn: () => listDomain<Skill>(bySlug["skills"].apiPath),
+  });
+  const skills: Skill[] = data ?? [];
+  const errorMessage = isError
+    ? error instanceof Error
+      ? error.message
+      : "Failed to load skills"
+    : null;
 
   const nameFor = (id: string) =>
-    skills?.find((skill) => skill.id === id)?.name ?? `${id} (unknown)`;
+    skills.find((skill) => skill.id === id)?.name ?? `${id} (unknown)`;
   const add = (id: string) => {
     if (id && !selected.includes(id)) onChange([...selected, id]);
   };
   const remove = (id: string) => onChange(selected.filter((entry) => entry !== id));
 
-  const available = (skills ?? []).filter((skill) => !selected.includes(skill.id));
+  const available = skills.filter((skill) => !selected.includes(skill.id));
 
   return (
     <div className="flex flex-col gap-2">
@@ -66,7 +62,7 @@ export function TechPicker({ value, onChange }: FieldInputProps) {
           </span>
         ))}
       </div>
-      {skills === null ? (
+      {isPending ? (
         <p className="text-sm text-gray-400">Loading skills...</p>
       ) : (
         <select
@@ -83,7 +79,7 @@ export function TechPicker({ value, onChange }: FieldInputProps) {
           ))}
         </select>
       )}
-      {error && <p className="mt-1 text-xs text-amber-400">{error}</p>}
+      {errorMessage && <p className="mt-1 text-xs text-amber-400">{errorMessage}</p>}
     </div>
   );
 }

@@ -11,6 +11,7 @@ const makeFakeRepo = () =>
     save: vi.fn(),
     update: vi.fn(),
     remove: vi.fn(),
+    reorder: vi.fn(),
   }) satisfies SkillRepository;
 
 const skill = (over: Partial<Skill>): Skill => ({

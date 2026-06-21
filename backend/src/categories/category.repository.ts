@@ -12,6 +12,7 @@ export const createCategoryRepository = (db?: Firestore) => {
     save:    (data: Category) => repo.save(data),
     update:  (id: string, data: Partial<Category>) => repo.update(id, data),
     remove:  (id: string) => repo.remove(id),
+    reorder: (updates: { id: string; order: number }[]) => repo.reorder(updates),
   };
 };
 

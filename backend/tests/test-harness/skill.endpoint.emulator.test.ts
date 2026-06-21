@@ -8,7 +8,7 @@ import { clearFirestore, withApiKey } from '../helpers/emulator';
 // (skills DI-wired, the 8 legacy domains also booted), emulator-backed. Covers
 // the auth gate (401/403/500), Zod 400, and one CRUD round-trip.
 //
-// Kept under the 20-writes/15-min write rate-limit: ~7 writes total (see
+// Kept under the 10-writes/min write rate-limit: ~7 writes total (see
 // PLAN edge-case note) — do not add more write assertions to this file.
 const validSkill = {
   name: 'Go',

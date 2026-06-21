@@ -108,10 +108,22 @@ Next.js 14 App Router, **`output: 'export'`** ([next.config.mjs](frontend/next.c
 alias `@/* -> ./*`.
 
 Data is fetched **client-side at runtime** (not at build time) via
-[useApi](frontend/lib/useApi.ts) on mount, calling the per-domain fetchers in
-[frontend/app/api/](frontend/app/api/) against `NEXT_PUBLIC_API_URL` with
-`cache: 'no-store'`. Pages (`app/page.tsx`, `app/project/page.tsx`,
-`app/resume/page.tsx`) are thin server components wrapping a `*Client` component under
+**TanStack Query** (`@tanstack/react-query`). A single `QueryClientProvider`
+([frontend/app/providers.tsx](frontend/app/providers.tsx)) mounts at the app root in
+[frontend/app/layout.tsx](frontend/app/layout.tsx), shared by the public group and the
+admin area (defaults: `staleTime` 5 min to match the server `max-age=300`,
+`refetchOnWindowFocus` off, `retry: 1`). Per-endpoint hooks + query keys live in
+[frontend/lib/queries.ts](frontend/lib/queries.ts) (public reads under `queryKeys`,
+admin reads under `adminKeys.domain(apiPath)`); a shared key dedups requests
+(media-socials fetched once across navbar + footer; a domain's list view and its
+dashboard count share one fetch). The per-domain fetchers in
+[frontend/app/api/](frontend/app/api/) (and the admin client in
+[frontend/lib/admin/api.ts](frontend/lib/admin/api.ts)) keep `cache: 'no-store'` and act
+as the query functions — TanStack Query is the cache layer, not the browser HTTP cache.
+Admin writes (create/update/delete/reorder) `invalidateQueries` the affected domain so
+the list + count refresh immediately under the 5-min `staleTime`. Pages
+(`app/page.tsx`, `app/project/page.tsx`, `app/resume/page.tsx`) are thin server
+components wrapping a `*Client` component under
 [frontend/components/](frontend/components/). External icon image URLs are guarded by
 [isSafeUrl](frontend/lib/url.ts).
 

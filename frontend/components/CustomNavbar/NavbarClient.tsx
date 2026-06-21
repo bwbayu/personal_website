@@ -10,11 +10,10 @@ import {
 } from "flowbite-react";
 import "devicon/devicon.min.css";
 import { isSafeUrl } from "@/lib/url";
-import { useApi } from "@/lib/useApi";
-import { fetchMediaSocials } from "@/app/api/mediaSocials";
+import { useMediaSocials } from "@/lib/queries";
 
 export function NavbarClient() {
-  const { data } = useApi(fetchMediaSocials);
+  const { data } = useMediaSocials();
   const mediaSocials = data ?? [];
 
   return (
