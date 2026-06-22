@@ -388,6 +388,10 @@ emitted `out/sitemap.xml` + `out/robots.txt`.
 
 ## BLOG-7 — Admin Rebuild button (dashboard + Blog list header) (D3)
 
+**Status: DONE — commit `4d9bd03`.** Confirm modal added; shared dark modal theme
+extracted to `confirmModalTheme.ts` (reused by the delete + rebuild dialogs). Typecheck
+only — the authed POST can't be exercised headless.
+
 **Scope.** A reusable "Rebuild site" button calling `POST /api/rebuild` via `authedFetch`,
 placed on the admin dashboard and at the top of the Blog (posts) list view. Manual only
 (no auto-fire on publish — D3).
