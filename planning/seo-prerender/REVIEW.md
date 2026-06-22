@@ -120,3 +120,41 @@ Fresh-eyes, read-only audit of the feature diff. No code changed.
 | §3 comment in type literal | NICE-TO-HAVE | NO-ACTION | Cosmetic. |
 | §4 getAbout throw vs hidden data | NICE-TO-HAVE | NO-ACTION | Per locked DISCUSSION §4 edge case. |
 | §5 backend-dev.log not ignored | OUT-OF-SCOPE | **FIX** [FIXED] | `*.log` added to root `.gitignore`. |
+
+---
+
+# Pass 2 review
+
+Fresh-eyes re-review of the FIX delta only (not a full re-audit). Read-only.
+
+- **Delta base:** `06c644a` (`docs: record SEO-5 commit in plan` — last commit Pass 1
+  reviewed). **Range:** `06c644a..HEAD`.
+- **Delta commits:**
+  - `c92aa6e` refactor(frontend): extract shared `apiBase` helper for build fetchers — closes §2
+  - `12f7546` chore: ignore log files — closes §5
+  - `7cb47e8` docs: add seo-prerender discussion and review notes — planning docs only (excluded)
+- **Verification:** `npm run typecheck` run here = **GREEN**. FE-only, no Vitest/emulator
+  slice applies. No backend code touched, so no emulator gate.
+
+## Status of previous FIX findings
+
+| § | Verdict | Evidence |
+|---|---------|----------|
+| §2 base-URL duplication | **verified-fixed** | New [lib/apiBase.ts:4-6](../../frontend/lib/apiBase.ts#L4-L6) returns `process.env.NEXT_PUBLIC_API_URL ?? ""` — byte-identical to the old inline default (empty-string fallback preserved, so `/api/...` append behavior is unchanged). All 7 build-fetcher copies now call it: [content.ts:30,40,49,58,67](../../frontend/lib/public/content.ts#L30) (5), [blog/posts.ts:22](../../frontend/lib/blog/posts.ts#L22), [daily/logs.ts:15](../../frontend/lib/daily/logs.ts#L15). Grep confirms no inline `process.env.NEXT_PUBLIC_API_URL` remains in any build fetcher; the 3 surviving copies (`app/api/mediaSocials.ts`, `admin/AdminGuard.tsx`, `lib/admin/api.ts`) are RUNTIME client fetchers, outside §2's stated scope (build fetchers) — correctly untouched. Typecheck GREEN. |
+| §5 backend-dev.log not ignored | **verified-fixed** | [.gitignore:11-12](../../.gitignore#L11-L12) adds a `# Logs` / `*.log` block at repo root; `git check-ignore backend-dev.log` -> match (exit 0). The artifact can no longer be accidentally `git add`-ed. |
+
+## New findings
+
+None. The delta is a behavior-preserving extract plus a gitignore line; both touch
+exactly what §2/§5 called for and nothing adjacent. No regression, no locked-decision
+violation (§2 even improves on D4/P3 by centralizing the base the locked pattern
+duplicated, without changing fetch shape). No test gap: this is FE-only refactor/chore
+work where `typecheck` is the established gate (CLAUDE.md: FE has no test runner), and
+it is GREEN.
+
+## Recommendation
+
+**CLOSE.** Both triaged FIX findings are verified-fixed with file:line evidence; the fix
+delta introduces no new issues and typecheck is green. §1 was already verified-PASS by
+the Pass 1 reviewer (build greps confirmed OG tags + baked content in emitted HTML);
+§3/§4 were NO-ACTION (cosmetic / per locked edge case). Nothing blocks close.
