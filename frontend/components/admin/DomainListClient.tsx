@@ -180,7 +180,7 @@ function DomainList({ config }: { config: DomainConfig }) {
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-xl font-semibold text-white">{config.label}</h1>
         <div className="flex items-center gap-2">
-          {config.slug === "posts" && <RebuildButton />}
+          {(config.slug === "posts" || config.slug === "daily-logs") && <RebuildButton />}
           <Link
             href={`/admin/${config.slug}/new`}
             className="rounded bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
