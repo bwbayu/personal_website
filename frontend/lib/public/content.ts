@@ -11,7 +11,19 @@ import {
   SkillType,
   CategoryType,
   ProjectType,
+  EducationType,
+  ExperienceType,
+  CertificationType,
+  AchievementType,
 } from "@/app/types/resume";
+
+// The /api/resume aggregation payload (read-only backend join of the four sections).
+export type ResumeData = {
+  educations: EducationType[];
+  experiences: ExperienceType[];
+  certifications: CertificationType[];
+  achievements: AchievementType[];
+};
 
 export async function getAbout(): Promise<AboutMeType> {
   const base = process.env.NEXT_PUBLIC_API_URL ?? "";
@@ -54,4 +66,15 @@ export async function getProjects(): Promise<ProjectType[]> {
   }
   const json = (await res.json()) as { data?: ProjectType[] };
   return json.data ?? [];
+}
+
+export async function getResume(): Promise<ResumeData> {
+  const base = process.env.NEXT_PUBLIC_API_URL ?? "";
+  const res = await fetch(`${base}/api/resume`, { cache: "force-cache" });
+  if (!res.ok) {
+    throw new Error(`Failed to fetch resume (HTTP ${res.status})`);
+  }
+  const json = (await res.json()) as { data?: ResumeData };
+  if (!json.data) throw new Error("Invalid API response: missing resume data");
+  return json.data;
 }

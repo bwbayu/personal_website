@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import ResumeClient from '@/components/ResumeClient';
+import { getResume } from '@/lib/public/content';
 
 const title = 'Resume | Bayu Wicaksono';
 const description =
@@ -24,6 +25,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ResumePage() {
-  return <ResumeClient />;
+export default async function ResumePage() {
+  const resume = await getResume();
+  return <ResumeClient resume={resume} />;
 }

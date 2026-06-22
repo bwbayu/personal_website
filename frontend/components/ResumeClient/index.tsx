@@ -13,9 +13,7 @@ import { BsArrowUpRightCircle } from "react-icons/bs";
 import "devicon/devicon.min.css";
 import Link from "next/link";
 import { isSafeUrl } from "@/lib/url";
-import { useResume } from "@/lib/queries";
-import Loading from "@/components/Loading";
-import ErrorMessage from "@/components/ErrorMessage";
+import type { ResumeData } from "@/lib/public/content";
 
 function formatDate(date: string): string {
   const [year, month] = date.split("-");
@@ -25,14 +23,10 @@ function formatDate(date: string): string {
   });
 }
 
-export default function ResumeClient() {
-  const { data, isPending, isError } = useResume();
+export default function ResumeClient({ resume }: { resume: ResumeData }) {
   const [activeTab, setActiveTab] = useState("education");
 
-  if (isPending) return <Loading />;
-  if (isError || !data) return <ErrorMessage message="Failed to load resume. Please try again later." />;
-
-  const { educations, experiences, certifications, achievements } = data;
+  const { educations, experiences, certifications, achievements } = resume;
 
   return (
     <div className="flex grow flex-col bg-gray-900 p-6 dark:bg-gray-900">
