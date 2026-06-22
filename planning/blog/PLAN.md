@@ -143,6 +143,8 @@ shared repository (repo-level only — does NOT add a `GET /:id` HTTP route, so 
 
 ## BLOG-2 — Backend `POST /api/rebuild` shared endpoint + env (D3)
 
+**Status: DONE — commit `026cf15`.**
+
 **Scope.** A shared, domain-agnostic authed endpoint that proxies a GitHub
 `workflow_dispatch` on the existing `frontend-deploy.yml` (ref `main`). NOT under
 `/posts` (S5 daily-log reuses it). Uses Node global `fetch` (no new dependency).
