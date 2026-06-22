@@ -198,11 +198,11 @@
 | §4 siteUrl dedup | NICE-TO-HAVE | **[FIXED] `544a375`** | New `lib/siteUrl.ts` exporting a normalized, empty-safe origin; layout/sitemap/robots consume it. This single change resolves §1 + §3 + §4 (one commit). |
 | §5 clear optional fields | OUT-OF-SCOPE | **DEFERRED** | Pre-existing scaffold behavior across all domains; separate follow-up against the scaffold if ever wanted. |
 | §6 slug race | NICE-TO-HAVE | **NO-ACTION** | Accepted by D2 + DISCUSSION §4 (single-author scale). |
-| §7 excerpt hyphen strip | NICE-TO-HAVE | **FIX** | Small regex tweak in `excerptOf` (stop turning `well-known` into `well known`). |
+| §7 excerpt hyphen strip | NICE-TO-HAVE | **[FIXED] `5f94fd7`** | Small regex tweak in `excerptOf` (stop turning `well-known` into `well known`); line-leading list markers now stripped separately so bullets are still removed. |
 | §8 canonical URL | NICE-TO-HAVE | **DEFERRED** | Not in any AC; optional SEO nicety for later. |
 
 ### Fix-phase commit map (for /wf-fix)
 - **Commit 1 (§4 + §1 + §3) — DONE `544a375`:** add `frontend/lib/siteUrl.ts` (normalized, empty-safe origin via trim + `||`, default `https://bwbayu.space`); rewire `app/layout.tsx`, `app/sitemap.ts`, `app/robots.ts` to use it.
 - **Commit 2 (§2) — DONE `0842f7a`:** add `backend/firestore.indexes.json` + wire `firestore.indexes` in `backend/firebase.json`. (Index deploy `firebase deploy --only firestore:indexes` is an OPERATOR step before `develop -> main`.)
-- **Commit 3 (§7):** tweak the `excerptOf` fallback regex.
+- **Commit 3 (§7) — DONE `5f94fd7`:** tweak the `excerptOf` fallback regex.
 - DEFERRED/NO-ACTION: §5, §6, §8 — no code.
