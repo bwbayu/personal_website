@@ -3,35 +3,17 @@
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { Modal, type CustomFlowbiteTheme } from "flowbite-react";
+import { Modal } from "flowbite-react";
 import { bySlug, type DomainConfig } from "@/lib/admin/config";
 import { deleteItem, reorderItems, ApiError } from "@/lib/admin/api";
 import { adminReadList, adminReadPath } from "@/lib/admin/read";
 import { adminKeys } from "@/lib/queries";
 import { SingletonForm } from "./DomainFormPage";
 import { useAdminToast } from "./ToastProvider";
+import { confirmModalTheme } from "./confirmModalTheme";
+import { RebuildButton } from "./RebuildButton";
 
 type Row = Record<string, unknown> & { id: string };
-
-// Force the Flowbite modal onto the layered-dark palette in both OS color schemes
-// (the admin is dark-always; Flowbite defaults to a light panel with a dark: variant).
-const confirmModalTheme: CustomFlowbiteTheme["modal"] = {
-  content: {
-    inner:
-      "relative flex max-h-[90dvh] flex-col rounded-lg border border-gray-700 bg-gray-800 shadow",
-  },
-  header: {
-    base: "flex items-start justify-between rounded-t border-b border-gray-700 p-5",
-    title: "text-xl font-medium text-white",
-    close: {
-      base: "ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-700 hover:text-white",
-      icon: "h-5 w-5",
-    },
-  },
-  footer: {
-    base: "flex items-center space-x-2 rounded-b border-gray-700 p-6",
-  },
-};
 
 // Reorder grouping: skills are ordered within their category; other reorderable
 // domains (categories) share one global group.
@@ -197,12 +179,15 @@ function DomainList({ config }: { config: DomainConfig }) {
     <div>
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-xl font-semibold text-white">{config.label}</h1>
-        <Link
-          href={`/admin/${config.slug}/new`}
-          className="rounded bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
-        >
-          New
-        </Link>
+        <div className="flex items-center gap-2">
+          {config.slug === "posts" && <RebuildButton />}
+          <Link
+            href={`/admin/${config.slug}/new`}
+            className="rounded bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
+          >
+            New
+          </Link>
+        </div>
       </div>
 
       {notice && (

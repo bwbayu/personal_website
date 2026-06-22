@@ -79,6 +79,14 @@ export async function deleteItem(apiPath: string, id: string): Promise<void> {
   await unwrap<null>(res);
 }
 
+// Triggers a full static rebuild + redeploy via the shared authed endpoint. The
+// backend proxies a GitHub workflow_dispatch; a 503 ('Rebuild not configured') or 502
+// ('GitHub dispatch failed') surfaces here as an ApiError with the backend's message.
+export async function triggerRebuild(): Promise<void> {
+  const res = await authedFetch(`${API_URL}/api/rebuild`, { method: 'POST' });
+  await unwrap<null>(res);
+}
+
 // Atomic bulk reorder: one PATCH to `${apiPath}/reorder` with a bare array of
 // { id, order } pairs (the server writes them in a single Firestore batch). The
 // Content-Type header is required so the array body is parsed as JSON.
