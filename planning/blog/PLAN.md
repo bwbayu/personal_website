@@ -184,6 +184,9 @@ shared repository (repo-level only — does NOT add a `GET /:id` HTTP route, so 
 
 ## BLOG-3 — Admin scaffold: `markdown` + `select` field widgets + types (D10)
 
+**Status: DONE — commit `ea2c190`.** CSS path = `@uiw/react-md-editor/markdown-editor.css`
+(v4.1.1).
+
 **Scope.** Extend the config-driven field-type registry with a `markdown` widget
 (`@uiw/react-md-editor`, client-only dynamic import per D1) and a generic `select` widget
 (enum options, for `status`). No posts config yet (lands in BLOG-4) — this ticket adds the
