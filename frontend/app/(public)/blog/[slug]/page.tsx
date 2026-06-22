@@ -6,8 +6,15 @@ import { PostContent } from "@/components/blog/PostContent";
 // Only published slugs are pre-rendered; anything else (drafts, unknown) 404s (D11).
 export const dynamicParams = false;
 
+// output: export rejects an empty generateStaticParams() ("missing
+// generateStaticParams"), so when nothing is published yet we emit a single internal
+// fallback param. Its page finds no post and renders notFound(), and it disappears as
+// soon as any real post exists — keeping the zero-posts build green.
+const EMPTY_FALLBACK_SLUG = "__no-posts__";
+
 export async function generateStaticParams() {
   const posts = await getPublishedPosts();
+  if (posts.length === 0) return [{ slug: EMPTY_FALLBACK_SLUG }];
   return posts.map((post) => ({ slug: post.slug }));
 }
 
