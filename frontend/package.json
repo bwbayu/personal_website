@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.101.0",
+    "@uiw/react-md-editor": "^4.1.1",
     "devicon": "^2.16.0",
     "firebase": "^12.15.0",
     "flowbite-react": "^0.8.0",

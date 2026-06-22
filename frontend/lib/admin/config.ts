@@ -14,13 +14,16 @@ export type FieldType =
   | 'url'
   | 'string-array' // array-of-strings editor (add/remove rows)
   | 'category-ref' // single-select dropdown of categories (stores a category id)
-  | 'tech-picker'; // multi-select of skill ids (stores skill ids)
+  | 'tech-picker' // multi-select of skill ids (stores skill ids)
+  | 'markdown' // markdown editor (client-only; stores raw markdown text)
+  | 'select'; // single-select of fixed enum options (stores the option value)
 
 export interface FieldConfig {
   key: string;
   label: string;
   type: FieldType;
   required?: boolean;
+  options?: { value: string; label: string }[]; // for `select`
 }
 
 export interface ColumnConfig {

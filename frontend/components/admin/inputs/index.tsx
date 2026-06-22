@@ -6,6 +6,8 @@ import { isSafeUrl } from "@/lib/url";
 import { StringArrayInput } from "./StringArrayInput";
 import { CategorySelect } from "./CategorySelect";
 import { TechPicker } from "./TechPicker";
+import { MarkdownInput } from "./MarkdownInput";
+import { SelectInput } from "./SelectInput";
 
 // One input component per simple field type. Complex types (string-array,
 // category-ref, tech-picker) are added to the registry in a later step; until then
@@ -131,6 +133,8 @@ export const fieldInputRegistry: Partial<Record<FieldType, ComponentType<FieldIn
   "string-array": StringArrayInput,
   "category-ref": CategorySelect,
   "tech-picker": TechPicker,
+  markdown: MarkdownInput,
+  select: SelectInput,
 };
 
 export function FieldInput(props: FieldInputProps) {
