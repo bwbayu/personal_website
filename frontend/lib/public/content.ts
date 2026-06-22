@@ -10,6 +10,7 @@ import {
   AboutMeType,
   SkillType,
   CategoryType,
+  ProjectType,
 } from "@/app/types/resume";
 
 export async function getAbout(): Promise<AboutMeType> {
@@ -42,5 +43,15 @@ export async function getCategories(): Promise<CategoryType[]> {
     throw new Error(`Failed to fetch categories (HTTP ${res.status})`);
   }
   const json = (await res.json()) as { data?: CategoryType[] };
+  return json.data ?? [];
+}
+
+export async function getProjects(): Promise<ProjectType[]> {
+  const base = process.env.NEXT_PUBLIC_API_URL ?? "";
+  const res = await fetch(`${base}/api/projects`, { cache: "force-cache" });
+  if (!res.ok) {
+    throw new Error(`Failed to fetch projects (HTTP ${res.status})`);
+  }
+  const json = (await res.json()) as { data?: ProjectType[] };
   return json.data ?? [];
 }
