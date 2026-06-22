@@ -225,6 +225,9 @@ reusable widgets + type plumbing, verified by typecheck.
 
 ## BLOG-4 — Admin posts integration: authed `/all` read + posts config + Blog nav (D4, D10)
 
+**Status: DONE — commit `1e7ebb7`.** Read helpers live in `frontend/lib/admin/read.ts`
+(`adminReadPath` + `adminReadList<T>`), not `config.ts`, to keep config pure data.
+
 **Scope.** Wire posts into the admin scaffold. Posts is the FIRST domain whose admin read
 needs auth and whose read path differs from its write path, so this ticket adds: an
 `adminListPath` override on `DomainConfig`, an authed list fetcher, and a small read-path
