@@ -24,6 +24,7 @@ export interface FieldConfig {
   type: FieldType;
   required?: boolean;
   options?: { value: string; label: string }[]; // for `select`
+  defaultToday?: boolean; // only meaningful for `date`: pre-fill a new form with today
 }
 
 export interface ColumnConfig {
@@ -237,6 +238,21 @@ export const registry: DomainConfig[] = [
       },
     ],
   },
+  {
+    slug: 'daily-logs',
+    label: 'Daily Log',
+    apiPath: '/api/daily-logs',
+    idKind: 'uuid',
+    columns: [
+      { key: 'date', label: 'Date' },
+      { key: 'tags', label: 'Tags' },
+    ],
+    fields: [
+      { key: 'date', label: 'Date', type: 'date', required: true, defaultToday: true },
+      { key: 'content', label: 'Content', type: 'textarea', required: true },
+      { key: 'tags', label: 'Tags', type: 'string-array' },
+    ],
+  },
 ];
 
 export const bySlug: Record<string, DomainConfig> = Object.fromEntries(
@@ -250,7 +266,7 @@ export const navGroups: { label: string; slugs: string[] }[] = [
   { label: 'Profile', slugs: ['about', 'media-socials'] },
   { label: 'Portfolio', slugs: ['projects', 'skills', 'categories'] },
   { label: 'Resume', slugs: ['experiences', 'educations', 'certifications', 'achievements'] },
-  { label: 'Blog', slugs: ['posts'] },
+  { label: 'Writing', slugs: ['posts', 'daily-logs'] },
 ];
 
 // Fail loudly if a domain is added to `registry` without being placed in exactly one

@@ -22,6 +22,16 @@ type Item = Record<string, unknown> & { id: string };
 // so any format-valid UUID works for the singleton PATCH.
 const SINGLETON_PATCH_ID = "00000000-0000-0000-0000-000000000000";
 
+// Today's date as a LOCAL YYYY-MM-DD string, built by manual zero-padding (not locale
+// formatting) so it always matches the backend `safeDate` shape on any runtime.
+function todayLocalISODate(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 function defaultForType(field: FieldConfig): unknown {
   switch (field.type) {
     case "number":
@@ -34,6 +44,9 @@ function defaultForType(field: FieldConfig): unknown {
     case "select":
       // Default a new record to the first option (e.g. a post starts as 'draft').
       return field.options?.[0]?.value ?? "";
+    case "date":
+      // Opt-in only: a daily log pre-fills today; other date fields stay blank.
+      return field.defaultToday ? todayLocalISODate() : "";
     case "markdown":
       return "";
     default:

@@ -56,6 +56,15 @@ const swaggerSpec = {
           url: { type: 'string' },
         },
       },
+      DailyLog: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          date: { type: 'string', format: 'date', example: '2026-06-22' },
+          content: { type: 'string' },
+          tags: { type: 'array', items: { type: 'string' } },
+        },
+      },
       Education: {
         type: 'object',
         properties: {
@@ -313,6 +322,45 @@ const swaggerSpec = {
       delete: {
         tags: ['Certifications'],
         summary: 'Delete a certification',
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: {
+          '200': { description: 'Deleted', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+    },
+    '/api/daily-logs': {
+      get: {
+        tags: ['Daily Logs'],
+        summary: 'Get all daily log entries',
+        responses: {
+          '200': { description: 'Success', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+      post: {
+        tags: ['Daily Logs'],
+        summary: 'Create a daily log entry',
+        security: [{ ApiKeyAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/DailyLog' } } } },
+        responses: {
+          '201': { description: 'Created', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+    },
+    '/api/daily-logs/{id}': {
+      patch: {
+        tags: ['Daily Logs'],
+        summary: 'Update a daily log entry',
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/DailyLog' } } } },
+        responses: {
+          '200': { description: 'Updated', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+      delete: {
+        tags: ['Daily Logs'],
+        summary: 'Delete a daily log entry',
         security: [{ ApiKeyAuth: [] }],
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
         responses: {
