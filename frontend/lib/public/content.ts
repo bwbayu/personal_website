@@ -1,0 +1,46 @@
+// Build-time fetchers for the public pages (home / projects / resume). Each is
+// fetched with force-cache so a data domain requested by more than one page (skills
+// on home + projects) dedups to a single request via Next's build-time fetch dedup.
+// NOT no-store: that would refetch per consumer and break static export. Mirrors
+// lib/blog/posts.ts / lib/daily/logs.ts: throw on HTTP error (build fails) and, for
+// list endpoints, return [] on empty (a valid state). Singletons the pages depend on
+// (about) throw on a missing document.
+
+import {
+  AboutMeType,
+  SkillType,
+  CategoryType,
+} from "@/app/types/resume";
+
+export async function getAbout(): Promise<AboutMeType> {
+  const base = process.env.NEXT_PUBLIC_API_URL ?? "";
+  const res = await fetch(`${base}/api/about`, { cache: "force-cache" });
+  if (!res.ok) {
+    throw new Error(`Failed to fetch about (HTTP ${res.status})`);
+  }
+  const json = (await res.json()) as { data?: AboutMeType };
+  if (!json.data) throw new Error("Invalid API response: missing about data");
+  return json.data;
+}
+
+export async function getSkills(): Promise<SkillType[]> {
+  const base = process.env.NEXT_PUBLIC_API_URL ?? "";
+  const res = await fetch(`${base}/api/skills`, { cache: "force-cache" });
+  if (!res.ok) {
+    throw new Error(`Failed to fetch skills (HTTP ${res.status})`);
+  }
+  const json = (await res.json()) as { data?: SkillType[] };
+  // Full unfiltered list: home filters to isShow, projects needs all of them to
+  // resolve project-only (isShow:false) tech icons.
+  return json.data ?? [];
+}
+
+export async function getCategories(): Promise<CategoryType[]> {
+  const base = process.env.NEXT_PUBLIC_API_URL ?? "";
+  const res = await fetch(`${base}/api/categories`, { cache: "force-cache" });
+  if (!res.ok) {
+    throw new Error(`Failed to fetch categories (HTTP ${res.status})`);
+  }
+  const json = (await res.json()) as { data?: CategoryType[] };
+  return json.data ?? [];
+}

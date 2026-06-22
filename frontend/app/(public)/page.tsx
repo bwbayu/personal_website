@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import HomeClient from '@/components/HomeClient';
+import { getAbout, getSkills, getCategories } from '@/lib/public/content';
 
 const title = 'Bayu Wicaksono - AI, Back-end & Cloud';
 const description =
@@ -24,6 +25,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
-  return <HomeClient />;
+export default async function Home() {
+  const [about, skills, categories] = await Promise.all([
+    getAbout(),
+    getSkills(),
+    getCategories(),
+  ]);
+  return <HomeClient about={about} skills={skills} categories={categories} />;
 }
