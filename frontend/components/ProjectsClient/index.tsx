@@ -6,10 +6,7 @@ import "devicon/devicon.min.css";
 import Link from "next/link";
 import Image from "next/image";
 import { isSafeUrl } from "@/lib/url";
-import { useProjects, useSkills } from "@/lib/queries";
-import { SkillType } from "@/app/types/resume";
-import Loading from "@/components/Loading";
-import ErrorMessage from "@/components/ErrorMessage";
+import { ProjectType, SkillType } from "@/app/types/resume";
 
 // Resolve a project's technology ids against the skill map (single source of truth
 // for icons + names). Unknown/dangling ids are silently skipped. Shared by the
@@ -52,21 +49,15 @@ function TechStack({
   );
 }
 
-export default function ProjectsClient() {
-  const projectsQuery = useProjects();
-  // Skills are fetched UNFILTERED: project-only skills are isShow:false but still
+export default function ProjectsClient({
+  projects,
+  skills,
+}: {
+  projects: ProjectType[];
+  // Skills come in UNFILTERED: project-only skills are isShow:false but still
   // need to resolve here for their icon + name.
-  const skillsQuery = useSkills();
-
-  const loading = projectsQuery.isPending || skillsQuery.isPending;
-  const error = projectsQuery.isError || skillsQuery.isError;
-
-  if (loading) return <Loading />;
-  if (error || !projectsQuery.data || !skillsQuery.data)
-    return <ErrorMessage message="Failed to load projects. Please try again later." />;
-
-  const projects = projectsQuery.data;
-  const skills = skillsQuery.data;
+  skills: SkillType[];
+}) {
   const skillMap = new Map(skills.map((skill) => [skill.id, skill]));
   const recent = projects.slice(0, 3);
 

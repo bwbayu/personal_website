@@ -3,6 +3,8 @@
 // /blog/[slug] (find-by-slug in memory) — share a single request. NOT no-store: that
 // would refetch per consumer and per page.
 
+import { apiBase } from "@/lib/apiBase";
+
 export interface Post {
   id: string;
   slug: string;
@@ -17,8 +19,7 @@ export interface Post {
 }
 
 export async function getPublishedPosts(): Promise<Post[]> {
-  const base = process.env.NEXT_PUBLIC_API_URL ?? "";
-  const res = await fetch(`${base}/api/posts`, { cache: "force-cache" });
+  const res = await fetch(`${apiBase()}/api/posts`, { cache: "force-cache" });
   if (!res.ok) {
     throw new Error(`Failed to fetch posts (HTTP ${res.status})`);
   }

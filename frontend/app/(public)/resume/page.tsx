@@ -1,11 +1,31 @@
 import type { Metadata } from 'next';
 import ResumeClient from '@/components/ResumeClient';
+import { getResume } from '@/lib/public/content';
+
+const title = 'Resume | Bayu Wicaksono';
+const description =
+  'Education, experience, certifications, and achievements of Bayu Wicaksono';
 
 export const metadata: Metadata = {
-  title: 'Resume | Bayu Wicaksono',
-  description: 'Education, experience, certifications, and achievements of Bayu Wicaksono',
+  title,
+  description,
+  openGraph: {
+    type: 'website',
+    siteName: 'Bayu Wicaksono',
+    title,
+    description,
+    url: '/resume',
+    images: ['/og-default.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title,
+    description,
+    images: ['/og-default.png'],
+  },
 };
 
-export default function ResumePage() {
-  return <ResumeClient />;
+export default async function ResumePage() {
+  const resume = await getResume();
+  return <ResumeClient resume={resume} />;
 }

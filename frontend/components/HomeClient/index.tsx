@@ -3,12 +3,9 @@
 import { useEffect, useState } from "react";
 import { Accordion, Tooltip } from "flowbite-react";
 import Image from "next/image";
-import { CategoryType, SkillType } from "@/app/types/resume";
+import { AboutMeType, CategoryType, SkillType } from "@/app/types/resume";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { isSafeUrl } from "@/lib/url";
-import { useAbout, useSkills, useCategories } from "@/lib/queries";
-import Loading from "@/components/Loading";
-import ErrorMessage from "@/components/ErrorMessage";
 
 const roles = [
   "Artificial Intelligence",
@@ -16,10 +13,15 @@ const roles = [
   "Cloud Computing",
 ];
 
-export default function HomeClient() {
-  const aboutQuery = useAbout();
-  const skillsQuery = useSkills();
-  const categoriesQuery = useCategories();
+export default function HomeClient({
+  about,
+  skills: allSkills,
+  categories,
+}: {
+  about: AboutMeType;
+  skills: SkillType[];
+  categories: CategoryType[];
+}) {
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [showContactInfo, setShowContactInfo] = useState(false);
 
@@ -31,18 +33,8 @@ export default function HomeClient() {
     return () => clearInterval(interval);
   }, []);
 
-  const loading =
-    aboutQuery.isPending || skillsQuery.isPending || categoriesQuery.isPending;
-  const error =
-    aboutQuery.isError || skillsQuery.isError || categoriesQuery.isError;
-
-  if (loading) return <Loading />;
-  if (error || !aboutQuery.data || !skillsQuery.data || !categoriesQuery.data)
-    return <ErrorMessage />;
-
-  const aboutMe = aboutQuery.data;
-  const skills = skillsQuery.data.filter((s) => s.isShow);
-  const categories = categoriesQuery.data;
+  const aboutMe = about;
+  const skills = allSkills.filter((s) => s.isShow);
 
   // Group shown skills by categoryId.
   const skillsByCategory = skills.reduce(
