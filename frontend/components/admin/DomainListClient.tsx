@@ -5,7 +5,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { Modal, type CustomFlowbiteTheme } from "flowbite-react";
 import { bySlug, type DomainConfig } from "@/lib/admin/config";
-import { listDomain, deleteItem, reorderItems, ApiError } from "@/lib/admin/api";
+import { deleteItem, reorderItems, ApiError } from "@/lib/admin/api";
+import { adminReadList, adminReadPath } from "@/lib/admin/read";
 import { adminKeys } from "@/lib/queries";
 import { SingletonForm } from "./DomainFormPage";
 import { useAdminToast } from "./ToastProvider";
@@ -101,7 +102,7 @@ function NotFoundView() {
 function DomainList({ config }: { config: DomainConfig }) {
   const { show } = useAdminToast();
   const queryClient = useQueryClient();
-  const queryKey = adminKeys.domain(config.apiPath);
+  const queryKey = adminKeys.domain(adminReadPath(config));
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -113,7 +114,7 @@ function DomainList({ config }: { config: DomainConfig }) {
     isPending,
     isError,
     error: queryError,
-  } = useQuery({ queryKey, queryFn: () => listDomain<Row>(config.apiPath) });
+  } = useQuery({ queryKey, queryFn: () => adminReadList<Row>(config) });
 
   // Display rows: reorderable domains are grouped + ordered for intuitive up/down;
   // others render as-fetched. On a load error rows are treated as empty (the error

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { registry, type DomainConfig } from "@/lib/admin/config";
-import { listDomain } from "@/lib/admin/api";
+import { adminReadList, adminReadPath } from "@/lib/admin/read";
 import { adminKeys } from "@/lib/queries";
 
 // One dashboard card per domain. Non-singleton cards show a live item count derived
@@ -13,8 +13,8 @@ import { adminKeys } from "@/lib/queries";
 // link and no count.
 function DomainCard({ config }: { config: DomainConfig }) {
   const { data: count, isPending, isError } = useQuery({
-    queryKey: adminKeys.domain(config.apiPath),
-    queryFn: () => listDomain(config.apiPath),
+    queryKey: adminKeys.domain(adminReadPath(config)),
+    queryFn: () => adminReadList(config),
     enabled: !config.singleton,
     select: (rows) => rows.length,
   });

@@ -9,9 +9,9 @@ import {
   ApiError,
   createItem,
   getSingleton,
-  listDomain,
   updateItem,
 } from "@/lib/admin/api";
+import { adminReadList, adminReadPath } from "@/lib/admin/read";
 import { adminKeys } from "@/lib/queries";
 import { DomainForm } from "./DomainForm";
 import { useAdminToast } from "./ToastProvider";
@@ -112,7 +112,7 @@ function CreateForm({ config }: { config: DomainConfig }) {
     try {
       await createItem(config.apiPath, buildPayload(config, values));
       show("Created");
-      await queryClient.invalidateQueries({ queryKey: adminKeys.domain(config.apiPath) });
+      await queryClient.invalidateQueries({ queryKey: adminKeys.domain(adminReadPath(config)) });
       router.push(backHref);
     } catch (err) {
       setError(errorMessage(err));
@@ -140,7 +140,7 @@ function EditForm({ config }: { config: DomainConfig }) {
   const searchParams = useSearchParams();
   const id = searchParams.get("id") ?? "";
   const backHref = `/admin/${config.slug}`;
-  const queryKey = adminKeys.domain(config.apiPath);
+  const queryKey = adminKeys.domain(adminReadPath(config));
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -152,7 +152,7 @@ function EditForm({ config }: { config: DomainConfig }) {
     isPending,
     isError,
     error: queryError,
-  } = useQuery({ queryKey, queryFn: () => listDomain<Item>(config.apiPath) });
+  } = useQuery({ queryKey, queryFn: () => adminReadList<Item>(config) });
 
   const onSubmit = async (values: Record<string, unknown>) => {
     setSubmitting(true);
@@ -205,7 +205,7 @@ export function SingletonForm({ config }: { config: DomainConfig }) {
   const router = useRouter();
   const { show } = useAdminToast();
   const queryClient = useQueryClient();
-  const queryKey = adminKeys.domain(config.apiPath);
+  const queryKey = adminKeys.domain(adminReadPath(config));
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
