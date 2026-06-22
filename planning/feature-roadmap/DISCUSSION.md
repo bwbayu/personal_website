@@ -263,8 +263,8 @@ dependent; split when large or different domain). Each session spins off its own
 - S3.2 DONE — slug `admin-cms-perf`, PR #7 (TanStack Query, atomic bulk reorder endpoint, tighter rate limits)
 - S4 DONE — slug `blog`, PR #8 (posts collection, admin editor, public /blog pages, rebuild-on-publish, SEO plumbing)
 - S5 DONE — slug `daily-log`, PR #9 (dailyLogs collection, BE domain, admin widget, public timeline feed, reused S4 webhook)
-- develop -> main release (S0-S5 batch) not yet shipped to prod
-- **Next: S6 (SEO pre-render of public pages, T11)**
+- S6 DONE — slug `seo-prerender`, PR #10 (per-page OG/Twitter cards + build-time render of home/projects/resume; deleted dead client data layer)
+- **All sessions S0-S6 complete. develop -> main release (full batch) ready to ship.**
 
 | Session | Tasks | Status | Notes |
 |---------|-------|--------|-------|
@@ -276,7 +276,7 @@ dependent; split when large or different domain). Each session spins off its own
 | **S3.2 — Backend optimization** | | DONE | TanStack Query for public + admin reads with write invalidation; atomic bulk reorder endpoint for skills/categories. |
 | **S4 — Blog** | T9 (part 1: `posts`) | DONE | BE domain + admin editor, public /blog + /blog/[slug] pages, rebuild-on-publish webhook, site-wide SEO plumbing. |
 | **S5 — Daily log** | T9 (part 2: `dailyLogs`) | DONE | Reuses S4 foundation (webhook, markdown render); lighter. |
-| **S6 — SEO pre-render of public pages** | T11 | NEXT | Reuses S4 foundation (rebuild webhook + build-time fetch). Level 1: per-page metadata + OG/Twitter + sitemap/robots across home/projects/resume. Level 2: convert those pages client-fetch -> build-time render (Home first). Makes content edits require a rebuild. |
+| **S6 — SEO pre-render of public pages** | T11 | DONE | Per-page OG/Twitter cards (Level 1) + build-time render of home/projects/resume (Level 2); deleted dead client data layer. Reused S4 rebuild webhook + build-time-fetch pattern. |
 
 - **Test coverage is incremental per-session (decided 2026-06-19, see
   [planning/test-harness/DISCUSSION.md](../test-harness/DISCUSSION.md)).** S0 ships the
