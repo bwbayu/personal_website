@@ -88,6 +88,21 @@ const swaggerSpec = {
           iconClass: { type: 'string' },
         },
       },
+      Post: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          slug: { type: 'string' },
+          title: { type: 'string' },
+          excerpt: { type: 'string' },
+          cover: { type: 'string' },
+          content: { type: 'string' },
+          tags: { type: 'array', items: { type: 'string' } },
+          status: { type: 'string', enum: ['draft', 'published'] },
+          publishedAt: { type: 'string' },
+          readingTime: { type: 'integer' },
+        },
+      },
       Project: {
         type: 'object',
         properties: {
@@ -218,6 +233,30 @@ const swaggerSpec = {
         requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/Category' } } } },
         responses: {
           '201': { description: 'Created', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+    },
+    '/api/categories/reorder': {
+      patch: {
+        tags: ['Categories'],
+        summary: 'Reorder categories',
+        security: [{ ApiKeyAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: { id: { type: 'string' }, order: { type: 'integer' } },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          '200': { description: 'Reordered', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
         },
       },
     },
@@ -398,6 +437,55 @@ const swaggerSpec = {
         },
       },
     },
+    '/api/posts': {
+      get: {
+        tags: ['Posts'],
+        summary: 'Get all published posts',
+        responses: {
+          '200': { description: 'Success', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+      post: {
+        tags: ['Posts'],
+        summary: 'Create a post',
+        security: [{ ApiKeyAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/Post' } } } },
+        responses: {
+          '201': { description: 'Created', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+    },
+    '/api/posts/all': {
+      get: {
+        tags: ['Posts'],
+        summary: 'Get all posts including drafts',
+        security: [{ ApiKeyAuth: [] }],
+        responses: {
+          '200': { description: 'Success', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+    },
+    '/api/posts/{id}': {
+      patch: {
+        tags: ['Posts'],
+        summary: 'Update a post',
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/Post' } } } },
+        responses: {
+          '200': { description: 'Updated', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+      delete: {
+        tags: ['Posts'],
+        summary: 'Delete a post',
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: {
+          '200': { description: 'Deleted', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+    },
     '/api/projects': {
       get: {
         tags: ['Projects'],
@@ -437,6 +525,16 @@ const swaggerSpec = {
         },
       },
     },
+    '/api/rebuild': {
+      post: {
+        tags: ['Rebuild'],
+        summary: 'Trigger a site rebuild',
+        security: [{ ApiKeyAuth: [] }],
+        responses: {
+          '202': { description: 'Accepted', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+    },
     '/api/resume': {
       get: {
         tags: ['Resume'],
@@ -461,6 +559,30 @@ const swaggerSpec = {
         requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/Skill' } } } },
         responses: {
           '201': { description: 'Created', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+        },
+      },
+    },
+    '/api/skills/reorder': {
+      patch: {
+        tags: ['Skills'],
+        summary: 'Reorder skills',
+        security: [{ ApiKeyAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: { id: { type: 'string' }, order: { type: 'integer' } },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          '200': { description: 'Reordered', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
         },
       },
     },

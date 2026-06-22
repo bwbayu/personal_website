@@ -14,13 +14,16 @@ export type FieldType =
   | 'url'
   | 'string-array' // array-of-strings editor (add/remove rows)
   | 'category-ref' // single-select dropdown of categories (stores a category id)
-  | 'tech-picker'; // multi-select of skill ids (stores skill ids)
+  | 'tech-picker' // multi-select of skill ids (stores skill ids)
+  | 'markdown' // markdown editor (client-only; stores raw markdown text)
+  | 'select'; // single-select of fixed enum options (stores the option value)
 
 export interface FieldConfig {
   key: string;
   label: string;
   type: FieldType;
   required?: boolean;
+  options?: { value: string; label: string }[]; // for `select`
 }
 
 export interface ColumnConfig {
@@ -31,7 +34,11 @@ export interface ColumnConfig {
 export interface DomainConfig {
   slug: string; // route segment + sidebar key, e.g. 'projects' / 'media-socials'
   label: string; // sidebar/title text
-  apiPath: string; // e.g. '/api/projects' (appended to NEXT_PUBLIC_API_URL)
+  apiPath: string; // e.g. '/api/projects' (appended to NEXT_PUBLIC_API_URL); writes target this
+  // Admin read path when it differs from `apiPath` (posts reads /api/posts/all to see
+  // drafts, but still writes to /api/posts). Defaults to `apiPath` when unset.
+  adminListPath?: string;
+  adminAuthRead?: boolean; // admin read needs a Firebase token (posts: drafts are private)
   idKind: 'uuid' | 'slug'; // which id format the write routes validate
   singleton?: boolean; // about: edit-only, no list/create/delete
   reorderable?: boolean; // skills, categories: per-item order PATCH
@@ -199,6 +206,37 @@ export const registry: DomainConfig[] = [
       { key: 'iconClass', label: 'Icon Class', type: 'text', required: true },
     ],
   },
+  {
+    slug: 'posts',
+    label: 'Posts',
+    apiPath: '/api/posts',
+    adminListPath: '/api/posts/all', // admin list reads drafts too
+    adminAuthRead: true,
+    idKind: 'uuid',
+    columns: [
+      { key: 'title', label: 'Title' },
+      { key: 'status', label: 'Status' },
+      { key: 'publishedAt', label: 'Published' },
+    ],
+    fields: [
+      { key: 'title', label: 'Title', type: 'text', required: true },
+      { key: 'slug', label: 'Slug', type: 'text', required: true },
+      { key: 'excerpt', label: 'Excerpt', type: 'textarea' },
+      { key: 'cover', label: 'Cover Image URL', type: 'url' },
+      { key: 'content', label: 'Content', type: 'markdown', required: true },
+      { key: 'tags', label: 'Tags', type: 'string-array' },
+      {
+        key: 'status',
+        label: 'Status',
+        type: 'select',
+        required: true,
+        options: [
+          { value: 'draft', label: 'Draft' },
+          { value: 'published', label: 'Published' },
+        ],
+      },
+    ],
+  },
 ];
 
 export const bySlug: Record<string, DomainConfig> = Object.fromEntries(
@@ -212,6 +250,7 @@ export const navGroups: { label: string; slugs: string[] }[] = [
   { label: 'Profile', slugs: ['about', 'media-socials'] },
   { label: 'Portfolio', slugs: ['projects', 'skills', 'categories'] },
   { label: 'Resume', slugs: ['experiences', 'educations', 'certifications', 'achievements'] },
+  { label: 'Blog', slugs: ['posts'] },
 ];
 
 // Fail loudly if a domain is added to `registry` without being placed in exactly one

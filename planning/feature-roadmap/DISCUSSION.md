@@ -47,6 +47,7 @@ decisions.
 | T8 | Backend API completeness (reorder, add-category, etc.) | LOCKED — additive; categories→collection |
 | T9 | Blog (Medium-like) + Daily log features | LOCKED — Firestore collections + static pre-render w/ rebuild-on-publish |
 | T10 | DB: stay on Firestore vs migrate to SQL on GCP | LOCKED — stay on Firestore |
+| T11 | SEO pre-render of existing public pages (home/projects/resume) | LOCKED — defer to S6; reuse S4 rebuild + build-fetch foundation |
 
 ---
 
@@ -174,6 +175,23 @@ harness reopens CI. Agreed design:
   benefit. Blog full-text search at personal scale handled with simple filtering;
   add a search service later only if ever needed.
 
+### T11 — SEO pre-render of existing public pages (LOCKED — deferred to S6)
+
+- Surfaced during the S4 blog deep-dive (see
+  [planning/blog/DISCUSSION.md](../blog/DISCUSSION.md)). Today NO public page emits
+  Open Graph/Twitter/sitemap/robots/metadataBase; the home page has no own `metadata`
+  export; all content is client-fetched (not in HTML), so the site has near-zero per-page
+  SEO and bare link previews. For a personal site SEO matters most on Home.
+- Decision: do NOT scope-creep S4. S4 (blog) lays only the minimal shared SEO plumbing it
+  forces anyway (metadataBase, default OG image, a sitemap that can also list static
+  routes, robots.txt). A dedicated session **S6** then, reusing the S4 rebuild webhook +
+  build-time-fetch pattern: (Level 1) add per-page metadata + OG/Twitter across
+  home/projects/resume; (Level 2) convert those pages from client-fetch to build-time
+  server render so content lands in the HTML. Priority Home >> Projects > Resume.
+- Accepted trade-off: pre-rendering makes content edits (about/projects/skills) require a
+  rebuild to go live — site-wide "edit -> rebuild -> live", same model as the blog. Fine
+  for a rarely-changing personal site; also yields cheaper reads + faster pages.
+
 ## 4. Edge Cases
 - (collected per task as we go)
 
@@ -218,6 +236,13 @@ harness reopens CI. Agreed design:
   planning docs/tickets/decisions (planning/ is gitignored - external readers lack
   them); no Co-Authored-By. Ticket->SHA traceability recorded in PLAN.md/REVIEW.md.
   CLAUDE.md + EXECUTION_FLOW.md + wf-implement/wf-fix updated.
+- 2026-06-21 — T11 ADDED + LOCKED: SEO pre-render of the existing public pages
+  (home/projects/resume) is its own concern, deferred to a new session S6 (after S5) to
+  keep S4 focused on the blog. S4 lays only the shared SEO plumbing the blog forces
+  (metadataBase, default OG image, sitemap incl. static routes, robots.txt); S6 reuses the
+  S4 rebuild webhook + build-time-fetch pattern for per-page OG (Level 1) + client-fetch ->
+  build-time render (Level 2, Home first). Accepted trade: content edits then need a
+  rebuild to go live. Surfaced in the S4 blog deep-dive.
 
 ## 6. Parking Lot / Later
 - Fix `DEPLOYMENT.md:12` to reflect client-side runtime fetching.
@@ -237,6 +262,7 @@ dependent; split when large or different domain). Each session spins off its own
 - S3.1 DONE — slug `admin-cms-design`, PR #6 (dark palette, responsive mobile drawer, toasts, dashboard cards)
 - S3.2 DONE — slug `admin-cms-perf`, PR #7 (TanStack Query, atomic bulk reorder endpoint, tighter rate limits)
 - develop -> main release (S0-S3.2 batch) not yet shipped to prod
+- S6 ADDED 2026-06-21 — slug TBD, SEO pre-render of existing public pages (T11), after S5
 - **Next: S4 (blog, T9 part 1: posts)**
 
 | Session | Tasks | Status | Notes |
@@ -249,6 +275,7 @@ dependent; split when large or different domain). Each session spins off its own
 | **S3.2 — Backend optimization** | | DONE | TanStack Query for public + admin reads with write invalidation; atomic bulk reorder endpoint for skills/categories. |
 | **S4 — Blog** | T9 (part 1: `posts`) | NEXT | BE domain + admin widget + public pages + **rebuild-on-publish webhook** (shared foundation). |
 | **S5 — Daily log** | T9 (part 2: `dailyLogs`) | | Reuses S4 foundation (webhook, markdown render); lighter. |
+| **S6 — SEO pre-render of public pages** | T11 | | Reuses S4 foundation (rebuild webhook + build-time fetch). Level 1: per-page metadata + OG/Twitter + sitemap/robots across home/projects/resume. Level 2: convert those pages client-fetch -> build-time render (Home first). Makes content edits require a rebuild. |
 
 - **Test coverage is incremental per-session (decided 2026-06-19, see
   [planning/test-harness/DISCUSSION.md](../test-harness/DISCUSSION.md)).** S0 ships the

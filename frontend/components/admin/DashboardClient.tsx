@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { registry, type DomainConfig } from "@/lib/admin/config";
-import { listDomain } from "@/lib/admin/api";
+import { adminReadList, adminReadPath } from "@/lib/admin/read";
 import { adminKeys } from "@/lib/queries";
+import { RebuildButton } from "./RebuildButton";
 
 // One dashboard card per domain. Non-singleton cards show a live item count derived
 // from the domain's list query (shared cache key with the list view, so one fetch
@@ -13,8 +14,8 @@ import { adminKeys } from "@/lib/queries";
 // link and no count.
 function DomainCard({ config }: { config: DomainConfig }) {
   const { data: count, isPending, isError } = useQuery({
-    queryKey: adminKeys.domain(config.apiPath),
-    queryFn: () => listDomain(config.apiPath),
+    queryKey: adminKeys.domain(adminReadPath(config)),
+    queryFn: () => adminReadList(config),
     enabled: !config.singleton,
     select: (rows) => rows.length,
   });
@@ -64,7 +65,10 @@ function DomainCard({ config }: { config: DomainConfig }) {
 export function DashboardClient() {
   return (
     <div>
-      <h1 className="mb-2 text-2xl font-semibold text-white">Admin dashboard</h1>
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <h1 className="text-2xl font-semibold text-white">Admin dashboard</h1>
+        <RebuildButton />
+      </div>
       <p className="mb-6 text-sm text-gray-400">
         Manage the site content. Select a section to get started.
       </p>

@@ -14,6 +14,13 @@ export const config = {
     .filter(Boolean),
   // Used by the Firebase Admin SDK to set the verifyIdToken audience; ADC supplies it in prod.
   firebaseProjectId: process.env.FIREBASE_PROJECT_ID ?? process.env.GOOGLE_CLOUD_PROJECT,
+  // GitHub workflow_dispatch config for the rebuild endpoint. Token + repo are
+  // optional: when unset the /api/rebuild endpoint returns 503 rather than throwing
+  // at boot, so the API still runs without rebuild configured.
+  githubDispatchToken: process.env.GITHUB_DISPATCH_TOKEN,
+  githubRepo: process.env.GITHUB_REPO,
+  githubWorkflowFile: process.env.GITHUB_WORKFLOW_FILE ?? 'frontend-deploy.yml',
+  githubWorkflowRef: process.env.GITHUB_WORKFLOW_REF ?? 'main',
 };
 
 if (config.nodeEnv === 'production' && !config.apiKey) {

@@ -33,6 +33,13 @@ export async function listDomain<T = Record<string, unknown>>(apiPath: string): 
   return unwrap<T[]>(res);
 }
 
+// Authed variant for domains whose admin read is private (posts: /api/posts/all
+// exposes drafts and is gated by the Firebase token).
+export async function listDomainAuthed<T = Record<string, unknown>>(apiPath: string): Promise<T[]> {
+  const res = await authedFetch(`${API_URL}${apiPath}`, { cache: 'no-store' });
+  return unwrap<T[]>(res);
+}
+
 // Public GET for a singleton domain (about) whose endpoint returns one object, not a
 // list. Throws ApiError(404) when the single record has not been created yet.
 export async function getSingleton<T = Record<string, unknown>>(apiPath: string): Promise<T> {
@@ -69,6 +76,14 @@ export async function deleteItem(apiPath: string, id: string): Promise<void> {
   const res = await authedFetch(`${API_URL}${apiPath}/${encodeURIComponent(id)}`, {
     method: 'DELETE',
   });
+  await unwrap<null>(res);
+}
+
+// Triggers a full static rebuild + redeploy via the shared authed endpoint. The
+// backend proxies a GitHub workflow_dispatch; a 503 ('Rebuild not configured') or 502
+// ('GitHub dispatch failed') surfaces here as an ApiError with the backend's message.
+export async function triggerRebuild(): Promise<void> {
+  const res = await authedFetch(`${API_URL}/api/rebuild`, { method: 'POST' });
   await unwrap<null>(res);
 }
 

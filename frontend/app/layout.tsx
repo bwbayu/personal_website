@@ -2,13 +2,36 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeModeScript } from "flowbite-react";
 import { Providers } from "./providers";
+import { getSiteUrl } from "@/lib/siteUrl";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
+// Canonical site origin (build-time env). metadataBase lets per-page relative OG
+// image paths (e.g. /og-default.png, or a post cover) resolve to absolute URLs that
+// social scrapers require. See lib/siteUrl for the env/default resolution.
+const siteUrl = getSiteUrl();
+const siteName = "Bayu Wicaksono";
+const siteDescription = "Personal Website of Bayu Wicaksono";
+
 export const metadata: Metadata = {
-  title: "Bayu Wicaksono",
-  description: "Personal Website of Bayu Wicaksono",
+  metadataBase: new URL(siteUrl),
+  title: siteName,
+  description: siteDescription,
+  openGraph: {
+    type: "website",
+    siteName,
+    title: siteName,
+    description: siteDescription,
+    url: "/",
+    images: ["/og-default.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteName,
+    description: siteDescription,
+    images: ["/og-default.png"],
+  },
 };
 
 // Bare document shell shared by every route. Public marketing chrome lives in the

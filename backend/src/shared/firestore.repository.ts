@@ -14,6 +14,31 @@ export class FirestoreRepository<T extends { id: string }> {
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
   }
 
+  async findById(id: string): Promise<T | null> {
+    const doc = await this.db.collection(this.collection).doc(id).get();
+    if (!doc.exists) return null;
+    return { id: doc.id, ...doc.data() } as T;
+  }
+
+  async findByField(field: string, value: unknown): Promise<T[]> {
+    const snapshot = await this.db.collection(this.collection).where(field, '==', value).get();
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
+  }
+
+  async findByFieldOrdered(
+    field: string,
+    value: unknown,
+    orderField: string,
+    direction: 'asc' | 'desc' = 'desc',
+  ): Promise<T[]> {
+    const snapshot = await this.db
+      .collection(this.collection)
+      .where(field, '==', value)
+      .orderBy(orderField, direction)
+      .get();
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
+  }
+
   async save(data: T): Promise<T> {
     await this.db.collection(this.collection).doc(data.id).set(data);
     return data;

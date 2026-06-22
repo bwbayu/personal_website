@@ -4,14 +4,14 @@ import { Suspense, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { bySlug, type DomainConfig, type FieldType } from "@/lib/admin/config";
+import { bySlug, type DomainConfig, type FieldConfig } from "@/lib/admin/config";
 import {
   ApiError,
   createItem,
   getSingleton,
-  listDomain,
   updateItem,
 } from "@/lib/admin/api";
+import { adminReadList, adminReadPath } from "@/lib/admin/read";
 import { adminKeys } from "@/lib/queries";
 import { DomainForm } from "./DomainForm";
 import { useAdminToast } from "./ToastProvider";
@@ -22,8 +22,8 @@ type Item = Record<string, unknown> & { id: string };
 // so any format-valid UUID works for the singleton PATCH.
 const SINGLETON_PATCH_ID = "00000000-0000-0000-0000-000000000000";
 
-function defaultForType(type: FieldType): unknown {
-  switch (type) {
+function defaultForType(field: FieldConfig): unknown {
+  switch (field.type) {
     case "number":
       return 0;
     case "boolean":
@@ -31,6 +31,11 @@ function defaultForType(type: FieldType): unknown {
     case "string-array":
     case "tech-picker":
       return [];
+    case "select":
+      // Default a new record to the first option (e.g. a post starts as 'draft').
+      return field.options?.[0]?.value ?? "";
+    case "markdown":
+      return "";
     default:
       return "";
   }
@@ -38,7 +43,7 @@ function defaultForType(type: FieldType): unknown {
 
 function buildInitialValues(config: DomainConfig): Record<string, unknown> {
   const values: Record<string, unknown> = {};
-  for (const field of config.fields) values[field.key] = defaultForType(field.type);
+  for (const field of config.fields) values[field.key] = defaultForType(field);
   return values;
 }
 
@@ -48,7 +53,7 @@ function seedFromRecord(
 ): Record<string, unknown> {
   const values: Record<string, unknown> = {};
   for (const field of config.fields) {
-    values[field.key] = record[field.key] ?? defaultForType(field.type);
+    values[field.key] = record[field.key] ?? defaultForType(field);
   }
   return values;
 }
@@ -107,7 +112,7 @@ function CreateForm({ config }: { config: DomainConfig }) {
     try {
       await createItem(config.apiPath, buildPayload(config, values));
       show("Created");
-      await queryClient.invalidateQueries({ queryKey: adminKeys.domain(config.apiPath) });
+      await queryClient.invalidateQueries({ queryKey: adminKeys.domain(adminReadPath(config)) });
       router.push(backHref);
     } catch (err) {
       setError(errorMessage(err));
@@ -135,7 +140,7 @@ function EditForm({ config }: { config: DomainConfig }) {
   const searchParams = useSearchParams();
   const id = searchParams.get("id") ?? "";
   const backHref = `/admin/${config.slug}`;
-  const queryKey = adminKeys.domain(config.apiPath);
+  const queryKey = adminKeys.domain(adminReadPath(config));
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -147,7 +152,7 @@ function EditForm({ config }: { config: DomainConfig }) {
     isPending,
     isError,
     error: queryError,
-  } = useQuery({ queryKey, queryFn: () => listDomain<Item>(config.apiPath) });
+  } = useQuery({ queryKey, queryFn: () => adminReadList<Item>(config) });
 
   const onSubmit = async (values: Record<string, unknown>) => {
     setSubmitting(true);
@@ -200,7 +205,7 @@ export function SingletonForm({ config }: { config: DomainConfig }) {
   const router = useRouter();
   const { show } = useAdminToast();
   const queryClient = useQueryClient();
-  const queryKey = adminKeys.domain(config.apiPath);
+  const queryKey = adminKeys.domain(adminReadPath(config));
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
