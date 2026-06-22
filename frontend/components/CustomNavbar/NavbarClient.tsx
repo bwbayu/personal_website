@@ -32,6 +32,9 @@ export function NavbarClient() {
           <NavbarLink as={Link} href="/project" className="text-lg">
             Project
           </NavbarLink>
+          <NavbarLink as={Link} href="/blog" className="text-lg">
+            Blog
+          </NavbarLink>
           {mediaSocials.filter((social) => isSafeUrl(social.url)).map((social) => (
             <NavbarLink
               key={social.name}
