@@ -45,6 +45,12 @@ Post {
 
 ## BLOG-1 — Backend `posts` domain (CRUD + service logic)
 
+**Status: DONE — commit `e5e69c3`.** Deviation: admin `findAll` sorts in memory
+(published newest-first, drafts last) instead of a Firestore `orderBy('publishedAt')`,
+which would drop drafts (Firestore excludes docs missing the ordered field). The
+published-only query (`status == published` + `orderBy publishedAt`) needs a composite
+index in prod.
+
 **Scope.** New per-domain module `backend/src/posts/` following the projects factory-DI
 pattern (`createXxxRepository -> Service -> Controller`, composition root in
 `*.routes.ts`). Implements the full Post shape, the two posts-specific GET routes
