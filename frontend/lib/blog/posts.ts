@@ -37,7 +37,8 @@ export function excerptOf(post: Post): string {
     .replace(/`[^`]*`/g, " ") // inline code
     .replace(/!\[[^\]]*\]\([^)]*\)/g, " ") // images
     .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1") // links -> link text
-    .replace(/[#>*_~`-]/g, " ") // leftover markdown punctuation
+    .replace(/^\s*[-*+]\s+/gm, " ") // line-leading list markers
+    .replace(/[#>*_~`]/g, " ") // leftover markdown punctuation (keep intra-word hyphens)
     .replace(/\s+/g, " ")
     .trim();
   return stripped.length > 160 ? `${stripped.slice(0, 160).trimEnd()}...` : stripped;
