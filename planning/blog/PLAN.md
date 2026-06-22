@@ -278,6 +278,13 @@ can't be exercised headless (needs a signed-in admin).
 
 ## BLOG-5 — Public `/blog` + `/blog/[slug]` pages + markdown render + navbar link (D5, D11, D12)
 
+**Status: DONE — commit `064a777`.** Verified with a real static-export build against
+an emulator-backed backend (1 published + 1 draft): `/blog` + `/blog/hello-markdown`
+emitted, draft excluded; rendered HTML had highlighted code, a GFM table, `<del>`;
+`<script>`/`onerror` stripped by rehype-sanitize; per-post OG image = cover; force-cache
+shared one fetch (a mid-build PATCH was only seen after clearing `.next`). Deps:
+react-markdown 10, remark-gfm 4, rehype-sanitize 6, rehype-highlight 7, highlight.js 11.
+
 **Scope.** The SEO departure: build-time server-rendered blog. One force-cached build
 fetch of the published list, reused by `generateStaticParams`, the `/blog` list, and each
 `/blog/[slug]` (find-by-slug in memory). `dynamicParams = false`. Markdown rendered at
