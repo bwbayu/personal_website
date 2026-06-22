@@ -10,6 +10,7 @@ import certificationRoutes from '../certifications/certification.routes';
 import educationRoutes from '../educations/education.routes';
 import mediaSocialRoutes from '../mediaSocials/mediaSocial.routes';
 import postRoutes from '../posts/post.routes';
+import dailyLogRoutes from '../dailyLogs/dailyLog.routes';
 import rebuildRoutes from '../rebuild/rebuild.routes';
 
 const router = Router();
@@ -29,6 +30,7 @@ router.use('/certifications', certificationRoutes);
 router.use('/educations', educationRoutes);
 router.use('/media-socials', mediaSocialRoutes);
 router.use('/posts', postRoutes);
+router.use('/daily-logs', dailyLogRoutes);
 router.use('/rebuild', rebuildRoutes);
 
 export default router;
