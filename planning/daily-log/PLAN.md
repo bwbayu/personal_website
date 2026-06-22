@@ -256,5 +256,5 @@ Per-entry permalink/share pages, RSS/Atom, mood field/analytics, pagination/infi
 | Ticket | SHA | Status |
 |--------|-----|--------|
 | DAILY-LOG-1 | eb3cd62 | done |
-| DAILY-LOG-2 | _pending_ | not started |
+| DAILY-LOG-2 | e74e110 | done |
 | DAILY-LOG-3 | _pending_ | not started |
