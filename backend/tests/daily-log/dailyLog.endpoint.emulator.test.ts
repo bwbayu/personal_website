@@ -7,8 +7,9 @@ import { clearFirestore, withApiKey } from '../helpers/emulator';
 // writes), the public read ordered by date desc, one CRUD round-trip, and the
 // bad-date rejection.
 //
-// Kept well under the 10-writes/min limiter: 7 writes total (2 auth-gate POSTs +
-// 2 seed POSTs + 1 PATCH + 1 DELETE + 1 bad-date POST). Do not add more.
+// Kept well under the 10-writes/min limiter: 6 writes total (1 auth-gate POST +
+// 2 seed POSTs + 1 PATCH + 1 DELETE + 1 bad-date POST). Do not add more. The
+// wrong-key (403) path is the shared authMiddleware, covered in the posts smoke.
 const olderBody = { date: '2026-01-05', content: 'An older note.', tags: ['old'] };
 const newerBody = { date: '2026-06-20', content: 'A newer note.', tags: ['new'] };
 
@@ -22,11 +23,8 @@ describe('daily log endpoint smoke (emulator)', () => {
   });
 
   describe('auth gate', () => {
-    it('POST /api/daily-logs returns 401 without a key and 403 with a wrong key', async () => {
+    it('POST /api/daily-logs returns 401 without a key', async () => {
       expect((await request(app).post('/api/daily-logs').send(newerBody)).status).toBe(401);
-      expect(
-        (await request(app).post('/api/daily-logs').set('x-api-key', 'nope').send(newerBody)).status,
-      ).toBe(403);
     });
   });
 
