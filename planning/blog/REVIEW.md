@@ -206,3 +206,151 @@
 - **Commit 2 (§2) — DONE `0842f7a`:** add `backend/firestore.indexes.json` + wire `firestore.indexes` in `backend/firebase.json`. (Index deploy `firebase deploy --only firestore:indexes` is an OPERATOR step before `develop -> main`.)
 - **Commit 3 (§7) — DONE `5f94fd7`:** tweak the `excerptOf` fallback regex.
 - DEFERRED/NO-ACTION: §5, §6, §8 — no code.
+
+---
+
+# Pass 2 review (re-review)
+
+> Fresh-eyes verification of the Pass 1 fixes + delta-only review. No code changed,
+> nothing committed. Delta base = `1b69f2e` (last commit Pass 1 reviewed).
+
+## Scope of the delta
+
+Fix commits in `1b69f2e..HEAD` (code only; doc commits omitted):
+- `544a375` fix(frontend): resolve canonical site URL via shared empty-safe helper — **§1 + §3 + §4**
+- `0842f7a` chore(backend): add posts published-query composite index — **§2**
+- `5f94fd7` fix(frontend): keep intra-word hyphens in derived post excerpts — **§7**
+
+Diff touched 6 source files: `frontend/lib/siteUrl.ts` (new), `frontend/app/layout.tsx`,
+`frontend/app/sitemap.ts`, `frontend/app/robots.ts`, `frontend/lib/blog/posts.ts`,
+`backend/firestore.indexes.json` (new) + `backend/firebase.json`. No backend TS changed.
+
+**Gates run by the re-reviewer (all green):**
+- Frontend `npm run typecheck` (the FE gate — no FE test runner exists): **clean**.
+- Backend unit `npx vitest run tests/blog`: **25 passed / 3 files**.
+- Backend emulator slice `npm run test:emulator` (Temurin 21 present): **22 passed / 8 files**.
+
+## Status of previous FIX findings
+
+| § | Finding | Fix commit | Verdict | Evidence |
+|---|---------|-----------|---------|----------|
+| §1 | `NEXT_PUBLIC_SITE_URL` unset → `new URL("")` crash | `544a375` | **verified-fixed** | [siteUrl.ts:13](../../frontend/lib/siteUrl.ts#L13) `(env ?? "").trim() || DEFAULT` — empty string now falls through `||` to the default, so `metadataBase: new URL(getSiteUrl())` never receives `""`. Default updated to `https://bwbayu.space` as the decisions log required. All 3 call sites ([layout.tsx:13](../../frontend/app/layout.tsx#L13), [sitemap.ts:10](../../frontend/app/sitemap.ts#L10), [robots.ts:5](../../frontend/app/robots.ts#L5)) route through it; grep confirms no remaining raw `process.env.NEXT_PUBLIC_SITE_URL` reads. |
+| §2 | Published query needs a composite index | `0842f7a` | **verified-fixed (code)** — operator deploy outstanding | [firestore.indexes.json](../../backend/firestore.indexes.json) declares `posts` / COLLECTION / `status ASC, publishedAt DESC` — an exact match for `findByFieldOrdered('status','published','publishedAt','desc')` → `.where('status','==','published').orderBy('publishedAt','desc')` ([post.repository.ts:13](../../backend/src/posts/post.repository.ts#L13) → [firestore.repository.ts:34-38](../../backend/src/shared/firestore.repository.ts#L34)). `backend/firebase.json` wires `firestore.indexes`. The actual `firebase deploy --only firestore:indexes` is a human/operator step (emulator does not enforce indexes, so it cannot be verified headless) — already tracked as OUTSTANDING in the decisions log; not a code defect. |
+| §3 | `robots.ts` keeps a trailing slash | `544a375` | **verified-fixed** | robots now consumes `getSiteUrl()`, which strips the trailing slash (`raw.replace(/\/$/, "")`), so `${siteUrl}/sitemap.xml` no longer doubles. |
+| §4 | Site-URL default duplicated ×3 | `544a375` | **verified-fixed** | Single source [siteUrl.ts](../../frontend/lib/siteUrl.ts); the inline literals are gone from all three files. |
+| §7 | `excerptOf` strips intra-word hyphens | `5f94fd7` | **verified-fixed** | [posts.ts:40-41](../../frontend/lib/blog/posts.ts#L40): `-` dropped from the leftover-punctuation class; line-leading list markers stripped separately (`^\s*[-*+]\s+`). `well-known` is preserved; bullet markers are still removed. |
+
+DEFERRED / NO-ACTION findings (§5, §6, §8) correctly received no code in the delta.
+
+## New findings
+
+Numbering continues after the highest existing § (last was §8).
+
+### §9 — `---` horizontal rules survive in the derived excerpt (REFERENCES §7)
+- **Severity:** NICE-TO-HAVE (informational; recommend NO-ACTION)
+- **Where:** [posts.ts:40-41](../../frontend/lib/blog/posts.ts#L40)
+- **What:** Dropping `-` from the leftover-punctuation class to fix §7 means a literal
+  `---` horizontal rule is no longer collapsed to spaces (the list-marker regex
+  `^\s*[-*+]\s+` requires whitespace after the marker, so `---` does not match it). The
+  other HR forms (`***`, `___`) are still stripped because `*`/`_` remain in the
+  punctuation class. This only affects the auto-derived fallback excerpt (no explicit
+  excerpt set) and only when an HR lands in the first ~160 chars.
+- **Why it matters:** Purely cosmetic, strictly narrower than the §7 problem it replaced,
+  and an accepted consequence of §7's intent (keep real hyphens). The inverse case — a
+  prose dash like ` - ` now surviving — is actually correct text.
+- **Recommended fix:** None. If ever wanted, add `^\s*([-*_])\1{2,}\s*$` HR stripping
+  before the list-marker pass. Not FIX-worthy.
+
+### §10 — Code fixes shipped without an automated test (expected, not a defect)
+- **Severity:** OBSERVATION (no action)
+- **What:** None of the four code fixes added a test: §1/§3/§4/§7 are frontend (and
+  `getSiteUrl`/`excerptOf` are pure, testable functions) but the repo has **no FE test
+  runner** by design (CLAUDE.md: "Frontend: typecheck only"); §2 is a JSON index artifact
+  that the **emulator cannot enforce**, so it is not unit/emulator-testable either.
+- **Why it matters:** Per re-review checklist item C I flag "fixed without a test"
+  transparently — but here it is a direct consequence of the project's locked testing
+  conventions, not a gap introduced by these fixes. Verification rests on `npm run
+  typecheck` (green) + the index-vs-query match above. No action.
+
+### §11 — Posts + rebuild endpoints missing from the Swagger spec (user-surfaced; outside the fix delta)
+- **Severity:** SHOULD-FIX (API-doc parity) — non-blocking for correctness/deploy
+- **Status:** **[FIXED] `c1dd768`** — `Post` schema + `/api/posts` (get + post), `/api/posts/all` (get), `/api/posts/{id}` (patch + delete), `/api/rebuild` (post) added to the static spec. Full posts-domain parity (all 5 routes) per user decision to include `POST /api/posts`.
+- **Provenance:** NOT in the fix delta (`1b69f2e..HEAD`). Pre-existing omission from the
+  original **BLOG-1** (posts domain) + **BLOG-2** (rebuild) implementation that Pass 1
+  (Phase 4) did not catch. Surfaced by the user during re-review.
+- **Where:** [swagger.ts](../../backend/src/config/swagger.ts) — the hand-written static
+  spec. No `Post` schema in `components.schemas`; no `/api/posts`, `/api/posts/all`,
+  `/api/posts/{id}`, or `/api/rebuild` entries in `paths` (grep nihil).
+- **What:** Swagger is a static object that documents all 9 existing domains. The new posts
+  domain (`GET /`, `GET /all`, `POST /`, `PATCH /:id`, `DELETE /:id` — [post.routes.ts](../../backend/src/posts/post.routes.ts))
+  and `POST /api/rebuild` ([rebuild.routes.ts](../../backend/src/rebuild/rebuild.routes.ts))
+  are absent, so `/api-docs` (non-prod) is out of parity with the codebase.
+- **Why it matters:** Every other domain is documented; an undocumented new domain breaks
+  the established "adding a domain documents it" convention. Swagger is **non-prod only**
+  (mounted off in prod), so there is **no runtime or security impact** — purely doc
+  completeness/parity.
+- **Recommended fix:** Add a `Post` schema to `components.schemas` and path entries for
+  `/api/posts` (get), `/api/posts/all` (get, `ApiKeyAuth`), `/api/posts/{id}` (patch +
+  delete, `ApiKeyAuth`), and `/api/rebuild` (post, `ApiKeyAuth`), mirroring the
+  achievements pattern. Small + mechanical; a `docs(backend)` commit on `feat/blog`.
+- **Ref:** BLOG-1, BLOG-2 (original implementation) — not the fix delta.
+
+### §12 — `PATCH /api/skills/reorder` + `PATCH /api/categories/reorder` missing from the Swagger spec (full-audit follow-up; unrelated to blog)
+- **Severity:** NICE-TO-HAVE (API-doc parity) — non-blocking
+- **Status:** **[FIXED] `c1dd768`** — `/api/skills/reorder` + `/api/categories/reorder` (patch, `ApiKeyAuth`, requestBody = reorder array) added to the static spec.
+- **Provenance:** Entirely unrelated to blog. Pre-existing omission in the **skills** +
+  **categories** domains, found during a full route-vs-swagger audit the user requested
+  while triaging §11. Bundled here only so one `docs(backend)` swagger commit closes every
+  gap at once.
+- **Where:** [swagger.ts](../../backend/src/config/swagger.ts) documents `/api/skills`,
+  `/api/skills/{id}`, `/api/categories`, `/api/categories/{id}` — but NOT the literal
+  `/reorder` PATCH on each ([skill.routes.ts:21](../../backend/src/skills/skill.routes.ts#L21),
+  [category.routes.ts:21](../../backend/src/categories/category.routes.ts#L21)).
+- **What:** Both domains expose `PATCH /reorder` (authed; body = reorder array) for
+  drag-reorder. Neither path is in the spec.
+- **Why it matters:** Same parity rationale as §11; non-prod, no runtime/security impact.
+- **Recommended fix:** Add `/api/skills/reorder` and `/api/categories/reorder` (patch,
+  `ApiKeyAuth`, requestBody = reorder array). Bundle with §11 in the same `docs(backend)`
+  swagger commit.
+- **Ref:** skills + categories domains (pre-existing) — not blog, not the fix delta.
+
+#### Swagger audit result (full route-vs-spec sweep)
+Every registered route was checked against `swagger.ts`. The ONLY undocumented endpoints
+are: the entire **posts** domain (5 routes) + **`POST /api/rebuild`** (§11), and
+**`PATCH /api/skills/reorder`** + **`PATCH /api/categories/reorder`** (§12). All other
+domains (about, projects, experiences, educations, certifications, achievements,
+media-socials, resume, and the base skills/categories CRUD) are fully documented.
+
+## Recommendation
+
+**CLOSE.** All five Pass 1 FIX findings (§1, §2, §3, §4, §7) are verified-fixed against
+their stated problems, with file:line evidence. The delta introduced no regression and no
+new FIX-worthy finding (§9 is a strictly-narrower cosmetic trade-off that was §7's intent;
+§10 is an expected consequence of the locked "FE typecheck only" convention). All three
+gates are green (FE typecheck, backend unit, emulator slice).
+
+**One residual non-code item blocks the prod deploy, not the review:** the §2 composite
+index must be deployed (`firebase deploy --only firestore:indexes`) **before** the
+`develop -> main` deploy — the prod FE static build fetches `/api/posts`, which will return
+`FAILED_PRECONDITION` until the index exists. This is a human/operator step already tracked
+in the decisions log; it cannot be verified headless and is not a code change.
+
+**Addendum (post-recommendation, user-surfaced): §11 + §12.** A real API-doc parity gap
+surfaced during re-review and a follow-up full route-vs-swagger audit: the new posts/rebuild
+endpoints (§11) AND the pre-existing `skills/reorder` + `categories/reorder` endpoints (§12)
+are absent from the Swagger spec. All are OUTSIDE the fix delta, non-prod, and non-blocking
+for correctness or deploy, so the CLOSE of the fix-verification stands. They are genuine
+completeness gaps. **Triage decision (user, 2026-06-22): DEFER to `/wf-fix`** — close §11 +
+§12 together in one `docs(backend)` swagger commit on `feat/blog` (add `Post` schema +
+posts/rebuild paths + the two reorder paths) before S4 is considered fully done. The audit
+confirms these four are the ONLY undocumented routes.
+
+**Closed (`/wf-fix`, 2026-06-22): [FIXED] `c1dd768`.** One `docs(backend)` commit edited
+`backend/src/config/swagger.ts` only: added the `Post` schema to `components.schemas` and
+path entries for `/api/posts` (get + post), `/api/posts/all` (get), `/api/posts/{id}`
+(patch + delete), `/api/rebuild` (post), `/api/skills/reorder` (patch), and
+`/api/categories/reorder` (patch). The user chose **full posts-domain parity**, so
+`POST /api/posts` (create) was included even though the §11 fix list omitted it — closing
+the last undocumented posts route. Verified: `npx vitest run tests/blog` 25/25 green; `tsc`
+clean (spec is valid TS/JSON). No route/runtime change. The Swagger audit gap is now
+fully closed.
