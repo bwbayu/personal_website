@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
+import { getSiteUrl } from "@/lib/siteUrl";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://personal-website-490704.web.app";
+// getSiteUrl strips any trailing slash, so `${siteUrl}/sitemap.xml` never doubles up.
+const siteUrl = getSiteUrl();
 
 // Emitted as /robots.txt in the static export: allow all crawlers and point them at
 // the absolute sitemap URL.

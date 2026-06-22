@@ -1,13 +1,13 @@
 import type { MetadataRoute } from "next";
 import { getPublishedPosts } from "@/lib/blog/posts";
+import { getSiteUrl } from "@/lib/siteUrl";
 
 // Generated into the static export at build. Lists the static public routes plus one
 // entry per published post (drafts excluded — they are never in getPublishedPosts).
 // Reuses the BLOG-5 build fetcher (force-cache, so no extra network call). Sitemap
 // <loc> values must be ABSOLUTE (the protocol requires it, and Next does not prefix
 // them with metadataBase), so build them from the canonical site origin.
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://personal-website-490704.web.app";
-const base = siteUrl.replace(/\/$/, "");
+const base = getSiteUrl();
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [

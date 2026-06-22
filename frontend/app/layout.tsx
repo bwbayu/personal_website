@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeModeScript } from "flowbite-react";
 import { Providers } from "./providers";
+import { getSiteUrl } from "@/lib/siteUrl";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
 // Canonical site origin (build-time env). metadataBase lets per-page relative OG
 // image paths (e.g. /og-default.png, or a post cover) resolve to absolute URLs that
-// social scrapers require. Defaults to the production Firebase Hosting URL.
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://personal-website-490704.web.app";
+// social scrapers require. See lib/siteUrl for the env/default resolution.
+const siteUrl = getSiteUrl();
 const siteName = "Bayu Wicaksono";
 const siteDescription = "Personal Website of Bayu Wicaksono";
 
