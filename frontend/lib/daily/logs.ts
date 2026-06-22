@@ -2,6 +2,8 @@
 // the server-component build. There is no per-entry route, so this is the single build
 // consumer. NOT no-store, which would refetch on every render.
 
+import { apiBase } from "@/lib/apiBase";
+
 export interface DailyLog {
   id: string;
   date: string;
@@ -10,8 +12,7 @@ export interface DailyLog {
 }
 
 export async function getDailyLogs(): Promise<DailyLog[]> {
-  const base = process.env.NEXT_PUBLIC_API_URL ?? "";
-  const res = await fetch(`${base}/api/daily-logs`, { cache: "force-cache" });
+  const res = await fetch(`${apiBase()}/api/daily-logs`, { cache: "force-cache" });
   if (!res.ok) {
     throw new Error(`Failed to fetch daily logs (HTTP ${res.status})`);
   }

@@ -16,6 +16,7 @@ import {
   CertificationType,
   AchievementType,
 } from "@/app/types/resume";
+import { apiBase } from "@/lib/apiBase";
 
 // The /api/resume aggregation payload (read-only backend join of the four sections).
 export type ResumeData = {
@@ -26,8 +27,7 @@ export type ResumeData = {
 };
 
 export async function getAbout(): Promise<AboutMeType> {
-  const base = process.env.NEXT_PUBLIC_API_URL ?? "";
-  const res = await fetch(`${base}/api/about`, { cache: "force-cache" });
+  const res = await fetch(`${apiBase()}/api/about`, { cache: "force-cache" });
   if (!res.ok) {
     throw new Error(`Failed to fetch about (HTTP ${res.status})`);
   }
@@ -37,8 +37,7 @@ export async function getAbout(): Promise<AboutMeType> {
 }
 
 export async function getSkills(): Promise<SkillType[]> {
-  const base = process.env.NEXT_PUBLIC_API_URL ?? "";
-  const res = await fetch(`${base}/api/skills`, { cache: "force-cache" });
+  const res = await fetch(`${apiBase()}/api/skills`, { cache: "force-cache" });
   if (!res.ok) {
     throw new Error(`Failed to fetch skills (HTTP ${res.status})`);
   }
@@ -49,8 +48,7 @@ export async function getSkills(): Promise<SkillType[]> {
 }
 
 export async function getCategories(): Promise<CategoryType[]> {
-  const base = process.env.NEXT_PUBLIC_API_URL ?? "";
-  const res = await fetch(`${base}/api/categories`, { cache: "force-cache" });
+  const res = await fetch(`${apiBase()}/api/categories`, { cache: "force-cache" });
   if (!res.ok) {
     throw new Error(`Failed to fetch categories (HTTP ${res.status})`);
   }
@@ -59,8 +57,7 @@ export async function getCategories(): Promise<CategoryType[]> {
 }
 
 export async function getProjects(): Promise<ProjectType[]> {
-  const base = process.env.NEXT_PUBLIC_API_URL ?? "";
-  const res = await fetch(`${base}/api/projects`, { cache: "force-cache" });
+  const res = await fetch(`${apiBase()}/api/projects`, { cache: "force-cache" });
   if (!res.ok) {
     throw new Error(`Failed to fetch projects (HTTP ${res.status})`);
   }
@@ -69,8 +66,7 @@ export async function getProjects(): Promise<ProjectType[]> {
 }
 
 export async function getResume(): Promise<ResumeData> {
-  const base = process.env.NEXT_PUBLIC_API_URL ?? "";
-  const res = await fetch(`${base}/api/resume`, { cache: "force-cache" });
+  const res = await fetch(`${apiBase()}/api/resume`, { cache: "force-cache" });
   if (!res.ok) {
     throw new Error(`Failed to fetch resume (HTTP ${res.status})`);
   }
