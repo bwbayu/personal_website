@@ -354,3 +354,90 @@ path entries for `/api/posts` (get + post), `/api/posts/all` (get), `/api/posts/
 the last undocumented posts route. Verified: `npx vitest run tests/blog` 25/25 green; `tsc`
 clean (spec is valid TS/JSON). No route/runtime change. The Swagger audit gap is now
 fully closed.
+
+---
+
+# Pass 3 review (re-review)
+
+> Fresh-eyes verification of the §11 + §12 Swagger fix + delta-only review. No code
+> changed, nothing committed. Delta base = `9bb7ca1` (last commit Pass 2 reviewed before
+> the swagger fix).
+
+## Scope of the delta
+
+Commits in `9bb7ca1..HEAD`:
+- `c1dd768` docs(backend): document posts, rebuild, and reorder endpoints in swagger — **§11 + §12** (the only source change)
+- `c4c7f79` docs: mark blog review findings 11/12 fixed — REVIEW.md bookkeeping only (no source)
+
+Diff touched 1 source file: `backend/src/config/swagger.ts` (+122, additive only — a new
+`Post` schema in `components.schemas` and six new path entries). No routes, controllers,
+services, schemas, or runtime wiring changed.
+
+**Gates run by the re-reviewer (all green):**
+- Backend `npx tsc --noEmit`: **clean** — the static spec is valid TS/JSON and compiles.
+- Backend unit `npx vitest run tests/blog`: **25 passed / 3 files**.
+- Emulator slice **not re-run**: the delta touches zero Firestore code (no repository,
+  domain query, or endpoint changed) — a pure non-prod doc object. Pass 2 already ran it
+  green (22/8) over the last Firestore-touching delta; nothing in `9bb7ca1..HEAD` can move
+  that result.
+
+## Status of previous FIX findings
+
+| § | Finding | Fix commit | Verdict | Evidence |
+|---|---------|-----------|---------|----------|
+| §11 | Posts + rebuild endpoints absent from Swagger | `c1dd768` | **verified-fixed** | All five posts routes ([post.routes.ts:19-23](../../backend/src/posts/post.routes.ts#L19)) are now documented: `GET /api/posts` ([swagger.ts:440](../../backend/src/config/swagger.ts#L440), public — no `ApiKeyAuth`, matching the public read), `POST /api/posts` (ApiKeyAuth, `Post` body, 201), `GET /api/posts/all` ([swagger.ts:458](../../backend/src/config/swagger.ts#L458), ApiKeyAuth), `PATCH`+`DELETE /api/posts/{id}` ([swagger.ts:468](../../backend/src/config/swagger.ts#L468), ApiKeyAuth, id path param, 200). `POST /api/rebuild` ([swagger.ts:528](../../backend/src/config/swagger.ts#L528)) is ApiKeyAuth with a **202** response — an exact match for the controller's `sendSuccess(res, null, 202)` ([rebuild.controller.ts:36](../../backend/src/rebuild/rebuild.controller.ts#L36)). New `Post` schema ([swagger.ts:91](../../backend/src/config/swagger.ts#L91)) covers all entity fields incl. `status` enum `['draft','published']`. |
+| §12 | `skills/reorder` + `categories/reorder` absent from Swagger | `c1dd768` | **verified-fixed** | `PATCH /api/skills/reorder` ([swagger.ts:565](../../backend/src/config/swagger.ts#L565)) and `PATCH /api/categories/reorder` ([swagger.ts:239](../../backend/src/config/swagger.ts#L239)) both documented: ApiKeyAuth + requestBody = bare array of `{ id, order }` — a faithful match for [reorder.schema.ts:6-18](../../backend/src/shared/reorder.schema.ts#L6) (`z.array({ id: string, order: int })`). Both are placed before their `/{id}` sibling, mirroring the real route order. |
+
+Spec-vs-route sweep re-run: a grep for the six paths returns all six present
+([categories/reorder, posts, posts/all, posts/{id}, rebuild, skills/reorder]). No remaining
+undocumented route. The §11/§12 addendum's "these four [paths] are the ONLY undocumented
+routes" claim holds, and the chosen full posts-domain parity adds `POST /api/posts` on top.
+
+DEFERRED / NO-ACTION findings (§5, §6, §8) correctly received no code in the delta.
+
+## New findings
+
+Numbering continues after the highest existing § (last was §12).
+
+### §13 — `Post` schema reused as create/update requestBody advertises server-managed fields (matches existing convention)
+- **Severity:** OBSERVATION (no action)
+- **Where:** [swagger.ts:451,474](../../backend/src/config/swagger.ts#L451) (`POST`/`PATCH` requestBody `$ref: Post`)
+- **What:** The `Post` schema includes the server-managed `id`, `publishedAt`, and
+  `readingTime`, and is referenced verbatim as the requestBody for both create and update —
+  so the spec nominally suggests a client may send those, whereas the Zod insert/update
+  schemas deliberately omit them ([post.schema.ts:4-22](../../backend/src/posts/post.schema.ts#L4)).
+- **Why it matters:** It does not: this is the **exact** established pattern for every
+  existing domain — e.g. `POST`/`PATCH /api/projects` also `$ref` the full `Project`
+  entity (incl. `id`) as their requestBody ([swagger.ts:501,513](../../backend/src/config/swagger.ts#L501)).
+  §11's recommendation was explicitly to mirror that pattern, and it does. Flagging only so
+  a reader doesn't mistake the consistency for an oversight. No action — changing it would
+  diverge the new entries from the other 9 domains.
+
+### §14 — Swagger doc fix shipped without an automated test (expected, not a defect)
+- **Severity:** OBSERVATION (no action)
+- **What:** `c1dd768` added no test. The change is a hand-written static OpenAPI object
+  mounted at `/api-docs` **non-prod only** (off in prod per [app.ts] wiring); there is no
+  contract/spec test harness in the repo, and the spec asserts nothing at runtime.
+- **Why it matters:** Per re-review checklist item C I flag "fixed without a test"
+  transparently — but verification here rests on `tsc` (valid TS/JSON, green) + the
+  manual route-vs-spec sweep above, which is the only available form of verification for a
+  static doc object. Consistent with §10's reasoning for the earlier FE/index fixes. No
+  action.
+
+## Recommendation
+
+**CLOSE.** Both Pass 2 addendum FIX findings (§11, §12) are verified-fixed against their
+stated problems with file:line evidence, the six previously-undocumented paths are all
+present, and each entry faithfully matches its route's auth, params, request body, and
+status code (notably `/api/rebuild` 202 and the reorder array body). The delta is purely
+additive to a non-prod static doc object: no regression, no new FIX-worthy finding (§13 is
+a deliberate match to the existing convention; §14 is the expected "no test harness for a
+static spec"). Gates green: backend `tsc` clean, blog unit 25/25.
+
+**Unchanged residual operator item (not a code/review blocker):** the §2 composite index
+still must be deployed (`firebase deploy --only firestore:indexes`) **before** the
+`develop -> main` deploy — the prod FE static build fetches `/api/posts`, which returns
+`FAILED_PRECONDITION` until the index exists. Tracked in the decisions log; it is a
+human/operator step, unaffected by this delta.
+
+The blog (S4) review loop is now fully closed across Pass 1 → Pass 3.
