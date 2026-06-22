@@ -237,7 +237,7 @@ commit per ticket. Record each ticket's commit SHA here during implement:
 | Ticket | Scope | Commit |
 |--------|-------|--------|
 | SEO-1 | L1 per-page OG/Twitter (3 pages) | 0ee5c1c |
-| SEO-2 | Home -> build-time render | _pending_ |
+| SEO-2 | Home -> build-time render | f8ac894 |
 | SEO-3 | Projects -> build-time render | _pending_ |
 | SEO-4 | Resume -> build-time render | _pending_ |
 | SEO-5 | Delete dead public data layer | _pending_ |
