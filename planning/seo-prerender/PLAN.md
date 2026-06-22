@@ -240,7 +240,7 @@ commit per ticket. Record each ticket's commit SHA here during implement:
 | SEO-2 | Home -> build-time render | f8ac894 |
 | SEO-3 | Projects -> build-time render | 7a076f4 |
 | SEO-4 | Resume -> build-time render | ddcd7fc |
-| SEO-5 | Delete dead public data layer | _pending_ |
+| SEO-5 | Delete dead public data layer | 3edb38d |
 
 Suggested commit subjects (per CLAUDE.md, no ticket suffix):
 - SEO-1 `feat(frontend): add per-page Open Graph and Twitter card metadata`
