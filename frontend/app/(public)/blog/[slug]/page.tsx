@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { excerptOf, formatDate, getPublishedPosts } from "@/lib/blog/posts";
+import { excerptOf, getPublishedPosts } from "@/lib/blog/posts";
+import { formatDateUTC } from "@/lib/date";
 import { PostContent } from "@/components/blog/PostContent";
 
 // Only published slugs are pre-rendered; anything else (drafts, unknown) 404s (D11).
@@ -59,7 +60,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
         <header className="mb-8 border-b border-gray-700 pb-6">
           <h1 className="mb-3 text-3xl font-bold text-gray-100">{post.title}</h1>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-400">
-            {post.publishedAt && <span>{formatDate(post.publishedAt)}</span>}
+            {post.publishedAt && <span>{formatDateUTC(post.publishedAt)}</span>}
             <span>{post.readingTime} min read</span>
           </div>
           {post.tags.length > 0 && (

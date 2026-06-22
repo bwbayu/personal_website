@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getDailyLogs, formatDate } from "@/lib/daily/logs";
+import { getDailyLogs } from "@/lib/daily/logs";
+import { formatDateUTC } from "@/lib/date";
 import { PostContent } from "@/components/blog/PostContent";
 import { DailyLogFeedClient } from "@/components/daily/DailyLogFeedClient";
 
@@ -16,7 +17,7 @@ export default async function DailyPage() {
   const entries = logs.map((log) => ({
     id: log.id,
     date: log.date,
-    dateLabel: formatDate(log.date),
+    dateLabel: formatDateUTC(log.date),
     tags: log.tags,
     content: <PostContent content={log.content} />,
   }));

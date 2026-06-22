@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { isSafeUrl } from "@/lib/url";
-import { excerptOf, formatDate, type Post } from "@/lib/blog/posts";
+import { excerptOf, type Post } from "@/lib/blog/posts";
+import { formatDateUTC } from "@/lib/date";
 
 // Public /blog list (D9, D12). Receives the build-fetched published list as a prop
 // (the server page does the fetch) and renders cards + a client-side tag filter.
@@ -88,7 +89,7 @@ export function BlogListClient({ posts }: { posts: Post[] }) {
                 </div>
               )}
               <div className="flex items-center justify-between text-xs text-gray-500">
-                <span>{formatDate(post.publishedAt)}</span>
+                <span>{formatDateUTC(post.publishedAt)}</span>
                 <span>{post.readingTime} min read</span>
               </div>
             </div>

@@ -20,16 +20,3 @@ export async function getDailyLogs(): Promise<DailyLog[]> {
   // must still succeed.
   return json.data ?? [];
 }
-
-const MONTHS = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-];
-
-// Deterministic UTC formatting of a YYYY-MM-DD date (no locale/timezone drift between
-// build hosts). Kept local to this module so daily does not depend on blog.
-export function formatDate(date: string): string {
-  const d = new Date(date);
-  if (Number.isNaN(d.getTime())) return date;
-  return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
-}

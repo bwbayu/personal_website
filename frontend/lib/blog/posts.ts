@@ -43,16 +43,3 @@ export function excerptOf(post: Post): string {
     .trim();
   return stripped.length > 160 ? `${stripped.slice(0, 160).trimEnd()}...` : stripped;
 }
-
-const MONTHS = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-];
-
-// Deterministic UTC date formatting (no locale/timezone drift between build hosts).
-export function formatDate(iso?: string): string {
-  if (!iso) return "";
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
-}
