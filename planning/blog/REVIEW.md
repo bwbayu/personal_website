@@ -193,7 +193,7 @@
 | Finding | Severity | Triage | Notes |
 |---------|----------|--------|-------|
 | §1 site URL fallback | SHOULD-FIX | **[FIXED] `544a375`** | Resolved via the §4 shared helper (empty-safe `||`). Operator action DONE: `NEXT_PUBLIC_SITE_URL` GitHub secret set to the custom domain `https://bwbayu.space`. The hardcoded fallback default (currently `https://personal-website-490704.web.app`) is to be updated to `https://bwbayu.space` in the §4 helper so the canonical/sitemap/OG/fallback all use the custom domain. |
-| §2 composite index | SHOULD-FIX | **FIX** | Option A: commit `backend/firestore.indexes.json` with `(status ASC, publishedAt DESC)` + wire `firestore.indexes` into `backend/firebase.json`. Deploy `firebase deploy --only firestore:indexes` is an operator step before `develop -> main` (cannot be verified headless — emulator does not enforce indexes). |
+| §2 composite index | SHOULD-FIX | **[FIXED] `0842f7a`** | Option A: commit `backend/firestore.indexes.json` with `(status ASC, publishedAt DESC)` + wire `firestore.indexes` into `backend/firebase.json`. Deploy `firebase deploy --only firestore:indexes` is an operator step before `develop -> main` (cannot be verified headless — emulator does not enforce indexes). **OPERATOR ACTION STILL OUTSTANDING.** |
 | §3 robots trailing slash | NICE-TO-HAVE | **[FIXED] `544a375`** | Folded into the §4 helper (normalized origin). |
 | §4 siteUrl dedup | NICE-TO-HAVE | **[FIXED] `544a375`** | New `lib/siteUrl.ts` exporting a normalized, empty-safe origin; layout/sitemap/robots consume it. This single change resolves §1 + §3 + §4 (one commit). |
 | §5 clear optional fields | OUT-OF-SCOPE | **DEFERRED** | Pre-existing scaffold behavior across all domains; separate follow-up against the scaffold if ever wanted. |
@@ -203,6 +203,6 @@
 
 ### Fix-phase commit map (for /wf-fix)
 - **Commit 1 (§4 + §1 + §3) — DONE `544a375`:** add `frontend/lib/siteUrl.ts` (normalized, empty-safe origin via trim + `||`, default `https://bwbayu.space`); rewire `app/layout.tsx`, `app/sitemap.ts`, `app/robots.ts` to use it.
-- **Commit 2 (§2):** add `backend/firestore.indexes.json` + wire `firestore.indexes` in `backend/firebase.json`. (Index deploy + DEPLOYMENT.md note is an operator step.)
+- **Commit 2 (§2) — DONE `0842f7a`:** add `backend/firestore.indexes.json` + wire `firestore.indexes` in `backend/firebase.json`. (Index deploy `firebase deploy --only firestore:indexes` is an OPERATOR step before `develop -> main`.)
 - **Commit 3 (§7):** tweak the `excerptOf` fallback regex.
 - DEFERRED/NO-ACTION: §5, §6, §8 — no code.
