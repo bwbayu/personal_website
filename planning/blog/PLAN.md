@@ -341,6 +341,15 @@ sandbox can't reach a backend, STOP and have the operator run the build).
 
 ## BLOG-6 — Site-wide SEO plumbing: metadataBase, default OG, sitemap, robots (FULL scope)
 
+**Status: DONE — commit `f27d989`.** Verified by build (zero-posts + with-posts):
+sitemap.xml uses ABSOLUTE URLs (Next does not prefix sitemap locs with metadataBase, so
+they are built from NEXT_PUBLIC_SITE_URL); robots.txt points at the absolute sitemap;
+root OG image resolves absolute via metadataBase. Site URL default =
+`https://personal-website-490704.web.app`. **Action for the user: set the
+`NEXT_PUBLIC_SITE_URL` GitHub secret** (else the deployed metadataBase/sitemap fall back
+to the default). Related: zero-posts build needed a `/blog/[slug]` fix (commit `50c59a6`,
+completes BLOG-5 AC3) because `output: export` rejects an empty `generateStaticParams()`.
+
 **Scope.** The shared SEO foundation the blog forces (and S6 will build on). Per the
 resolved FULL-scope decision.
 
