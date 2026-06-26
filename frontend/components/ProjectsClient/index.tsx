@@ -60,6 +60,8 @@ export default function ProjectsClient({
 }) {
   const skillMap = new Map(skills.map((skill) => [skill.id, skill]));
   const recent = projects.slice(0, 3);
+  // "All My Projects" excludes the 3 already shown in "Recent Projects" (no repeats).
+  const rest = projects.slice(3);
 
   return (
     <div className="flex grow flex-col bg-gray-900 p-6 dark:bg-gray-900">
@@ -168,10 +170,10 @@ export default function ProjectsClient({
         All My Projects
       </h1>
       <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {projects.length === 0 && (
+        {rest.length === 0 && (
           <p className="col-span-full text-gray-400">No projects to display.</p>
         )}
-        {projects.map((project, index) => (
+        {rest.map((project, index) => (
           <div
             key={index}
             className="animate-fade-in-left-top opacity-0"
