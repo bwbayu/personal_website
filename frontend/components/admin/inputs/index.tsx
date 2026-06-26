@@ -1,6 +1,7 @@
 "use client";
 
 import { type ComponentType } from "react";
+import { ToggleSwitch } from "flowbite-react";
 import type { FieldConfig, FieldType } from "@/lib/admin/config";
 import { isSafeUrl } from "@/lib/url";
 import { StringArrayInput } from "./StringArrayInput";
@@ -64,29 +65,12 @@ function NumberInput({ field, value, onChange }: FieldInputProps) {
 function BooleanInput({ field, value, onChange }: FieldInputProps) {
   const isOn = value === true;
   return (
-    <div className="flex gap-6">
-      <label className="flex items-center gap-2 text-sm text-gray-200">
-        <input
-          type="radio"
-          id={field.key}
-          name={field.key}
-          checked={isOn}
-          onChange={() => onChange(true)}
-          className="size-4 accent-blue-600"
-        />
-        Yes
-      </label>
-      <label className="flex items-center gap-2 text-sm text-gray-200">
-        <input
-          type="radio"
-          name={field.key}
-          checked={!isOn}
-          onChange={() => onChange(false)}
-          className="size-4 accent-blue-600"
-        />
-        No
-      </label>
-    </div>
+    <ToggleSwitch
+      id={field.key}
+      checked={isOn}
+      label={isOn ? "Yes" : "No"}
+      onChange={(checked) => onChange(checked)}
+    />
   );
 }
 
