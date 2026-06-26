@@ -43,6 +43,8 @@ export type ProjectType = {
   role: string[];
   technologies: string[];
   category: string[];
+  // Public visibility toggle; the /project page renders only isShow !== false.
+  isShow?: boolean;
 };
 
 export type AboutMeType = {
