@@ -62,14 +62,31 @@ function NumberInput({ field, value, onChange }: FieldInputProps) {
 }
 
 function BooleanInput({ field, value, onChange }: FieldInputProps) {
+  const isOn = value === true;
   return (
-    <input
-      type="checkbox"
-      id={field.key}
-      checked={value === true}
-      onChange={(e) => onChange(e.target.checked)}
-      className="size-4 accent-blue-600"
-    />
+    <div className="flex gap-6">
+      <label className="flex items-center gap-2 text-sm text-gray-200">
+        <input
+          type="radio"
+          id={field.key}
+          name={field.key}
+          checked={isOn}
+          onChange={() => onChange(true)}
+          className="size-4 accent-blue-600"
+        />
+        Yes
+      </label>
+      <label className="flex items-center gap-2 text-sm text-gray-200">
+        <input
+          type="radio"
+          name={field.key}
+          checked={!isOn}
+          onChange={() => onChange(false)}
+          className="size-4 accent-blue-600"
+        />
+        No
+      </label>
+    </div>
   );
 }
 
