@@ -3,9 +3,9 @@
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { Modal } from "flowbite-react";
+import { Modal, ToggleSwitch } from "flowbite-react";
 import { bySlug, type DomainConfig } from "@/lib/admin/config";
-import { deleteItem, reorderItems, ApiError } from "@/lib/admin/api";
+import { deleteItem, reorderItems, updateItem, ApiError } from "@/lib/admin/api";
 import { adminReadList, adminReadPath } from "@/lib/admin/read";
 import { adminKeys } from "@/lib/queries";
 import { SingletonForm } from "./DomainFormPage";
@@ -90,6 +90,9 @@ function DomainList({ config }: { config: DomainConfig }) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [reordering, setReordering] = useState(false);
+  // Per-cell in-flight keys (`${rowId}:${colKey}`) for inline boolean toggles, so each
+  // toggle disables only itself while its PATCH is in flight.
+  const [busyToggle, setBusyToggle] = useState<Set<string>>(new Set());
 
   const {
     data,
@@ -105,6 +108,13 @@ function DomainList({ config }: { config: DomainConfig }) {
     if (!data) return [];
     return config.reorderable ? sortForReorder(config, data) : data;
   }, [config, data]);
+
+  // Columns whose key maps to a boolean field render as an inline toggle (e.g. the
+  // Visible / isShow column on projects and skills) rather than static Yes/No text.
+  const booleanFieldKeys = useMemo(
+    () => new Set(config.fields.filter((field) => field.type === "boolean").map((field) => field.key)),
+    [config],
+  );
 
   // Combined banner: a write/reorder error (state) takes precedence, else the load error.
   const displayError =
@@ -134,6 +144,33 @@ function DomainList({ config }: { config: DomainConfig }) {
       setError(err instanceof Error ? err.message : "Reorder failed");
     } finally {
       setReordering(false);
+    }
+  };
+
+  // Inline toggle of a boolean field (e.g. `isShow`) straight from the list, so the
+  // common "just flip visible" edit needs no trip into the form. Optimistic for instant
+  // feedback, rolled back on failure, then invalidated to reconcile with the server.
+  const toggleField = async (row: Row, key: string, next: boolean) => {
+    const busyKey = `${row.id}:${key}`;
+    setError(null);
+    setNotice(null);
+    setBusyToggle((prev) => new Set(prev).add(busyKey));
+    const snapshot = queryClient.getQueryData<Row[]>(queryKey);
+    queryClient.setQueryData<Row[]>(queryKey, (old: Row[] | undefined) =>
+      (old ?? []).map((item) => (item.id === row.id ? { ...item, [key]: next } : item)),
+    );
+    try {
+      await updateItem(config.apiPath, row.id, { [key]: next });
+      await queryClient.invalidateQueries({ queryKey });
+    } catch (err) {
+      queryClient.setQueryData<Row[]>(queryKey, snapshot);
+      setError(err instanceof Error ? err.message : "Update failed");
+    } finally {
+      setBusyToggle((prev) => {
+        const nextSet = new Set(prev);
+        nextSet.delete(busyKey);
+        return nextSet;
+      });
     }
   };
 
@@ -224,11 +261,22 @@ function DomainList({ config }: { config: DomainConfig }) {
             <tbody>
               {rows.map((row) => (
                 <tr key={row.id} className="border-b border-gray-700 hover:bg-gray-700/50">
-                  {config.columns.map((col) => (
-                    <td key={col.key} className="px-3 py-2 text-gray-300">
-                      {formatCell(row[col.key])}
-                    </td>
-                  ))}
+                  {config.columns.map((col) => {
+                    const value = row[col.key];
+                    return (
+                      <td key={col.key} className="px-3 py-2 text-gray-300">
+                        {booleanFieldKeys.has(col.key) ? (
+                          <ToggleSwitch
+                            checked={value === true}
+                            disabled={busyToggle.has(`${row.id}:${col.key}`)}
+                            onChange={(next) => toggleField(row, col.key, next)}
+                          />
+                        ) : (
+                          formatCell(value)
+                        )}
+                      </td>
+                    );
+                  })}
                   {config.reorderable && (
                     <td className="px-3 py-2">
                       <div className="flex gap-2">
