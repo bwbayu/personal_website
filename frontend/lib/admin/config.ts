@@ -25,6 +25,7 @@ export interface FieldConfig {
   required?: boolean;
   options?: { value: string; label: string }[]; // for `select`
   defaultToday?: boolean; // only meaningful for `date`: pre-fill a new form with today
+  defaultOn?: boolean; // only meaningful for `boolean`: pre-check a new form (e.g. projects visible)
 }
 
 export interface ColumnConfig {
@@ -105,6 +106,7 @@ export const registry: DomainConfig[] = [
     columns: [
       { key: 'name', label: 'Name' },
       { key: 'date', label: 'Date' },
+      { key: 'isShow', label: 'Visible' },
     ],
     fields: [
       { key: 'name', label: 'Name', type: 'text', required: true },
@@ -116,6 +118,7 @@ export const registry: DomainConfig[] = [
       { key: 'url', label: 'URL', type: 'url' },
       { key: 'githubUrl', label: 'GitHub URL', type: 'url' },
       { key: 'youtubeUrl', label: 'YouTube URL', type: 'url' },
+      { key: 'isShow', label: 'Visible', type: 'boolean', defaultOn: true },
     ],
   },
   {
@@ -249,7 +252,7 @@ export const registry: DomainConfig[] = [
     ],
     fields: [
       { key: 'date', label: 'Date', type: 'date', required: true, defaultToday: true },
-      { key: 'content', label: 'Content', type: 'textarea', required: true },
+      { key: 'content', label: 'Content', type: 'markdown', required: true },
       { key: 'tags', label: 'Tags', type: 'string-array' },
     ],
   },

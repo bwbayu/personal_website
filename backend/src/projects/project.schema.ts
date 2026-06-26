@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { safeUrl, safeDate } from '../utils/schema.util';
 
-export const projectInsertSchema = z.object({
+const projectBase = z.object({
   name: z.string().min(1).max(200),
   date: safeDate,
   description: z.string().min(1).max(5000),
@@ -11,6 +11,14 @@ export const projectInsertSchema = z.object({
   url: safeUrl.optional(),
   githubUrl: safeUrl.optional(),
   youtubeUrl: safeUrl.optional(),
+  isShow: z.boolean().optional(),
 });
 
-export const projectUpdateSchema = projectInsertSchema.partial();
+// Insert defaults isShow to true (a new project is visible). The default lives only on
+// the insert schema, not the update partial — otherwise a PATCH omitting isShow would
+// re-show a deliberately hidden project. `validate` writes the parsed default to req.body.
+export const projectInsertSchema = projectBase.extend({
+  isShow: projectBase.shape.isShow.default(true),
+});
+
+export const projectUpdateSchema = projectBase.partial();

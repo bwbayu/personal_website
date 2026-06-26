@@ -1,6 +1,7 @@
 "use client";
 
 import { type ComponentType } from "react";
+import { ToggleSwitch } from "flowbite-react";
 import type { FieldConfig, FieldType } from "@/lib/admin/config";
 import { isSafeUrl } from "@/lib/url";
 import { StringArrayInput } from "./StringArrayInput";
@@ -62,13 +63,13 @@ function NumberInput({ field, value, onChange }: FieldInputProps) {
 }
 
 function BooleanInput({ field, value, onChange }: FieldInputProps) {
+  const isOn = value === true;
   return (
-    <input
-      type="checkbox"
+    <ToggleSwitch
       id={field.key}
-      checked={value === true}
-      onChange={(e) => onChange(e.target.checked)}
-      className="size-4 accent-blue-600"
+      checked={isOn}
+      label={isOn ? "Yes" : "No"}
+      onChange={(checked) => onChange(checked)}
     />
   );
 }

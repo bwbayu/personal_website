@@ -11,7 +11,8 @@
     "test:all": "npm test && npm run test:emulator",
     "migrate": "ts-node src/config/migration.ts",
     "patch:media-socials": "ts-node src/config/patch-media-socials.ts",
-    "patch:data-model-cleanup": "ts-node src/config/patch-data-model-cleanup.ts"
+    "patch:data-model-cleanup": "ts-node src/config/patch-data-model-cleanup.ts",
+    "patch:projects-visible": "ts-node src/config/patch-projects-visible.ts"
   },
   "dependencies": {
     "@google-cloud/firestore": "^7.5.0",

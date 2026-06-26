@@ -37,7 +37,8 @@ function defaultForType(field: FieldConfig): unknown {
     case "number":
       return 0;
     case "boolean":
-      return false;
+      // Opt-in default-on (e.g. a new project starts visible); otherwise unchecked.
+      return field.defaultOn ?? false;
     case "string-array":
     case "tech-picker":
       return [];

@@ -8,14 +8,8 @@ import {
   NavbarLink,
   NavbarToggle,
 } from "flowbite-react";
-import "devicon/devicon.min.css";
-import { isSafeUrl } from "@/lib/url";
-import { useMediaSocials } from "@/lib/queries";
 
 export function NavbarClient() {
-  const { data } = useMediaSocials();
-  const mediaSocials = data ?? [];
-
   return (
     <div className="w-full">
       <Navbar fluid rounded className="bg-gray-800 dark:bg-gray-800">
@@ -38,20 +32,6 @@ export function NavbarClient() {
           <NavbarLink as={Link} href="/daily" className="text-lg">
             Daily Log
           </NavbarLink>
-          {mediaSocials.filter((social) => isSafeUrl(social.url)).map((social) => (
-            <NavbarLink
-              key={social.name}
-              as={Link}
-              href={social.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-lg"
-            >
-              <div className="group relative flex flex-col items-center">
-                <i className={`${social.iconClass} text-lg transition-transform group-hover:scale-110`}></i>
-              </div>
-            </NavbarLink>
-          ))}
         </NavbarCollapse>
       </Navbar>
     </div>
