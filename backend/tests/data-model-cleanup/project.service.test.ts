@@ -21,6 +21,7 @@ const sampleProject: Project = {
   technologies: ['python', 'fastapi'],
   role: ['Back-End Developer'],
   category: ['Web'],
+  isShow: true,
 };
 
 describe('project service', () => {

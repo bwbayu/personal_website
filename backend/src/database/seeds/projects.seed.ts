@@ -4,7 +4,7 @@ import { toSlug } from '../../utils/slug.util';
 // Raw projects keep the technology NAMES for readability; they are mapped to skill
 // slug ids on export (single source of truth on the skill). Every tech name is a
 // verbatim skill name, so toSlug(name) === the seeded skill id.
-type RawProject = Omit<Project, 'id' | 'technologies'> & { technologies: string[] };
+type RawProject = Omit<Project, 'id' | 'technologies' | 'isShow'> & { technologies: string[] };
 
 const raw: RawProject[] = [
   {
@@ -139,4 +139,5 @@ const raw: RawProject[] = [
 export const projectsSeed: Omit<Project, 'id'>[] = raw.map(p => ({
   ...p,
   technologies: p.technologies.map(toSlug),
+  isShow: true,
 }));
