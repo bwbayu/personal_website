@@ -249,7 +249,7 @@ export const registry: DomainConfig[] = [
     ],
     fields: [
       { key: 'date', label: 'Date', type: 'date', required: true, defaultToday: true },
-      { key: 'content', label: 'Content', type: 'textarea', required: true },
+      { key: 'content', label: 'Content', type: 'markdown', required: true },
       { key: 'tags', label: 'Tags', type: 'string-array' },
     ],
   },
