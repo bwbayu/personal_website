@@ -2,5 +2,6 @@
 // minimal: the encode function, the config/id types, and the id lists the selects need.
 
 export { encode } from './engine';
+export { parsePlugboard } from './plugboard';
 export type { EnigmaConfig, RotorId, ReflectorId } from './types';
 export { ROTOR_IDS, REFLECTOR_IDS } from './data';
