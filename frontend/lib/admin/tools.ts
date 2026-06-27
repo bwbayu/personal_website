@@ -10,4 +10,5 @@ export type ToolLink = {
 
 export const toolLinks: ToolLink[] = [
   { slug: "ascii-sum", label: "ASCII sum", path: "/admin/tools/ascii-sum" },
+  { slug: "enigma", label: "Enigma", path: "/admin/tools/enigma" },
 ];
