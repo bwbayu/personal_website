@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import {
   encode,
+  parsePlugboard,
   REFLECTOR_IDS,
   ROTOR_IDS,
   type EnigmaConfig,
@@ -35,15 +36,16 @@ export function EnigmaClient() {
   const [reflector, setReflector] = useState<ReflectorId>("B");
   const [rings, setRings] = useState<Triple<number>>([1, 1, 1]); // 1..26
   const [positions, setPositions] = useState<Triple<number>>([0, 0, 0]); // 0..25 letter index
-  const [pairs, setPairs] = useState<Array<[string, string]>>([]); // plugboard rows; "" = unset
+  const [plugRaw, setPlugRaw] = useState(""); // plugboard as free text, e.g. "AB CD EF"
 
-  // Only fully-set rows reach the engine (DISCUSSION E3/E4): a half-entered pair is skipped
-  // so the output stays a valid A-Z string while the user finishes choosing the partner.
-  const plugboard = pairs.filter(([a, b]) => a !== "" && b !== "").map(([a, b]) => a + b);
+  // Parse the raw plugboard text live into pairs. All-or-nothing: any problem yields an
+  // empty plugboard (so the output stays valid) plus one inline hint; the pairs apply
+  // only once the whole string parses cleanly.
+  const { pairs: plugboard, error: plugError } = parsePlugboard(plugRaw);
 
-  // Single UI -> engine conversion point (DISCUSSION E5): start positions are 0-based
-  // letter indices, +1'd to the engine's 1..26; rings are already 1..26; plugboard carries
-  // only the complete pairs assembled above.
+  // Single UI -> engine conversion point: start positions are 0-based letter indices,
+  // +1'd to the engine's 1..26; rings are already 1..26; plugboard is the parsed pair
+  // list from above (empty whenever the raw text is invalid).
   const config: EnigmaConfig = {
     rotors,
     reflector,
@@ -71,35 +73,6 @@ export function EnigmaClient() {
       next[slot] = value;
       return next;
     });
-
-  const addPair = () => setPairs((prev) => [...prev, ["", ""]]);
-  const removePair = (row: number) =>
-    setPairs((prev) => prev.filter((_, i) => i !== row));
-  const setPairCell = (row: number, pos: number, letter: string) =>
-    setPairs((prev) =>
-      prev.map((pair, i) => {
-        if (i !== row) return pair;
-        const next = [...pair] as [string, string];
-        next[pos] = letter;
-        return next;
-      }),
-    );
-
-  // Letters selectable in one plugboard cell: every letter except those already used in
-  // another cell (DISCUSSION E3). The cell's own current value is kept (it is excluded from
-  // the "used" set), and its row partner is excluded, so reuse and self-pairing are
-  // unrepresentable. A free letter is one not used by any pair.
-  const lettersFor = (row: number, pos: number): string[] => {
-    const used = new Set<string>();
-    pairs.forEach((pair, r) =>
-      pair.forEach((letter, c) => {
-        if (letter && !(r === row && c === pos)) used.add(letter);
-      }),
-    );
-    return LETTERS.filter((l) => !used.has(l));
-  };
-  const freeLetters = 26 - pairs.reduce((n, [a, b]) => n + (a ? 1 : 0) + (b ? 1 : 0), 0);
-  const canAddPair = pairs.length < 10 && freeLetters >= 2;
 
   return (
     <div className="max-w-4xl">
@@ -132,10 +105,6 @@ export function EnigmaClient() {
 
         <div className="grid gap-4 sm:grid-cols-3">
           {SLOT_LABELS.map((slotLabel, slot) => {
-            // Rotor exclusion (DISCUSSION E4): a slot may pick its own current rotor or any
-            // rotor not held by the other two slots, so duplicates are unrepresentable.
-            const usedByOthers = rotors.filter((_, i) => i !== slot);
-            const rotorOptions = ROTOR_IDS.filter((id) => !usedByOthers.includes(id));
             return (
               <div
                 key={slotLabel}
@@ -154,7 +123,7 @@ export function EnigmaClient() {
                   onChange={(e) => setRotorAt(slot, e.target.value as RotorId)}
                   className={`${fieldClass} mb-3`}
                 >
-                  {rotorOptions.map((id) => (
+                  {ROTOR_IDS.map((id) => (
                     <option key={id} value={id}>
                       {id}
                     </option>
@@ -215,56 +184,25 @@ export function EnigmaClient() {
       </div>
 
       <div className="mb-4 rounded-lg border border-gray-700 bg-gray-800 p-6">
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <div>
-            <p className="text-sm font-medium text-gray-300">Plugboard</p>
-            <p className="text-xs text-gray-500">
-              Up to 10 pairs. A letter can be used in at most one pair.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={addPair}
-            disabled={!canAddPair}
-            className="shrink-0 rounded border border-gray-600 bg-gray-700 px-3 py-1.5 text-sm text-gray-100 hover:bg-gray-600 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Add pair
-          </button>
-        </div>
-
-        {pairs.length === 0 ? (
-          <p className="text-sm text-gray-500">No pairs - letters map to themselves.</p>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {pairs.map((pair, row) => (
-              <div key={row} className="flex items-center gap-2">
-                {[0, 1].map((pos) => (
-                  <select
-                    key={pos}
-                    aria-label={`Plugboard pair ${row + 1} letter ${pos + 1}`}
-                    value={pair[pos]}
-                    onChange={(e) => setPairCell(row, pos, e.target.value)}
-                    className={`${fieldClass} w-20`}
-                  >
-                    <option value="">--</option>
-                    {lettersFor(row, pos).map((l) => (
-                      <option key={l} value={l}>
-                        {l}
-                      </option>
-                    ))}
-                  </select>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => removePair(row)}
-                  aria-label={`Remove plugboard pair ${row + 1}`}
-                  className="rounded border border-gray-600 bg-gray-700 px-3 py-1.5 text-sm text-gray-300 hover:bg-gray-600"
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-          </div>
+        <label htmlFor="enigma-plugboard" className={labelClass}>
+          Plugboard
+        </label>
+        <p className="mb-2 text-xs text-gray-500">
+          Up to 10 pairs; each letter at most once. Two letters per pair; spaces are
+          optional (e.g. AB CD EF).
+        </p>
+        <input
+          id="enigma-plugboard"
+          type="text"
+          value={plugRaw}
+          onChange={(e) => setPlugRaw(e.target.value)}
+          placeholder="e.g. AB CD EF"
+          className={fieldClass}
+        />
+        {plugError && (
+          <p className="mt-2 text-sm text-red-400" role="alert">
+            {plugError}
+          </p>
         )}
       </div>
 
