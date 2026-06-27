@@ -29,3 +29,8 @@ secrets/
 # planning/ is tracked (workflow handoff docs shared so the wf-* flow is portable)
 PR.md
 node_modules
+
+# Exception: the security-tools roadmap and its sessions commit code only (no planning
+# .md), so their planning docs stay local-only and uncommitted.
+planning/security-tools
+planning/ascii-sum-tool
