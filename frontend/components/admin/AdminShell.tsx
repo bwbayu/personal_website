@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { bySlug, navGroups } from "@/lib/admin/config";
+import { toolLinks } from "@/lib/admin/tools";
 
 // Sidebar + content shell for the authenticated admin area. On desktop the grouped
 // sidebar is always visible; below md it collapses behind a topbar toggle into a
@@ -85,6 +86,21 @@ export function AdminShell({ children }: { children: ReactNode }) {
           })}
         </div>
       ))}
+      {/* Tools: non-CRUD utility pages, kept out of navGroups/registry (see tools.ts). */}
+      <div className="mt-3 flex flex-col gap-1">
+        <span className="px-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
+          Tools
+        </span>
+        {toolLinks.map((tool) => (
+          <Link
+            key={tool.slug}
+            href={tool.path}
+            className={linkClass(pathname.startsWith(tool.path))}
+          >
+            {tool.label}
+          </Link>
+        ))}
+      </div>
     </>
   );
 
