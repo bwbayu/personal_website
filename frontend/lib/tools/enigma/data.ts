@@ -38,11 +38,13 @@ export const REFLECTOR_IDS: ReflectorId[] = ['A', 'B', 'C'];
 // Known-answer vectors (asserted by the throwaway scratch check, also kept here so the
 // data file documents its own correctness contract):
 //
-// 1. Primary (sourced): rotors I-II-III (left-to-right), reflector B, rings A-A-A,
+// 1. Primary (published): rotors I-II-III (left-to-right), reflector B, rings A-A-A,
 //    start A-A-A, no plugboard, input "AAAAA" -> "BDZGO".
 // 2. Self-reciprocity: encode(cfg, encode(cfg, s)) === s for any all-letter s
 //    (reflectors A/B/C are derangements + involutions).
-// 3. Double-stepping: a config whose message crosses rotor II's notch 'E' so the
-//    middle rotor double-steps; expected ciphertext sourced from cryptii.
-// 4. Non-A ring (Ringstellung): a config with at least one ring != A; expected
-//    ciphertext sourced from cryptii.
+// 3. Double-stepping: rotors I-II-III, reflector B, rings A-A-A, start A-D-U, no
+//    plugboard, "AAAAAAAAAA" -> "EQIBMGFJBW". From A-D-U the window advances
+//    ADV, AEW, BFX, BFY (Wikipedia), so rotor II crosses its notch 'E' and double-steps
+//    on the 3rd press.
+// 4. Non-A ring (Ringstellung): rotors I-II-III, reflector B, rings C-E-B, start A-A-A,
+//    no plugboard, "HELLOWORLD" -> "UXFQYPAGJP".
