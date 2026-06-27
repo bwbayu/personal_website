@@ -132,10 +132,6 @@ export function EnigmaClient() {
 
         <div className="grid gap-4 sm:grid-cols-3">
           {SLOT_LABELS.map((slotLabel, slot) => {
-            // Rotor exclusion (DISCUSSION E4): a slot may pick its own current rotor or any
-            // rotor not held by the other two slots, so duplicates are unrepresentable.
-            const usedByOthers = rotors.filter((_, i) => i !== slot);
-            const rotorOptions = ROTOR_IDS.filter((id) => !usedByOthers.includes(id));
             return (
               <div
                 key={slotLabel}
@@ -154,7 +150,7 @@ export function EnigmaClient() {
                   onChange={(e) => setRotorAt(slot, e.target.value as RotorId)}
                   className={`${fieldClass} mb-3`}
                 >
-                  {rotorOptions.map((id) => (
+                  {ROTOR_IDS.map((id) => (
                     <option key={id} value={id}>
                       {id}
                     </option>
