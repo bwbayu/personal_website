@@ -50,8 +50,14 @@ and your CLOSE / another-pass recommendation. Do NOT start fixing.
 End your reply with the appropriate next step:
 - If you recommend ANOTHER pass: a ready-to-paste prompt to fix the new findings
   (after I triage them) - `/wf-fix $1`.
-- If CLOSE: state the review loop is done. Remaining steps are human-gated:
-  (1) push `feat/$1` to origin only after the user approves; the user then opens a
-  PR into `develop` — Claude never runs `gh pr create` or opens PRs; (2) the final
-  PR `develop` -> `main` (which triggers the prod deploy) happens only AFTER all
-  roadmap sessions are merged into develop - NOT per session.
+- If CLOSE: the review loop is done. Next, run the diagram finisher to reconcile this
+  feature's flow diagram(s) against the shipped code (it self-assesses; if the flow
+  was never diagram-worthy it will say so and skip):
+  ```
+  /wf-diagram $1 final
+  ```
+  After that, the remaining steps are human-gated: (1) push `feat/$1` to origin only
+  after the user approves; the user then opens a PR into `develop` — Claude never
+  runs `gh pr create` or opens PRs; (2) the final PR `develop` -> `main` (which
+  triggers the prod deploy) happens only AFTER all roadmap sessions are merged into
+  develop - NOT per session.

@@ -33,7 +33,7 @@ only its OWN scoped tests under backend/tests/<ticket_slug>/ (backend: Vitest,
 unit-heavy with the repo mocked - run `npx vitest run tests/<slug>`). The thin
 Firestore-emulator slice (generic FirestoreRepository, domain queries, a few endpoint
 smokes) has its own config and is run as a whole via `cd backend; npm run test:emulator`
-(needs Java/Temurin 17) - it is a LOCAL gate run before commit in implement/fix, not
+(needs Java/Temurin 21) - it is a LOCAL gate run before commit in implement/fix, not
 scoped per ticket. Frontend: typecheck only - `npm run typecheck` (bare `tsc --noEmit`;
 this repo is single-config, do NOT use `-b`).
 
@@ -41,7 +41,7 @@ Deliverable: planning/$1/PLAN.md + any answered questions. No code, no commits.
 
 ## Handoff (run in a NEW session per phase)
 When the plan is finalized, end your reply with a ready-to-paste prompt for the next
-phase:
+phase - the diagram phase (intent), which then chains to implementation:
 ```
-/wf-implement $1
+/wf-diagram $1 plan
 ```

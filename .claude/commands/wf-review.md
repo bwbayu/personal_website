@@ -30,7 +30,7 @@ Plus a lower-priority bucket for reuse / simplification / efficiency smells.
 You MAY run the feature's scoped tests to validate (backend unit
 `npx vitest run tests/<slug>`, frontend `npm run typecheck`); do NOT run the full
 suite (slow). The emulator slice (`cd backend; npm run test:emulator`, needs
-Java/Temurin 17) is the operator's pre-PR local gate - if you have Java, run it and
+Java/Temurin 21) is the operator's pre-PR local gate - if you have Java, run it and
 confirm it is green before recommending a PR; note it if you could not run it.
 
 Output: planning/$1/REVIEW.md (discussion-notes style):
@@ -49,9 +49,21 @@ most want answered. Do NOT start fixing - triage first.
 
 ## Handoff (run in a NEW session per phase)
 Triage happens WITH me here (mark each finding FIX / DEFERRED / NO-ACTION in the
-REVIEW Decisions log). Once findings are triaged, end your reply with a
-ready-to-paste prompt for the fix phase:
-```
-/wf-fix $1
-```
-If nothing is marked FIX, say so and recommend closing instead.
+REVIEW Decisions log). Once findings are triaged, end your reply with the appropriate
+next step:
+- If anything is marked FIX: a ready-to-paste prompt for the fix phase:
+  ```
+  /wf-fix $1
+  ```
+- If nothing is marked FIX: say so — the review loop CLOSES here (no fix, no
+  re-review). Next, run the diagram finisher to reconcile this feature's flow
+  diagram(s) against the shipped code (it self-assesses; if the flow was never
+  diagram-worthy it will say so and skip):
+  ```
+  /wf-diagram $1 final
+  ```
+  After that, the remaining steps are human-gated: (1) push `feat/$1` to origin only
+  after the user approves; the user then opens a PR into `develop` — Claude never
+  runs `gh pr create` or opens PRs; (2) the final PR `develop` -> `main` (which
+  triggers the prod deploy) happens only AFTER all roadmap sessions are merged into
+  develop - NOT per session.
