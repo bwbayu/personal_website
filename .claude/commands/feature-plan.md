@@ -11,7 +11,7 @@ Read in full:
 1. planning/$1/DISCUSSION.md - the design/PRD. Its "Decisions log" holds the
    LOCKED decisions; HONOR them, do not relitigate. If you think one is wrong,
    raise it as a question - don't silently change it.
-2. EXECUTION_FLOW.md - follow its discipline; this session is Phase 0 only
+2. FEATURE_FLOW.md - follow its discipline; this session is Phase 0 only
    (discovery + write the plan). Do NOT execute later phases.
 CLAUDE.md auto-loads - follow repo conventions.
 
@@ -28,14 +28,11 @@ C. Write the plan to planning/$1/PLAN.md. Give each ticket a stable id (e.g.
 D. Ask clarifying questions (AskUserQuestion) about anything load-bearing BEFORE
    finalizing the plan.
 
-Testing guidance: do NOT plan a full-suite run (it is slow). Each ticket names
-only its OWN scoped tests under backend/tests/<ticket_slug>/ (backend: Vitest,
-unit-heavy with the repo mocked - run `npx vitest run tests/<slug>`). The thin
-Firestore-emulator slice (generic FirestoreRepository, domain queries, a few endpoint
-smokes) has its own config and is run as a whole via `cd backend; npm run test:emulator`
-(needs Java/Temurin 21) - it is a LOCAL gate run before commit in implement/fix, not
-scoped per ticket. Frontend: typecheck only - `npm run typecheck` (bare `tsc --noEmit`;
-this repo is single-config, do NOT use `-b`).
+Testing guidance: do NOT plan a full-suite run (it is slow). Each ticket names only
+its OWN scoped tests, located and run per the Workflow stack contract (CLAUDE.md) -
+the Scoped test command, kept under the contract's Test location, plus the Static gate.
+Where a ticket touches the area the Pre-commit gate covers, note that gate too (a local
+gate run before commit in implement/fix, not scoped per ticket).
 
 Deliverable: planning/$1/PLAN.md + any answered questions. No code, no commits.
 
@@ -43,5 +40,5 @@ Deliverable: planning/$1/PLAN.md + any answered questions. No code, no commits.
 When the plan is finalized, end your reply with a ready-to-paste prompt for the next
 phase - the diagram phase (intent), which then chains to implementation:
 ```
-/wf-diagram $1 plan
+/feature-diagram $1 plan
 ```

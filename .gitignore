@@ -26,7 +26,7 @@ secrets/
 .claude/*
 !.claude/commands/
 
-# planning/ is tracked (workflow handoff docs shared so the wf-* flow is portable)
+# planning/ is tracked (workflow handoff docs shared so the feature-* flow is portable)
 PR.md
 node_modules
 

@@ -8,7 +8,7 @@ You are my design partner for a NEW feature. We DISCUSS until the design is clea
 Arguments: $ARGUMENTS
 The FIRST token is the feature SLUG (kebab-case). The rest is the task description.
 
-If this session was derived from a roadmap (e.g. `/wf-roadmap`), read
+If this session was derived from a roadmap (e.g. `/feature-roadmap`), read
 `planning/<roadmap-slug>/DISCUSSION.md` first — its Decisions log is LOCKED and must
 not be re-opened or contradicted. Raise any conflict instead of silently diverging.
 
@@ -41,5 +41,5 @@ updates in separate commits, not folded into code commits).
 Once I confirm the design is LOCKED and the Decisions log is complete, end your
 reply with a ready-to-paste prompt for the next phase:
 ```
-/wf-plan <slug>
+/feature-plan <slug>
 ```

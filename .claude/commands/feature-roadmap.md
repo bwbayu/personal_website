@@ -22,7 +22,7 @@ Doc structure:
    Each session gets: a slug (kebab-case), a one-line description, scope (what it
    delivers), and dependencies (which prior sessions must land first).
 5. Decisions log — every LOCKED decision with a one-line rationale + date. This is
-   the contract all derived `wf-discuss` sessions execute against; treat it as
+   the contract all derived `feature-discuss` sessions execute against; treat it as
    authoritative and immutable.
 6. Parking lot / later.
 
@@ -33,7 +33,7 @@ Rules:
 - Do NOT write feature code. Do NOT commit anything.
 - The scope of each session (S0..Sn) must be completable in one session. If a
   session feels large, split it.
-- Decisions locked here are authoritative for ALL derived `wf-discuss` sessions.
+- Decisions locked here are authoritative for ALL derived `feature-discuss` sessions.
   A derived session that contradicts a locked decision must STOP and escalate —
   not silently diverge.
 - This is a HUMAN-GATED phase: keep discussing until the user says the roadmap and
@@ -46,6 +46,6 @@ updates in separate commits, not folded into code commits).
 Once the roadmap is LOCKED and the session plan is complete, end your reply with the
 ready-to-paste prompts for starting each session in order. For S0:
 ```
-/wf-discuss <S0-slug> Read planning/<roadmap-slug>/DISCUSSION.md first — its Decisions log is LOCKED. <S0 description and scope>
+/feature-discuss <S0-slug> Read planning/<roadmap-slug>/DISCUSSION.md first — its Decisions log is LOCKED. <S0 description and scope>
 ```
 Repeat for S1..Sn so the user can copy each one when they start that session.

@@ -6,10 +6,10 @@ You are a fresh-eyes REVIEW agent. REVIEW ONLY: no code changes, no commits, no
 push. Produce review notes, then stop for triage with the user.
 
 Feature slug: $1
-Base branch (the branch feat/$1 was cut from): $2  (default `develop` if blank; say which you used)
+Base branch (the branch feat/$1 was cut from): $2  (default the integration branch from the Workflow stack contract if blank; say which you used)
 
 Read in full: planning/$1/PLAN.md (the contract), planning/$1/DISCUSSION.md (the
-LOCKED Decisions log), EXECUTION_FLOW.md (Phase 4 audit conventions: number every
+LOCKED Decisions log), FEATURE_FLOW.md (Phase 4 audit conventions: number every
 finding §N, severity buckets, recommendation, never fix without referencing).
 CLAUDE.md auto-loads - use its conventions to judge correctness.
 
@@ -27,11 +27,10 @@ C. EDGE CASES - build a checklist (empty/edge inputs, error paths, idempotency,
    concurrency, missing files, partial payloads, etc.) and verify each.
 Plus a lower-priority bucket for reuse / simplification / efficiency smells.
 
-You MAY run the feature's scoped tests to validate (backend unit
-`npx vitest run tests/<slug>`, frontend `npm run typecheck`); do NOT run the full
-suite (slow). The emulator slice (`cd backend; npm run test:emulator`, needs
-Java/Temurin 21) is the operator's pre-PR local gate - if you have Java, run it and
-confirm it is green before recommending a PR; note it if you could not run it.
+You MAY run the feature's scoped tests to validate, per the Workflow stack contract
+(CLAUDE.md): the Scoped test command + the Static gate; do NOT run the full suite
+(slow). The Pre-commit gate is the operator's pre-PR local gate - if you can run it, run
+it and confirm it is green before recommending a PR; note it if you could not.
 
 Output: planning/$1/REVIEW.md (discussion-notes style):
   1. Objective + scope (commits/tickets reviewed; what's pending)
@@ -53,17 +52,18 @@ REVIEW Decisions log). Once findings are triaged, end your reply with the approp
 next step:
 - If anything is marked FIX: a ready-to-paste prompt for the fix phase:
   ```
-  /wf-fix $1
+  /feature-fix $1
   ```
 - If nothing is marked FIX: say so — the review loop CLOSES here (no fix, no
   re-review). Next, run the diagram finisher to reconcile this feature's flow
   diagram(s) against the shipped code (it self-assesses; if the flow was never
   diagram-worthy it will say so and skip):
   ```
-  /wf-diagram $1 final
+  /feature-diagram $1 final
   ```
-  After that, the remaining steps are human-gated: (1) push `feat/$1` to origin only
-  after the user approves; the user then opens a PR into `develop` — Claude never
-  runs `gh pr create` or opens PRs; (2) the final PR `develop` -> `main` (which
-  triggers the prod deploy) happens only AFTER all roadmap sessions are merged into
-  develop - NOT per session.
+  After that, the remaining steps are human-gated per the Branch model (Workflow stack
+  contract): (1) push the feature branch to origin only after the user approves; the
+  user then opens the PR into the integration branch — Claude never runs `gh pr create`
+  or opens PRs; (2) the batch PR to the prod branch (which triggers the deploy) happens
+  only AFTER all roadmap sessions are merged into the integration branch - NOT per
+  session.

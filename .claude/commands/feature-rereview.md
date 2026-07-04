@@ -11,7 +11,7 @@ Delta base = the last commit the PREVIOUS pass reviewed: $2
 
 Read: planning/$1/REVIEW.md (prior findings + Decisions log: which were FIX vs
 DEFERRED / NO ACTION / OUT OF SCOPE), planning/$1/DISCUSSION.md (LOCKED decisions),
-EXECUTION_FLOW.md (Phase 4.5 re-audit conventions). CLAUDE.md auto-loads.
+FEATURE_FLOW.md (Phase 4.5 re-audit conventions). CLAUDE.md auto-loads.
 
 Scope the delta (fix commits only):
   git log --oneline $2..HEAD
@@ -27,11 +27,10 @@ B. Review the delta for regressions or NEW issues the fixes introduced (violated
    locked decision, broken adjacent behavior, missing/weak test, type error).
 C. Confirm each fix shipped with a scoped test that proves closure; flag any
    "fixed without a test".
-You MAY run the feature's scoped tests (backend unit `npx vitest run tests/<slug>`,
-frontend `npm run typecheck`); do NOT run the full suite (slow). Re-review is the gate
-before the PR - if you have Java, run the emulator slice
-(`cd backend; npm run test:emulator`, Temurin 21) and confirm it is green before
-recommending CLOSE; flag it if you could not run it locally.
+You MAY run the feature's scoped tests, per the Workflow stack contract (CLAUDE.md):
+the Scoped test command + the Static gate; do NOT run the full suite (slow). Re-review
+is the gate before the PR - if you can run the Pre-commit gate, run it and confirm it is
+green before recommending CLOSE; flag it if you could not run it locally.
 
 Output - APPEND to planning/$1/REVIEW.md (do NOT overwrite prior passes):
   # Pass N review
@@ -49,15 +48,16 @@ and your CLOSE / another-pass recommendation. Do NOT start fixing.
 ## Handoff (run in a NEW session per phase)
 End your reply with the appropriate next step:
 - If you recommend ANOTHER pass: a ready-to-paste prompt to fix the new findings
-  (after I triage them) - `/wf-fix $1`.
+  (after I triage them) - `/feature-fix $1`.
 - If CLOSE: the review loop is done. Next, run the diagram finisher to reconcile this
   feature's flow diagram(s) against the shipped code (it self-assesses; if the flow
   was never diagram-worthy it will say so and skip):
   ```
-  /wf-diagram $1 final
+  /feature-diagram $1 final
   ```
-  After that, the remaining steps are human-gated: (1) push `feat/$1` to origin only
-  after the user approves; the user then opens a PR into `develop` — Claude never
-  runs `gh pr create` or opens PRs; (2) the final PR `develop` -> `main` (which
-  triggers the prod deploy) happens only AFTER all roadmap sessions are merged into
-  develop - NOT per session.
+  After that, the remaining steps are human-gated per the Branch model (Workflow stack
+  contract): (1) push the feature branch to origin only after the user approves; the
+  user then opens the PR into the integration branch — Claude never runs `gh pr create`
+  or opens PRs; (2) the batch PR to the prod branch (which triggers the deploy) happens
+  only AFTER all roadmap sessions are merged into the integration branch - NOT per
+  session.

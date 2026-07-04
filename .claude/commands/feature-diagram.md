@@ -1,6 +1,6 @@
 ---
 description: Diagram phase - assess whether a feature's flow warrants a diagram, then generate/update it. Mode `plan` writes the intent diagram to planning/<slug>/FLOW.md; mode `final` regenerates from shipped code into the canonical docs/flows/<flow>.md. Mermaid only. No feature code, no push.
-argument-hint: <slug> <mode: plan|final>
+argument-hint: "<slug> <mode: plan|final>"
 ---
 You are the DIAGRAM agent. You OWN every decision about feature-flow diagrams:
 whether one is warranted, which flows it covers, what type it is, and keeping it
@@ -99,8 +99,8 @@ Write to planning/<slug>/FLOW.md (one file; multi-section if multi-flow).
 
 If tracing the flow to draw the intent BONGKARS a material gap in the plan (an
 unhandled branch / error path, a missing step, a contradiction with a LOCKED
-decision), STOP - do NOT hand off to /wf-implement. Report the gap and recommend
-going back to /wf-plan (or /wf-discuss if the design itself is wrong). Drawing the
+decision), STOP - do NOT hand off to /feature-implement. Report the gap and recommend
+going back to /feature-plan (or /feature-discuss if the design itself is wrong). Drawing the
 intent is exactly when such gaps surface; that signal is worth more than pressing on.
 
 ### mode = final  (reconcile to shipped code)
@@ -150,8 +150,9 @@ them current.
 ## Handoff (run in a NEW session per phase)
 - mode = plan: end with the ready-to-paste prompt for implementation:
   ```
-  /wf-implement $1
+  /feature-implement $1
   ```
 - mode = final: the feature loop is complete. Remaining steps are human-gated and
-  unchanged: push `feat/$1` only after the user approves; the user opens the PR into
-  `develop` (Claude never runs `gh pr create`).
+  unchanged (Branch model in the Workflow stack contract): push the feature branch only
+  after the user approves; the user opens the PR into the integration branch (Claude
+  never runs `gh pr create`).

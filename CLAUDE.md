@@ -40,7 +40,7 @@ emulator only where it adds value: the generic `FirestoreRepository<T>`,
 domain-specific queries (ordering / filtering), and a few endpoint smokes (auth
 gating, Zod validation, one CRUD round-trip). Tests are organized by backlog ticket
 under `backend/tests/<ticket_slug>/` (mirrors the workflow in
-[EXECUTION_FLOW.md](EXECUTION_FLOW.md)). Run scoped to one ticket, not the full suite
+[FEATURE_FLOW.md](FEATURE_FLOW.md)). Run scoped to one ticket, not the full suite
 (slow). The thin emulator slice has its own config and runs as a whole (not scoped
 per ticket) via `cd backend; npm run test:emulator`, which needs Java/Temurin 21
 (firebase-tools 15.22 dropped Java < 21). Run
@@ -71,6 +71,30 @@ cd backend; npm run test:emulator      # emulator slice (needs Java/Temurin 21)
 **No `tsc -b` trap here.** [frontend/tsconfig.json](frontend/tsconfig.json) is a
 single config (not project references), so bare `tsc --noEmit` — which is what
 `npm run typecheck` runs — checks everything correctly. Do NOT add `-b`.
+
+## Workflow stack contract
+
+The `feature-*` workflow commands are stack-agnostic: they reference the named slots
+below instead of hardcoding tool commands, so porting the workflow to another repo
+means rewriting THIS section only. Each slot's value is what to run / assume in THIS
+repo.
+
+- **Scoped test** — run one slug/ticket's tests (the bulk; repository mocked):
+  `npx vitest run tests/<slug>` (from `backend/`). Never run the full suite (slow).
+- **Static gate** — `npm run typecheck` (frontend; bare `tsc --noEmit`, single config,
+  do NOT use `-b`).
+- **Pre-commit gate** (optional; run BEFORE committing when the change touches the
+  covered area) — the Firestore emulator slice `cd backend; npm run test:emulator`
+  (needs Java/Temurin 21), covering repositories / domain queries / endpoints. The
+  sandbox may lack Java; if so STOP and have the operator run it. CI re-runs it on the
+  PR as a backstop. If a repo has no such gate, this slot is "none".
+- **Test location** — scoped tests live under `backend/tests/<slug>/`.
+- **Branch model** — feature branch `feat/<slug>` cut from the integration branch
+  `develop`; the user opens a PR into `develop`; a batch ships to prod via ONE PR
+  `develop` -> `main` (push to `main` = CI deploy). Claude never opens PRs. Never
+  commit to `develop`/`main` directly.
+- **Stack** — Express + TypeScript backend (Cloud Run) + Next.js static-export
+  frontend (Firebase Hosting) + Cloud Firestore.
 
 ## Architecture
 
@@ -142,15 +166,15 @@ code, comments, and commit messages.
 
 **Working docs live in [planning/](planning/) and are tracked in git.** All discussion,
 plan, and review markdown lives under `planning/<slug>/` (`DISCUSSION.md`, `PLAN.md`,
-`REVIEW.md`), committed so the wf-* workflow is portable across machines. Keep planning
+`REVIEW.md`), committed so the feature-* workflow is portable across machines. Keep planning
 updates in their own commits — do NOT fold them into feature/fix commits, which stay
 code + tests only. `.claude/commands/` is tracked too; `.claude/settings.local.json`
 (machine-local permissions) stays gitignored.
 
 **Root working docs** (tracked, at root because a contributor sees them first):
 - [CLAUDE.md](CLAUDE.md) — this file; auto-loaded every session.
-- [EXECUTION_FLOW.md](EXECUTION_FLOW.md) — the per-ticket workflow discipline the
-  `.claude/commands/wf-*` commands cite.
+- [FEATURE_FLOW.md](FEATURE_FLOW.md) — the per-ticket workflow discipline the
+  `.claude/commands/feature-*` commands cite.
 
 **Branching & release.** `main` is the only branch CI deploys (push to `main` ->
 prod). `develop` is a pure integration branch (no deploy). Each feature is a

@@ -1,32 +1,37 @@
-# EXECUTION_FLOW.md — Per-Ticket Workflow Discipline
+# FEATURE_FLOW.md — Feature Workflow Discipline (per-ticket)
 
-The durable process the `.claude/commands/wf-*` commands cite. It codifies how a
-feature moves from design to shipped code with full git discipline, for THIS repo
-(Express + TypeScript backend, Next.js static-export frontend, Cloud Firestore).
-Read alongside [CLAUDE.md](CLAUDE.md) (stack facts, conventions).
+The durable process the `.claude/commands/feature-*` commands cite. It codifies how a
+feature moves from design to shipped code with full git discipline. The stack-specific
+values (test commands, test location, branch model) live in the Workflow stack contract
+in [CLAUDE.md](CLAUDE.md); this file references those named slots so the process stays
+portable across repos. Read alongside CLAUDE.md (stack facts, conventions).
 
 ## The flow at a glance
 
 Each feature gets a kebab-case `<slug>` and a working folder `planning/<slug>/`
-(tracked in git, shared so the workflow is portable). The six phases map 1:1 to the
-wf-* commands:
+(tracked in git, shared so the workflow is portable). An OPTIONAL roadmap phase (0) can
+precede a batch of features; a DIAGRAM phase runs at plan-time (intent) and again when
+the review loop closes (final, reconciled to shipped code). The commands:
 
 | Phase | Command | Output | Code? Commit? |
 |-------|---------|--------|---------------|
-| 1. Discuss | `/wf-discuss` | `planning/<slug>/DISCUSSION.md` (Decisions log = the contract) | No / No |
-| 2. Plan | `/wf-plan` | `planning/<slug>/PLAN.md` (tickets `<SLUG-UPPER>-N`) | No / No |
-| 3. Implement | `/wf-implement` | code on `feat/<slug>`, one commit per ticket | Yes / Yes |
-| 4. Review | `/wf-review` | `planning/<slug>/REVIEW.md` (findings §N) | No / No |
-| 5. Fix | `/wf-fix` | code, one commit per FIX finding | Yes / Yes |
-| 6. Re-review | `/wf-rereview` | appends "Pass N" to REVIEW.md | No / No |
+| 0. Roadmap (optional) | `/feature-roadmap` | `planning/<roadmap>/DISCUSSION.md` + session plan S0..Sn | No / No |
+| 1. Discuss | `/feature-discuss` | `planning/<slug>/DISCUSSION.md` (Decisions log = the contract) | No / No |
+| 2. Plan | `/feature-plan` | `planning/<slug>/PLAN.md` (tickets `<SLUG-UPPER>-N`) | No / No |
+| 2.5 Diagram (intent) | `/feature-diagram <slug> plan` | `planning/<slug>/FLOW.md` (if warranted; self-assesses) | No / No |
+| 3. Implement | `/feature-implement` | code on `feat/<slug>`, one commit per ticket | Yes / Yes |
+| 4. Review | `/feature-review` | `planning/<slug>/REVIEW.md` (findings §N) | No / No |
+| 5. Fix | `/feature-fix` | code, one commit per FIX finding | Yes / Yes |
+| 6. Re-review | `/feature-rereview` | appends "Pass N" to REVIEW.md | No / No |
+| 6.5 Diagram (final) | `/feature-diagram <slug> final` | canonical `docs/flows/<flow>.md`, reconciled to shipped code | No / No |
 
-Loop 5<->6 until a pass returns CLOSE (no new FIX-worthy findings). Every phase
-boundary is **human-gated**. Pushing is a separate, explicit, human-approved step
-that happens only after the loop closes.
+Loop 5<->6 until a pass returns CLOSE (no new FIX-worthy findings). At close the diagram
+finisher (6.5) runs before push. Every phase boundary is **human-gated**. Pushing is a
+separate, explicit, human-approved step that happens only after the loop closes.
 
 **Each phase runs in a NEW session** (fresh context); the `planning/<slug>/` docs are
 the handoff, not chat history. Review/re-review especially MUST be fresh-eyes — never
-the same session that wrote the code. So every wf-* command ends by emitting a
+the same session that wrote the code. So every feature-* command ends by emitting a
 ready-to-paste prompt for the next phase, with concrete args filled in (slug, base
 branch, delta SHA) so the next session starts with the right context.
 
@@ -37,11 +42,11 @@ branch, delta SHA) so the next session starts with the right context.
   as a question — never silently change it.
 - `PLAN.md` tickets are the execution contract: each has scope, files, acceptance
   criteria (ACs), and its own scoped tests. Execute in order; dependencies first
-  (backend before the frontend that consumes it).
+  (e.g. an API before the UI that consumes it).
 
 ## Per-ticket loop (Stage A/B/C/D)
 
-Used by `/wf-implement` (per ticket) and `/wf-fix` (per finding). Do NOT advance
+Used by `/feature-implement` (per ticket) and `/feature-fix` (per finding). Do NOT advance
 until the current item is green + committed.
 
 - **A — Understand.** Re-read the ticket/finding. Open every file it touches; confirm
@@ -53,37 +58,27 @@ until the current item is green + committed.
   would violate a locked decision, ask ONE batched `AskUserQuestion`. Otherwise say
   "no questions, proceeding." Surface plan deviations here, not silently.
 - **C — Implement + scoped test.** Make the edits. Test EVERY acceptance criterion.
-  Add/extend the scoped test under `backend/tests/<slug>/` that proves the
-  ticket/finding. Run only that scope (see Testing). Fix until green. For FE behavior
+  Add/extend the scoped test under the contract's Test location that proves the
+  ticket/finding. Run only that scope (see Testing). Fix until green. For UI behavior
   you can't exercise headless, say so explicitly.
-- **D — Commit.** ONE commit (see Commit conventions). For fixes, mark the finding
-  `[FIXED]` in `REVIEW.md` first (but never `git add` anything under `planning/`).
-  Verify with `git log --oneline -3`.
+- **D — Commit.** ONE code commit (see Commit conventions). For fixes, mark the finding
+  `[FIXED]` in `REVIEW.md` first and commit that planning update SEPARATELY (never fold
+  `planning/` into the code commit). Verify with `git log --oneline -3`.
 
 ## Testing
 
 Run ONLY the current ticket's scoped tests — never the full suite (slow). Skip any
-pre-flight full-suite baseline.
+pre-flight full-suite baseline. The concrete commands are the named slots in the
+Workflow stack contract (CLAUDE.md):
 
-- **Backend unit (the bulk, repo mocked):**
-  ```
-  npx vitest run tests/<slug>            # from backend/
-  npx vitest run tests/<slug> -t "name"
-  ```
-- **Backend emulator slice (LOCAL gate — needs Java/Temurin 21):**
-  ```
-  cd backend; npm run test:emulator     # whole slice (own vitest.emulator.config.ts)
-  ```
-  Covers only the layers that truly touch Firestore: the generic
-  `FirestoreRepository<T>`, domain queries (ordering/filtering), and a few endpoint
-  smokes. It is NOT scoped per slug — it runs as one set. Run it locally BEFORE
-  committing any change that touches Firestore-backed code (repositories, domain
-  queries, endpoints). The agent sandbox may lack Java; if so, STOP and have the
-  operator run it. CI re-runs this slice on every PR as a backstop, but catch failures
-  locally before commit rather than bouncing off CI.
-- **Frontend (typecheck only):** `npm run typecheck` (= `tsc --noEmit`). This repo's
-  `frontend/tsconfig.json` is a single config, so bare `tsc --noEmit` is correct —
-  do NOT use `-b`.
+- **Scoped tests (the bulk):** the contract's Scoped test command, for the area(s) the
+  ticket touches, kept under its Test location. This is what you run after each ticket.
+- **Static gate:** the contract's Static gate (e.g. a typecheck).
+- **Pre-commit gate (LOCAL, before commit):** when the change touches the area the
+  contract's Pre-commit gate covers, run that gate BEFORE committing. It runs as one set
+  (not scoped per slug). The sandbox may lack its tooling; if so, STOP and have the
+  operator run it. CI re-runs it on every PR as a backstop, but catch failures locally
+  before commit rather than bouncing off CI. (If the repo defines no such gate, skip.)
 
 "Never advance while tests fail" applies, scoped to the current ticket/finding.
 
@@ -113,15 +108,15 @@ test(backend): add repository mock seam for unit tests
 
 ## Git rules
 
-- **Branch model.** `main` = prod (CI deploys on push). `develop` = pure integration
-  (no deploy). Work on `feat/<slug>` cut from `develop`; create it from develop if
-  missing and say so. When a feature's review loop CLOSES, the user opens a PR into
-  `develop` — Claude never runs `gh pr create`. One PR `develop` -> `main` ships a
-  whole batch to prod at the end -
-  never per-feature, so the live site never gets a half-finished feature.
+- **Branch model** (values in the Workflow stack contract, CLAUDE.md). Work on
+  `feat/<slug>` cut from the integration branch; create it from that branch if missing
+  and say so. When a feature's review loop CLOSES, the user opens a PR into the
+  integration branch — Claude never runs `gh pr create`. One batch PR to the prod branch
+  ships the whole batch at the end - never per-feature, so the live site never gets a
+  half-finished feature.
 - **Never push until the user approves that specific push.** A prior "yes" does not
-  carry forward. Never push between tickets. Never commit to `develop` or `main`
-  directly.
+  carry forward. Never push between tickets. Never commit to the integration or prod
+  branches directly.
 - Never use `--force` / `--force-with-lease` / `--no-verify` / `--amend` /
   `--no-gpg-sign` without an explicit instruction for that exact command.
 - Never `git reset --hard` / `git checkout --` / `git clean -f` / `git branch -D`
@@ -132,7 +127,7 @@ test(backend): add repository mock seam for unit tests
 
 ## Review phase (Phase 4)
 
-`/wf-review` is a fresh-eyes, read-only audit of `<base>..HEAD`, scoped to the feature
+`/feature-review` is a fresh-eyes, read-only audit of `<base>..HEAD`, scoped to the feature
 diff. It checks three axes with file:line evidence: (A) conformance to PLAN ACs per
 ticket, (B) conformance to each LOCKED decision, (C) an edge-case checklist
 (empty/edge inputs, error paths, idempotency, missing docs, partial payloads), plus a
@@ -144,7 +139,7 @@ referenced ticket/decision. The review does NOT fix — it stops for triage with
 user, who marks each finding FIX / DEFERRED / NO-ACTION in the REVIEW Decisions log
 (authoritative over the §N text).
 
-`/wf-rereview` (Pass N) verifies only the fix delta (`<delta-base>..HEAD`): each
+`/feature-rereview` (Pass N) verifies only the fix delta (`<delta-base>..HEAD`): each
 `[FIXED]` finding is verified-fixed / partial / not-fixed / regressed, plus any NEW
 issues the fixes introduced (numbered after the highest existing §). Anti-pattern:
 never silently re-open a closed finding — write a new §N that references the old one.
