@@ -74,10 +74,10 @@ single config (not project references), so bare `tsc --noEmit` — which is what
 
 ## Workflow stack contract
 
-The `feature-*` workflow commands are stack-agnostic: they reference the named slots
-below instead of hardcoding tool commands, so porting the workflow to another repo
-means rewriting THIS section only. Each slot's value is what to run / assume in THIS
-repo.
+The workflow commands (`feature-*`, `understand-*`) are stack-agnostic: they reference
+the named slots below instead of hardcoding tool commands / paths, so porting a workflow
+to another repo means rewriting THIS section only. Each slot's value is what to run /
+assume in THIS repo.
 
 - **Scoped test** — run one slug/ticket's tests (the bulk; repository mocked):
   `npx vitest run tests/<slug>` (from `backend/`). Never run the full suite (slow).
@@ -95,6 +95,12 @@ repo.
   commit to `develop`/`main` directly.
 - **Stack** — Express + TypeScript backend (Cloud Run) + Next.js static-export
   frontend (Firebase Hosting) + Cloud Firestore.
+- **Understanding docs location** (used by the `understand-*` workflow only) — base
+  dir for a codebase-understanding study's output: `docs/understanding/`, per-study
+  subfolder `docs/understanding/<slug>/` (`MAP.md`, `dives/<area>.md`,
+  `flows/<flow>.md`, `OVERVIEW.md`). Swap this per repo; for a codebase you do NOT own
+  (an OSS project you are only studying), point it OUTSIDE the repo so you never commit
+  into someone else's tree.
 
 ## Architecture
 
