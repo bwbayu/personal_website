@@ -91,6 +91,25 @@ historical `planning/<slug>/` records keep the old name (dated, not live).
   rules, human-gates). Splitting those into a shared doc is premature (YAGNI) - do it
   only when a second workflow (e.g. `bug-*`) needs them.
 
+### D8 - Second workflow: `understand-*` (codebase understanding) (2026-07-04)
+A second named workflow was authored under D1: `understand-*`, for understanding an
+EXISTING codebase (legacy or OSS), especially a large one. Phases:
+`understand-map` (breadth) -> `understand-dive` (depth, xN) -> `understand-diagram`
+(reverse-engineer flows) -> `understand-doc` (synthesize). It reads code and writes
+docs only - no app code, no push. Full rationale + decisions log in
+[understand/DESIGN.md](understand/DESIGN.md).
+- Rationale: Bayu often needs to understand codebases he did not write; the shape
+  (orient -> trace -> diagram -> document) is a distinct workflow from feature-*
+  (which builds). This is the first real test of D1 beyond the feature family and of D6
+  portability (its output path is a new named slot).
+- Reuses feature-diagram's reverse (code-true) discipline in `understand-diagram`
+  rather than reinventing it (thin sibling, decoupled from the feature slug).
+- Adds ONE named slot to the CLAUDE.md Workflow stack contract:
+  "Understanding docs location" (default `docs/understanding/`), so the workflow ports
+  to other repos - incl. ones you do not own - by pointing the slot outside their tree.
+- Open: unproven until run end-to-end; verify on THIS repo first (see
+  understand/DESIGN.md open items).
+
 ## 4. Migration plan - wf-* -> feature-* (D5)
 Applied in the working tree (renames staged via `git mv`, references updated); commit
 still pending - the log has no rename commit yet, so the earlier "executed as two
@@ -114,8 +133,8 @@ a repo-wide grep for `wf-` afterwards, commit as a single docs change.
 ## 5. Open items
 - Whether later workflows should be authored as skills (dir + SKILL.md) instead of
   flat command files - revisit if one needs bundled supporting files.
-- No second workflow exists yet; D1 is validated only against the feature family until
-  a real second workflow (e.g. `bug-*`) is built.
+- D1 now has a second workflow (`understand-*`, D8), but it is unproven until run
+  end-to-end; validate it on THIS repo, then on an external OSS project.
 - D6 portability is unproven until the workflow is actually copied to a second repo and
   run with only the CLAUDE.md contract rewritten - do that dry-run before relying on it.
 
