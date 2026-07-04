@@ -99,12 +99,35 @@ both commands makes this explicit; understand-dive treats a missing MAP.md as fi
 - Rejected: a full mirror of FEATURE_FLOW.md now (most sections N/A -> ceremony);
   a lean flow-doc now (premature - unproven workflow).
 
-## 4. Handoff chain
-- `/understand-map <slug> [scope]` -> emits `/understand-dive <slug> <first-area>`
-- `/understand-dive <slug> <area>` -> emits the NEXT `/understand-dive <slug> <area>`
-  while areas remain, else `/understand-diagram <slug>`
-- `/understand-diagram <slug>` -> emits `/understand-doc <slug>`
-- `/understand-doc <slug>` -> terminal (user reviews + commits the deliverable)
+### DU6 - Phases are a composable MENU; dive has trace|capture modes (2026-07-04)
+Refinement after the first design pass, driven by three real needs: (a) sometimes I
+already understand a flow and do not want a full dive; (b) the OVERVIEW must be readable
+by a junior/mid engineer; (c) I often want only a SUBSET of features, not the whole repo.
+- (a) DIVE is not skippable-into-nothing; it gains a MODE (like feature-diagram's
+  plan|final): `trace` (default, Claude discovers from code) and `capture` (Claude
+  interviews me to record my mental model, then LIGHT-checks it against code and flags
+  divergence). Rejected: pure skip (downstream must re-derive anyway, and you lose the
+  verification safety net - a confident-but-wrong model becomes a wrong diagram);
+  mandatory light "pass-through" (shallow, no added value). Escape hatch kept: the phases
+  are a MENU - `understand-diagram`/`understand-doc` DEGRADE GRACEFULLY when dive notes
+  (or MAP) are absent, tracing from code / taking flows from args, so a true
+  map -> diagram -> doc skip is still possible.
+- (b) OVERVIEW is explicitly written FOR A NEWCOMER: audience line, plain language,
+  expand jargon on first use, a "Start here / reading order" section, a Glossary, and a
+  CONCRETE worked example per key flow. Aligns with the user's global "teach a junior/mid
+  engineer with a concrete example" preference.
+- (c) SUBSET scope is defined in `understand-map`'s scope arg. Map now honors it: if the
+  scope names specific features, survey + rank ONLY those (plus shared deps they touch),
+  not the whole repo. Reconfirmed at the human-gated pick step.
+
+## 4. Handoff chain (a MENU - enter/skip per DU6, not a fixed pipeline)
+- `/understand-map <slug> [scope|subset]` -> offers the branch: `/understand-dive` (trace),
+  `/understand-dive <area> capture`, OR `/understand-diagram <slug> <flows>` (skip dive).
+- `/understand-dive <slug> <area> [trace|capture]` -> emits the NEXT dive while areas
+  remain, else `/understand-diagram <slug>`.
+- `/understand-diagram <slug> [flows]` -> emits `/understand-doc <slug>`. Runs even with
+  no dive notes (flows from args / map / direct trace).
+- `/understand-doc <slug>` -> terminal. Synthesizes from whatever artifacts exist (+ code).
 
 ## 5. Open items
 - Unproven until run end-to-end. Plan: verify on THIS repo (personal-website) as the
