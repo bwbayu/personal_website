@@ -1,6 +1,6 @@
 ---
-description: Phase 3 - reverse-engineer the flows flagged during dives into code-true Mermaid diagrams under the study's flows/ folder. Always code-true (no intent mode); validated headless. No code, no commit.
-argument-hint: <slug> [flow names]
+description: Phase 3 - reverse-engineer the chosen flows (from your args, the dive flags, or the map) into code-true Mermaid diagrams under the study's flows/ folder. Always code-true (no intent mode); validated headless. Runs even with no dives. No code, no commit.
+argument-hint: "<slug> [flow names]"
 ---
 You are the DIAGRAM agent for a codebase STUDY. You reverse-engineer the real flows
 from the ACTUAL code into Mermaid diagrams: always code-true (the code IS the source of
@@ -9,13 +9,18 @@ NO app code, NO push.
 
 Arguments: $ARGUMENTS
 FIRST token is the study SLUG. Any remaining tokens are explicit kebab-case flow
-name(s) to draw; if omitted, take the flows flagged `Diagram? yes` in the dive notes.
+name(s) to draw.
 
-Read `<understanding>/<slug>/MAP.md` and every `<understanding>/<slug>/dives/*.md`
-(Understanding docs location - Workflow stack contract in CLAUDE.md) for the flagged
-flows + their entry file:line. Write diagrams to `<understanding>/<slug>/flows/<flow>.md`
-(create the folder if missing). These are YOUR study artifacts - keep them under the
-study root, not in any product `docs/flows/`.
+Determine the flow set in priority order: (1) the flow name(s) in my args; else (2) the
+flows flagged `Diagram? yes` in `<understanding>/<slug>/dives/*.md`; else (3) the
+candidate areas in `<understanding>/<slug>/MAP.md`. Dive notes and MAP are OPTIONAL
+shortcuts - if neither exists (a straight-to-diagram study that skipped map/dive), take
+the flow(s) from my args and trace them directly from the code; if even the args are
+empty then, STOP and ask which flow(s) to draw. Read whatever of MAP.md / dives/*.md
+DOES exist (Understanding docs location - Workflow stack contract in CLAUDE.md) for entry
+file:line hints. Write diagrams to `<understanding>/<slug>/flows/<flow>.md` (create the
+folder if missing). These are YOUR study artifacts - keep them under the study root, not
+in any product `docs/flows/`.
 
 ## Step 1 - CONFIRM the flow set (human-gated)
 List the flows you will draw (from the dive flags or my args) with a one-line reason

@@ -8,7 +8,10 @@ is tractable. Pure reading + discussion - NO code, NO commit.
 
 Arguments: $ARGUMENTS
 The FIRST token is the study SLUG (kebab-case, e.g. the repo or subsystem name). The
-rest is optional scope / what I most want to understand.
+rest is optional scope. This is WHERE you define a SUBSET: if I only want some features
+(e.g. "only checkout, refunds, notifications - ignore the rest"), say so here and the
+survey is bounded to them; if I say nothing / "whole codebase", the survey covers
+everything.
 
 Output goes under the Understanding docs location (Workflow stack contract in
 CLAUDE.md), per-study folder `<understanding>/<slug>/`. Write `MAP.md` there; create
@@ -19,8 +22,13 @@ study targets a SINGLE known flow, map is optional - skip straight to
 `/understand-dive <slug> <flow>`. Run map when you need the territory first.
 
 ## Step 1 - SURVEY (breadth, ground every claim in files)
-Sweep the repo top-down; cite file:line. Do NOT read everything - sample enough to
-answer:
+SCOPE FIRST: if my scope names a SUBSET of features/areas, survey and rank ONLY those,
+plus the shared / cross-cutting parts they depend on (config, auth, the data layer) -
+do NOT map the whole repo. If the scope is whole-codebase or unspecified, sweep
+everything. Locate the named features in the tree first (grep/glob), then survey within
+that boundary.
+
+Sweep top-down; cite file:line. Do NOT read everything - sample enough to answer:
 - Purpose: what the system does, for whom (README / package manifest / docs).
 - Top-level structure: the main modules/packages/domains and how they are split.
 - Entry points: process starts, HTTP routers, CLI mains, job/cron entries, build
@@ -73,8 +81,17 @@ which area(s) to dive into first and in what order. Record the chosen order in M
   (follow CLAUDE.md conventions).
 
 ## Handoff (run in a NEW session per phase)
-Once MAP.md is written and I have picked the dive order, end with the ready-to-paste
-prompt for the first area:
-```
-/understand-dive <slug> <first-area>
-```
+Once MAP.md is written and I have picked the areas, offer the ready-to-paste next step -
+the phases are a MENU, not a fixed pipeline, so give me the branch:
+- I do NOT know an area yet -> trace it:
+  ```
+  /understand-dive <slug> <first-area>
+  ```
+- I ALREADY understand an area but want it recorded/verified -> capture mode:
+  ```
+  /understand-dive <slug> <first-area> capture
+  ```
+- I already understand the flows and only want the diagrams + doc -> SKIP dive:
+  ```
+  /understand-diagram <slug> <flow-names>
+  ```
