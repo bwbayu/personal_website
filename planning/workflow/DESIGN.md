@@ -118,3 +118,42 @@ a repo-wide grep for `wf-` afterwards, commit as a single docs change.
   a real second workflow (e.g. `bug-*`) is built.
 - D6 portability is unproven until the workflow is actually copied to a second repo and
   run with only the CLAUDE.md contract rewritten - do that dry-run before relying on it.
+
+## 6. Porting to a new repo
+
+The feature-* commands are stack-agnostic (D6): the ONLY per-repo adjustment is the
+"Workflow stack contract" section in the new repo's CLAUDE.md. Everything else copies
+verbatim.
+
+Steps:
+1. Copy `.claude/commands/feature-*.md` + `.claude/commands/meta-workflow.md` +
+   `FEATURE_FLOW.md` into the new repo (and this `planning/workflow/DESIGN.md` if you
+   want the rationale to travel too).
+2. Carry over your personal conventions (no Co-Authored-By, ASCII-only user strings,
+   PR-by-user, planning/ tracked) - either into the new repo's CLAUDE.md or once into a
+   global `~/.claude/CLAUDE.md`.
+3. Write the "Workflow stack contract" section in the new repo's CLAUDE.md - run the
+   reusable prompt below, which derives the slot values by inspecting the repo.
+4. Start as usual: `/feature-roadmap` or `/feature-discuss`.
+
+Reusable setup prompt (paste in the new repo after step 1):
+```
+Set up the feature-* workflow in THIS repo. Its commands are stack-agnostic: they read
+a "Workflow stack contract" section in CLAUDE.md for every repo-specific value. Your job
+is to write that section for this repo.
+
+1. Read FEATURE_FLOW.md and .claude/commands/feature-*.md to learn which named slots the
+   contract must define (Scoped test, Static gate, Pre-commit gate, Test location, Branch
+   model, Stack).
+2. Ground each slot by INSPECTING this repo - do not guess: the test runner and how to
+   run ONE test file/dir (package.json scripts / pyproject / go.mod / Makefile / CI
+   config), the static or type-check gate, any heavier integration gate (containers,
+   emulators, a real DB) and when it applies, where scoped tests live, the branch/release
+   model (existing branches, CI deploy triggers), and the stack (languages/frameworks).
+   Cite file:line evidence.
+3. For any slot you cannot determine from the repo, ASK with concrete options rather than
+   assuming. If a slot does not apply (e.g. no heavy integration gate), set it to "none".
+4. Write a "Workflow stack contract" section into CLAUDE.md (create CLAUDE.md if missing),
+   same slot names, filled with this repo's values.
+5. Report the filled slots + evidence + any assumptions/open questions. Do not commit.
+```
