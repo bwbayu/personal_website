@@ -1,225 +1,108 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code working in this repo.
 
-This is a personal-website monorepo: an Express + TypeScript API (`backend/`) and a
-Next.js static-export site (`frontend/`), backed by Cloud Firestore, deployed to
-Cloud Run + Firebase Hosting. See [DEPLOYMENT.md](DEPLOYMENT.md) for the full deploy
-architecture.
+Personal-website monorepo: Express + TypeScript API (`backend/`, Cloud Run) and a
+Next.js static-export site (`frontend/`, Firebase Hosting), backed by Cloud Firestore.
+Deploy architecture: [DEPLOYMENT.md](DEPLOYMENT.md). Per-ticket discipline:
+[FEATURE_FLOW.md](FEATURE_FLOW.md).
 
-## Running the stack
+## Architecture — Backend (`backend/`)
 
-Backend (dev port 3001):
-```powershell
-Set-Location backend
-npm install
-npm run dev          # ts-node ./bin/www
-```
-`npm run build` -> `tsc` into `dist/`; `npm start` -> `node ./dist/bin/www`. The port
-comes from `PORT` (default 3001 locally; Cloud Run injects 8080 in prod). Config is
-read in [backend/src/config/env.ts](backend/src/config/env.ts) from `backend/.env`
-(`PORT`, `NODE_ENV`, `API_KEY`, `ALLOWED_ORIGINS`, `API_BASE_URL`) — see
-[backend/.env.example](backend/.env.example). Data tooling: `npm run migrate`
-(seed/migrate) and `npm run patch:media-socials`.
+- Per-domain module: `controller / service / repository / routes / schema / type` under
+  `backend/src/<domain>/`. Follow this shape for any new domain.
+- 13 route groups registered in [routes/index.ts](backend/src/routes/index.ts): projects,
+  experiences, skills, categories, resume, about, achievements, certifications, educations,
+  media-socials, posts, daily-logs, rebuild. `resume` is a read-only aggregation and
+  `rebuild` is not a domain — do NOT scaffold CRUD for either.
+- Repositories extend the generic
+  [FirestoreRepository&lt;T&gt;](backend/src/shared/firestore.repository.ts); the client is
+  [config/firestore.ts](backend/src/config/firestore.ts) (Application Default Credentials in
+  prod). Never hand-roll Firestore access.
+- Writes (`POST/PATCH/DELETE`) are gated by
+  [authMiddleware](backend/src/middlewares/auth.middleware.ts); reads (`GET`) are public.
+  Per-route order: `validateId|validateSlugId -> authMiddleware -> validate(schema) -> controller`.
+- Validation is Zod, one `*.schema.ts` per domain, applied via
+  [validate.middleware](backend/src/middlewares/validate.middleware.ts).
+- [app.ts](backend/app.ts) sets the shared guards: rate limits (read 60 / write 10 per min),
+  64kb JSON limit, CORS allow-list, `/health`, Swagger at `/api-docs` (non-prod only). New
+  routes inherit these — do not re-add per route.
 
-Frontend (dev port 3002):
-```powershell
-Set-Location frontend
-npm install
-npm run dev          # next dev -p 3002
-```
-`npm run build` -> `next build` with `output: 'export'`, emitting static HTML to
-`out/`. The build/runtime needs `NEXT_PUBLIC_API_URL` pointing at the backend.
+## Architecture — Frontend (`frontend/`)
 
-## Tests
+- Next 14 App Router with `output: 'export'` ([next.config.mjs](frontend/next.config.mjs)):
+  builds to static HTML, **no Node server at runtime**. Do NOT add SSR, route handlers, or
+  server-only code.
+- Route groups `(public)` and `admin`; the admin area is a client-rendered CMS with a dynamic
+  `app/admin/[domain]` route.
+- Data is fetched **client-side at runtime** via TanStack Query. Hooks + keys live in
+  [lib/queries.ts](frontend/lib/queries.ts) (`queryKeys` public, `adminKeys` admin); fetchers
+  keep `cache: 'no-store'` (TanStack Query is the cache layer, not the browser). Do not fetch
+  at build time.
+- FE auth is Firebase client-side ([lib/firebase.ts](frontend/lib/firebase.ts), `AuthContext`,
+  `authedFetch` attaches the Bearer token). Do not hand-roll auth headers.
+- Blog/daily markdown renders through `react-markdown` + `rehype-sanitize`; external icon URLs
+  go through [isSafeUrl](frontend/lib/url.ts). Never render unsanitized markdown or unguarded URLs.
+- Pages are thin server components wrapping a `*Client` component — keep logic in the client
+  component, not in `page.tsx`.
 
-**Backend: Vitest — unit-heavy + a thin emulator layer.** Most tests are unit tests
-(services / utils / schemas / middlewares with the repository mocked) — each module
-runs in isolation. A thin set of integration tests runs against the Firestore
-emulator only where it adds value: the generic `FirestoreRepository<T>`,
-domain-specific queries (ordering / filtering), and a few endpoint smokes (auth
-gating, Zod validation, one CRUD round-trip). Tests are organized by backlog ticket
-under `backend/tests/<ticket_slug>/` (mirrors the workflow in
-[FEATURE_FLOW.md](FEATURE_FLOW.md)). Run scoped to one ticket, not the full suite
-(slow). The thin emulator slice has its own config and runs as a whole (not scoped
-per ticket) via `cd backend; npm run test:emulator`, which needs Java/Temurin 21
-(firebase-tools 15.22 dropped Java < 21). Run
-it locally before committing any Firestore-touching change (repositories, domain
-queries, endpoints).
+## Testing (facts; run steps are a skill)
 
-```powershell
-npx vitest run tests/<ticket_slug>     # unit bucket (repo mocked) - the bulk
-npx vitest run tests/<ticket_slug> -t "name"
-cd backend; npm run test:emulator      # emulator slice (needs Java/Temurin 21)
-```
-
-> Status: the test harness itself (Vitest config + emulator wiring + the
-> `tests/<slug>/` convention) is established in task **S0** of
-> [planning/feature-roadmap/DISCUSSION.md](planning/feature-roadmap/DISCUSSION.md);
-> until S0 ships there are no backend tests yet.
-
-**Frontend: typecheck only** (no test runner). Use `npm run typecheck`.
-
-| Script | Purpose |
-|---|---|
-| `npm run dev` | `next dev -p 3002`, HMR, no typecheck. |
-| `npm run typecheck` | `tsc --noEmit`. **Always use this** to verify FE types. |
-| `npm run build` | `next build` (static export). Fails on type errors. |
-| `npm run lint` | `next lint`. |
-| `npm run format` | `prettier . --write`. |
-
-**No `tsc -b` trap here.** [frontend/tsconfig.json](frontend/tsconfig.json) is a
-single config (not project references), so bare `tsc --noEmit` — which is what
-`npm run typecheck` runs — checks everything correctly. Do NOT add `-b`.
+- Backend Vitest: unit-heavy (repository mocked) plus a thin Firestore-emulator slice. Tests
+  live under `backend/tests/<slug>/`. Run scoped: `npx vitest run tests/<slug>` from `backend/`.
+  The emulator slice (`npm run test:emulator`) needs Java/Temurin 21.
+- Frontend: no test runner; typecheck only with `npm run typecheck` (bare `tsc --noEmit`, single
+  config).
 
 ## Workflow stack contract
 
-The workflow commands (`feature-*`, `understand-*`) are stack-agnostic: they reference
-the named slots below instead of hardcoding tool commands / paths, so porting a workflow
-to another repo means rewriting THIS section only. Each slot's value is what to run /
-assume in THIS repo.
+The `feature-*` / `understand-*` / `concept-*` commands are stack-agnostic and cite these slots:
 
-- **Scoped test** — run one slug/ticket's tests (the bulk; repository mocked):
-  `npx vitest run tests/<slug>` (from `backend/`). Never run the full suite (slow).
-- **Static gate** — `npm run typecheck` (frontend; bare `tsc --noEmit`, single config,
-  do NOT use `-b`).
-- **Pre-commit gate** (optional; run BEFORE committing when the change touches the
-  covered area) — the Firestore emulator slice `cd backend; npm run test:emulator`
-  (needs Java/Temurin 21), covering repositories / domain queries / endpoints. The
-  sandbox may lack Java; if so STOP and have the operator run it. CI re-runs it on the
-  PR as a backstop. If a repo has no such gate, this slot is "none".
-- **Test location** — scoped tests live under `backend/tests/<slug>/`.
-- **Branch model** — feature branch `feat/<slug>` cut from the integration branch
-  `develop`; the user opens a PR into `develop`; a batch ships to prod via ONE PR
-  `develop` -> `main` (push to `main` = CI deploy). Claude never opens PRs. Never
-  commit to `develop`/`main` directly.
-- **Stack** — Express + TypeScript backend (Cloud Run) + Next.js static-export
-  frontend (Firebase Hosting) + Cloud Firestore.
-- **Understanding docs location** (used by the `understand-*` workflow only) — base
-  dir for a codebase-understanding study's output: `docs/understanding/`, per-study
-  subfolder `docs/understanding/<slug>/` (`MAP.md`, `dives/<area>.md`,
-  `flows/<flow>.md`, `OVERVIEW.md`). Swap this per repo; for a codebase you do NOT own
-  (an OSS project you are only studying), point it OUTSIDE the repo so you never commit
-  into someone else's tree.
-
-## Architecture
-
-### Backend (`backend/`)
-
-Express + TypeScript. [backend/app.ts](backend/app.ts) wires `trust proxy` (1 hop, so
-rate limits key on the real client IP behind Cloud Run), helmet, CORS (allow-list from
-`config.allowedOrigins`), morgan, JSON body limit (64kb), read/write rate limiters
-(read 60 / write 10 per minute), a `Cache-Control` header on GETs, `/health` (pings
-Firestore), Swagger at `/api-docs` (non-prod only), then the API router under `/api`.
-
-Per-domain module pattern — each domain has
-`controller / service / repository / routes / schema / type` under
-`backend/src/<domain>/`. The 9 domains are registered in
-[backend/src/routes/index.ts](backend/src/routes/index.ts): about, skills, projects,
-experiences, educations, certifications, achievements, mediaSocials, resume (resume
-is a read-only aggregation). Repositories extend the generic
-[FirestoreRepository<T>](backend/src/shared/firestore.repository.ts); the Firestore
-client lives in [backend/src/config/firestore.ts](backend/src/config/firestore.ts)
-(Application Default Credentials on Cloud Run via `roles/datastore.user`).
-
-**Auth carve-out.** Writes (`POST/PATCH/DELETE`) are gated by
-[authMiddleware](backend/src/middlewares/auth.middleware.ts) — a single static
-`x-api-key`, timing-safe compared. Reads (`GET`) are public by design. Per-route order
-is `validateId -> authMiddleware -> validate(schema) -> controller`. (The admin/CMS
-work will add Firebase-ID-token verification alongside the API key — see the roadmap.)
-
-Validation is Zod via [validate.middleware](backend/src/middlewares/validate.middleware.ts);
-schemas live in each domain's `*.schema.ts`.
-
-### Frontend (`frontend/`)
-
-Next.js 14 App Router, **`output: 'export'`** ([next.config.mjs](frontend/next.config.mjs))
-— builds to static HTML, no Node server at runtime. Flowbite React + Tailwind. Path
-alias `@/* -> ./*`.
-
-Data is fetched **client-side at runtime** (not at build time) via
-**TanStack Query** (`@tanstack/react-query`). A single `QueryClientProvider`
-([frontend/app/providers.tsx](frontend/app/providers.tsx)) mounts at the app root in
-[frontend/app/layout.tsx](frontend/app/layout.tsx), shared by the public group and the
-admin area (defaults: `staleTime` 5 min to match the server `max-age=300`,
-`refetchOnWindowFocus` off, `retry: 1`). Per-endpoint hooks + query keys live in
-[frontend/lib/queries.ts](frontend/lib/queries.ts) (public reads under `queryKeys`,
-admin reads under `adminKeys.domain(apiPath)`); a shared key dedups requests
-(media-socials fetched once across navbar + footer; a domain's list view and its
-dashboard count share one fetch). The per-domain fetchers in
-[frontend/app/api/](frontend/app/api/) (and the admin client in
-[frontend/lib/admin/api.ts](frontend/lib/admin/api.ts)) keep `cache: 'no-store'` and act
-as the query functions — TanStack Query is the cache layer, not the browser HTTP cache.
-Admin writes (create/update/delete/reorder) `invalidateQueries` the affected domain so
-the list + count refresh immediately under the 5-min `staleTime`. Pages
-(`app/page.tsx`, `app/project/page.tsx`, `app/resume/page.tsx`) are thin server
-components wrapping a `*Client` component under
-[frontend/components/](frontend/components/). External icon image URLs are guarded by
-[isSafeUrl](frontend/lib/url.ts).
-
-### Deployment
-
-Firebase Hosting (FE static `out/`) <-> Cloud Run (BE Docker) <-> Cloud Firestore.
-CI in [.github/workflows/](.github/workflows/) deploys on push to `main`, path-filtered
-per package. Full details in [DEPLOYMENT.md](DEPLOYMENT.md). One service account
-secret `GCP_SA_KEY` is shared by both workflows.
+- **Scoped test** — `npx vitest run tests/<slug>` from `backend/` (repository mocked). Never run
+  the full suite (slow).
+- **Static gate** — `npm run typecheck` (frontend; bare `tsc --noEmit`, single config, do NOT use `-b`).
+- **Pre-commit gate** — Firestore emulator slice `cd backend; npm run test:emulator` (needs
+  Java/Temurin 21) when the change touches repositories / domain queries / endpoints. If the
+  sandbox lacks Java, STOP and have the operator run it.
+- **Test location** — `backend/tests/<slug>/`.
+- **Branch model** — `feat/<slug>` cut from `develop`; user opens the PR into `develop`; a batch
+  ships to prod via ONE PR `develop -> main`. Claude never opens PRs; never commit to `develop`/`main`.
+- **Understanding-docs location** — `docs/understanding/<slug>/`.
+- **Concept library** — defined once in the global `~/.claude/CLAUDE.md` (shared `~/notes/concepts/`).
 
 ## Repo conventions
 
-**Language.** Discuss/converse with the user in Bahasa Indonesia. Write everything
-durable in English: docs (`DISCUSSION.md`/`PLAN.md`/`REVIEW.md`, CLAUDE.md, etc.),
-code, comments, and commit messages.
+- Converse with the user in Bahasa Indonesia. Write everything durable in English: docs, code,
+  comments, commit messages.
+- Working docs live in `planning/<slug>/` (`DISCUSSION.md` / `PLAN.md` / `REVIEW.md`), committed.
+  Keep planning commits separate from code commits — never fold docs into a feature/fix commit.
+- Commit subject: `<type>(<scope>): <subject>` — `<type>` = feat/fix/refactor/perf/chore/docs/test,
+  `<scope>` = `backend`/`frontend`, no ticket/finding/doc suffix. Body = a few short bullets of WHAT
+  changed, self-contained.
+- PRs are opened by the user, not Claude. Claude drafts title + description into [PR.md](PR.md);
+  write each bullet as ONE continuous line (no mid-sentence newline) so it pastes cleanly.
 
-**Working docs live in [planning/](planning/) and are tracked in git.** All discussion,
-plan, and review markdown lives under `planning/<slug>/` (`DISCUSSION.md`, `PLAN.md`,
-`REVIEW.md`), committed so the feature-* workflow is portable across machines. Keep planning
-updates in their own commits — do NOT fold them into feature/fix commits, which stay
-code + tests only. `.claude/commands/` is tracked too; `.claude/settings.local.json`
-(machine-local permissions) stays gitignored.
+## Do NOT
 
-**Root working docs** (tracked, at root because a contributor sees them first):
-- [CLAUDE.md](CLAUDE.md) — this file; auto-loaded every session.
-- [FEATURE_FLOW.md](FEATURE_FLOW.md) — the per-ticket workflow discipline the
-  `.claude/commands/feature-*` commands cite.
+- Never commit to `develop` or `main` directly — work on `feat/<slug>` cut from `develop`.
+- Never push until the user explicitly approves the specific push.
+- Do NOT add a `Co-Authored-By` / any Claude/Anthropic attribution trailer to commits.
+- Do NOT run the full backend test suite (slow) — scope to `tests/<slug>`. Do NOT use `tsc -b`
+  on the frontend (single config; `-b` breaks the check).
+- Do NOT commit secrets: `keys/` (SA JSON) and `backend/.env` are gitignored; prod uses ADC.
+- security-tools feature (**enigma**, **ascii-sum**) ONLY: commit code, never the planning `.md`.
+- No emojis / non-ASCII in user-facing strings.
 
-**Branching & release.** `main` is the only branch CI deploys (push to `main` ->
-prod). `develop` is a pure integration branch (no deploy). Each feature is a
-`feat/<slug>` cut from `develop`; when its review loop closes, the user opens a PR into
-`develop`. Only after a coherent batch of features is merged into `develop` does the
-user open ONE PR `develop` -> `main` to ship everything to prod in a single coordinated
-deploy. Never commit to `develop` or `main` directly.
+## Gotchas / Domain Notes
 
-**Pull requests are opened by the user, not by Claude.** Claude never runs
-`gh pr create` and never opens or merges PRs. When a PR is ready, Claude drafts its
-title + description into [PR.md](PR.md) (root, gitignored) following PR.md's existing
-format; the user copies it into GitHub. In the PR description, write each bullet or
-paragraph as ONE continuous line — do NOT hard-wrap a sentence across multiple lines
-(no mid-explanation newline) so it pastes into GitHub without broken line breaks. Only
-a new bullet / list item / paragraph starts a new line.
-
-**Commit convention.** One commit per ticket/finding. Subject:
-`<type>(<scope>): <subject>` — NO ticket/issue/finding/doc suffix (no `(slug TH-2)`,
-no `(review §N)`). `<type>` = feat/fix/refactor/perf/chore/docs/test; `<scope>` =
-`backend` / `frontend`. Body = a few SHORT bullet points of WHAT changed,
-self-contained and readable by anyone cloning the public repo — do NOT reference
-DISCUSSION/PLAN/REVIEW, ticket IDs, finding numbers, or "decisions N" (keep each
-message self-contained and readable on its own). Keep it simple; no long prose.
-Track the ticket/finding -> commit SHA mapping inside PLAN.md / REVIEW.md instead.
-Do NOT add a `Co-Authored-By` / any Claude/Anthropic attribution trailer. Never push
-until the user explicitly approves the specific push; never push to `main`/`develop`
-directly — work on `feat/<slug>`.
-
-Example (good):
-```
-test(backend): add repository mock seam for unit tests
-
-- FirestoreRepository takes an optional db param (defaults to shared client)
-- convert skills module to factory functions wired in skill.routes.ts
-- add a skills service unit test backed by a fake repository
-```
-
-**User-facing strings:** no emojis / non-ASCII.
-
-**Secrets.** `backend/.env` holds `API_KEY` etc. (gitignored); `keys/` holds any GCP
-service-account JSON (gitignored). In prod, Firestore auth uses ADC — no key file on
-Cloud Run.
+- `POST /api/rebuild` proxies a GitHub `workflow_dispatch` that triggers a **real frontend
+  deploy** (static rebuild). The GH token is backend-only. Do not call it casually.
+- `npm run migrate` and `patch:*` scripts are one-off, idempotent scripts that run against
+  **real Firestore data** — not part of normal dev. Do not run them offhand.
+- Blog and daily-log documents use **slug IDs** (`validateSlugId`), not numeric IDs
+  (`validateId`) — pick the right id middleware.
+- Auth is dual-path: browsers send a Firebase `Bearer` token, break-glass clients send
+  `x-api-key`. The token path requires the caller's email to be on the `adminEmails` allowlist
+  AND `email_verified` — that is why some valid logins still 403.
+- Frontend `staleTime` is 5 min to match the server `Cache-Control: max-age=300`; admin writes
+  `invalidateQueries` on the touched domain. Keep these two in sync when adding cached endpoints.
